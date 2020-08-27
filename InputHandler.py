@@ -21,7 +21,7 @@ def getch():
     while (1):
         k = inkey()
         if k in valid_inputs: break
-        else: print("Invalid Input")
+        # else: print("Invalid Input")
     if k == '\033':
         print("Bye! :)")
         exit()

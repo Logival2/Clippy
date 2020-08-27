@@ -3,6 +3,7 @@ from utils import *
 
 class Map(object):
     def __init__(s, input):
+        s.updates = []
         if isinstance(input, Pos):
             # Map Generator
             s.map = []
@@ -16,15 +17,15 @@ class Map(object):
             # Build a double array containing Entity objects with
             # the colors specified in the map header
             s.map = [[Entity(c, *attr.get(c, [])) for c in l] for l in map]
-
-    def display(s):
+        # Print the map entirely for the first time
         for l in s.map:
             for entity in l:
                 print(entity, end=' \x1b[0m')
             print()
 
-    def refresh(s):
-        print("\033[6;3HHello")
+    def refresh_display(s):
+        for update in s.updates:
+            print(f"\033[{update.pos.y};{update.pos.y}H{update.entity.__repr__()}")
 
 
 class Entity(object):
