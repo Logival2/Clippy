@@ -1,11 +1,11 @@
-from Map import Map
-from CliHandler import get_terminal_size, inputs_handler, framerate_handler
+from CliHandler import FramerateHandler, get_terminal_size
+from GameHandler import GameHandler
 
 
 if __name__ == '__main__':
-    map = Map("test")
-    framerate_handler = framerate_handler.Framerate_handler(fps=60)
+    framerate_handler = FramerateHandler.FramerateHandler(fps=2)
+    gameHandler = GameHandler("test")
     while 42:
         if not framerate_handler.do_turn(): continue
-        input = inputs_handler.getch()
-        map.refresh_display()
+        gameHandler.do_turn()
+        # map.refresh_display()

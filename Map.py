@@ -8,6 +8,7 @@ class Map(object):
     def __init__(s, input):
         s.updates = []
         s.map = []
+        s.player_pos = None
         if isinstance(input, Pos):
             # Map Generator
             for y in range(input.y):
@@ -15,6 +16,16 @@ class Map(object):
                 s.map.append(line)
         else:
             s.load_map_from_json(input)
+        found_flag = False
+        for y, line in enumerate(s.map):
+            for x, ent in enumerate(line):
+                if isinstance(ent, Player):
+                    s.player_pos = Pos(y, x)
+                    found_flag = True
+                    break
+            if found_flag: break
+        if not found_flag:
+            exit_error("Invalid map file: No player defined")
         # Print the map entirely for the first time
         s.full_display()
 
@@ -45,6 +56,9 @@ class Map(object):
         if c in ent_data["obstacles"].keys():
             data = ent_data["obstacles"][c]
             return Obstacle(c, data["fg_c"], data["bg_c"])
+
+    def get_player_data(s):
+        return
 
     def full_display(s):
         for l in s.map:

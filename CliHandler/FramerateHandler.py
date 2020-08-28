@@ -1,7 +1,7 @@
 import time
 
 
-class Framerate_handler(object):
+class FramerateHandler(object):
     def __init__(s, fps):
         s.last_update = time.time()
         s.delta = 1 / fps
