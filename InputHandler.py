@@ -18,7 +18,7 @@ class _Getch(object):
 def getch():
     valid_inputs = ['\r', 'z', 'd', 's', 'q', '\033']
     inkey = _Getch()
-    while (1):
+    while 42:
         k = inkey()
         if k in valid_inputs: break
         # else: print("Invalid Input")

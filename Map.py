@@ -1,61 +1,56 @@
 from utils import *
+from Entities import *
 
 
 class Map(object):
     def __init__(s, input):
         s.updates = []
+        s.map = []
         if isinstance(input, Pos):
             # Map Generator
-            s.map = []
             for y in range(input.y):
                 line = [Entity('x')] * input.x
                 s.map.append(line)
         else:
-            with open(f"./maps/{input}.map", 'r') as f:
-                data = f.read()
-            attr, map = parse_map_file(data)
-            # Build a double array containing Entity objects with
-            # the colors specified in the map header
-            s.map = [[Entity(c, *attr.get(c, [])) for c in l] for l in map]
+            s.load_map_from_json(input)
         # Print the map entirely for the first time
         for l in s.map:
             for entity in l:
-                print(entity, end=' \x1b[0m')
+                if not entity:
+                    print("  ", end='')
+                else:
+                    print(entity, end=' \x1b[0m')
             print()
 
+    def load_map_from_json(s, input):
+        with open(f"./maps/{input}.json", 'r') as f:
+            data = f.read()
+        data = json.loads(data)
+        if not all(e in data["entities"].keys() for e in ["player", "enemies", "obstacles"]):
+            exit_error("Invalid map file, not enough entities defined")
+        map = [l for l in data["map"].split('\n') if l]
+        for line in map:
+            tmp_line = []
+            for c in line:
+                tmp_line.append(s.create_entity(c, data["entities"]))
+            s.map.append(tmp_line)
+
+    def create_entity(s, c, ent_data):
+        """Entity Factory, returns none if the char is not defined as any entity"""
+        # Create player
+        if c in ent_data["player"].keys():
+            data = ent_data["player"][c]
+            return Player(c, data["fg_c"], data["bg_c"])
+        # Create enemy
+        if c in ent_data["enemies"].keys():
+            data = ent_data["enemies"][c]
+            return Enemy(c, data["fg_c"], data["bg_c"])
+        # Create obstacle
+        if c in ent_data["obstacles"].keys():
+            data = ent_data["obstacles"][c]
+            return Obstacle(c, data["fg_c"], data["bg_c"])
+
     def refresh_display(s):
+        """Reprint only the parts which moved during last turn"""
         for update in s.updates:
             print(f"\033[{update.pos.y};{update.pos.y}H{update.entity.__repr__()}")
-
-
-class Entity(object):
-    def __init__(s, repr_char, fg_color=39, bg_color=49):
-        s.repr_char = repr_char
-        s.fg_color = fg_color
-        s.bg_color = bg_color
-
-    def __repr__(s):
-        return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}"
-
-
-def parse_map_file(raw_data):
-    splitted_data = [l for l in raw_data.split('\n') if l]
-    if splitted_data[0][:10] != "__header__":
-        exit_error("Invalid map file, no __header__ tag")
-    # Get the header data
-    try:
-        map_segment_idx = splitted_data.index("__map__")
-    except ValueError:
-        exit_error("Invalid map file, no __map__ tag")
-    else:
-        raw_header_infos = splitted_data[1:map_segment_idx]
-    # Handle the header data
-    attr = {}
-    for char_data in raw_header_infos:
-        tmp = char_data.split(';')
-        if len(tmp) != 3:
-            exit_error("Invalid map file, wrong character info parameters")
-        attr[tmp[0]] = tmp[1:]
-    # Get the map data
-    map_data = splitted_data[map_segment_idx + 1:]
-    return attr, map_data

@@ -1,0 +1,31 @@
+{
+        "entities": {
+                "player": {
+                        "P": {
+                                "fg_c": 36,
+                                "bg_c": 49
+                        }
+                },
+                "enemies": {
+                        "E": {
+                                "fg_c": 91,
+                                "bg_c": 49
+                        },
+                        "e": {
+                                "fg_c": 31,
+                                "bg_c": 49
+                        }
+                },
+                "obstacles": {
+                        "X": {
+                                "fg_c": 39,
+                                "bg_c": 107
+                        },
+                        "x": {
+                                "fg_c": 97,
+                                "bg_c": 107
+                        }
+                }
+        },
+        "map": "xxxxxxXxxx\nx        x\nx  P     xxxxXxxxx\nxxx     e        x\n  x       E      x\n  x              x\n  xxxXXxxxx      x\n          x      x\n          x  z   x\n          x      x\n          xxxxxxxx"
+}

@@ -1,4 +1,8 @@
 __header__
+Player;P
+Enemies;Ee
+Obstacles;Xx
+z
 x;39;107
 P;36;49
 E;91;49
