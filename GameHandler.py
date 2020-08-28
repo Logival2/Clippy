@@ -5,39 +5,17 @@ import termios
 import threading
 
 from Map import Map
-from utils import Pos
+from utils import Pos, Printer
 
 
-# class _Getch(object):
-#     def __call__(s):
-#         fd = sys.stdin.fileno()
-#         old_settings = termios.tcgetattr(fd)
-#         try:
-#             tty.setraw(sys.stdin.fileno())
-#             ch = sys.stdin.read(1)
-#         finally:
-#             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-#         return ch
-#
-# def getch():
-#     inkey = _Getch()
-#     k = inkey()
-#     if k == '\033':
-#         exit()
-#     return k
-
-def getch(fd, old_settings, inputs_queue):
-    # inkey = _Getch()
+def getch(fd, cli_attr, inputs_queue):
     while 42:
-        # ch = inkey()
         try:
             tty.setraw(fd)
             ch = sys.stdin.read(1)
         finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        # ch = tmp(fd, old_settings)
+            termios.tcsetattr(fd, termios.TCSADRAIN, cli_attr)
         inputs_queue.put(ch)
-        # sys.stdin.flush()
         if ch == '\033': return # Escape, stop input reading thread
 
 class GameHandler(object):
@@ -51,6 +29,7 @@ class GameHandler(object):
                                         target=getch,
                                         args=(s.fd, s.cli_attr, s.inputs_queue))
         s.inputs_thread.start()
+        s.printer = Printer(s.fd, s.cli_attr)
 
     def do_turn(s):
         inputs = []
@@ -59,4 +38,4 @@ class GameHandler(object):
         if '\033' in inputs: # Escape
             print("bye :)")
             exit()
-        print("->", inputs)
+        s.printer.safe_print("-> " + str(inputs))
