@@ -4,6 +4,8 @@ import tty
 import termios
 
 
+
+# Get keys
 class _Getch(object):
     def __call__(s):
         fd = sys.stdin.fileno()

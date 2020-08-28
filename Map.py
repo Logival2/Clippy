@@ -1,3 +1,5 @@
+import json
+
 from utils import *
 from Entities import *
 
@@ -14,13 +16,7 @@ class Map(object):
         else:
             s.load_map_from_json(input)
         # Print the map entirely for the first time
-        for l in s.map:
-            for entity in l:
-                if not entity:
-                    print("  ", end='')
-                else:
-                    print(entity, end=' \x1b[0m')
-            print()
+        s.full_display()
 
     def load_map_from_json(s, input):
         with open(f"./maps/{input}.json", 'r') as f:
@@ -49,6 +45,15 @@ class Map(object):
         if c in ent_data["obstacles"].keys():
             data = ent_data["obstacles"][c]
             return Obstacle(c, data["fg_c"], data["bg_c"])
+
+    def full_display(s):
+        for l in s.map:
+            for entity in l:
+                if not entity:
+                    print(" ", end='')
+                else:
+                    print(entity, end='\x1b[0m')
+            print()
 
     def refresh_display(s):
         """Reprint only the parts which moved during last turn"""
