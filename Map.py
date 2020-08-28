@@ -61,15 +61,16 @@ class Map(object):
         return
 
     def full_display(s):
-        for l in s.map:
+        for y, l in enumerate(s.map):
+            print(f"\033[{y+1};1H")
             for entity in l:
                 if not entity:
                     print(" ", end='')
                 else:
                     print(entity, end='\x1b[0m')
-            print()
+        print(f"\033[{len(s.map)+1};1H")
 
-    def refresh_display(s):
-        """Reprint only the parts which moved during last turn"""
-        for update in s.updates:
-            print(f"\033[{update.pos.y};{update.pos.y}H{update.entity.__repr__()}")
+    # def refresh_display(s):
+    #     """Reprint only the parts which moved during last turn"""
+    #     for update in s.updates:
+    #         print(f"\033[{update.pos.y};{update.pos.y}H{update.entity.__repr__()}")

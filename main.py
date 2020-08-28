@@ -3,9 +3,9 @@ from GameHandler import GameHandler
 
 
 if __name__ == '__main__':
-    framerate_handler = FramerateHandler.FramerateHandler(fps=2)
+    framerate_handler = FramerateHandler.FramerateHandler(fps=60)
     gameHandler = GameHandler("test")
     while 42:
-        if not framerate_handler.do_turn(): continue
+        framerate_handler.start_frame()
         gameHandler.do_turn()
-        # map.refresh_display()
+        framerate_handler.end_frame()

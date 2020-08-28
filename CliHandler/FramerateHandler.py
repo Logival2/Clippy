@@ -3,10 +3,15 @@ import time
 
 class FramerateHandler(object):
     def __init__(s, fps):
-        s.last_update = time.time()
         s.delta = 1 / fps
+        s.frame_start = None
 
-    def do_turn(s):
-        if (time.time() - s.last_update) > s.delta:
-            s.last_update = time.time()
-            return True
+    def start_frame(s):
+        s.frame_start = time.time()
+
+    def end_frame(s):
+        to_sleep = s.delta - (time.time() - s.frame_start)
+        if to_sleep > 0:
+            time.sleep(to_sleep)
+        else:
+            print(f"Lagging {-to_sleep} seconds behind")
