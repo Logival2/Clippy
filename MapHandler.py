@@ -4,7 +4,7 @@ from utils import *
 from Entities import *
 
 
-class Map(object):
+class MapHandler(object):
     def __init__(s, input):
         s.updates = []
         s.map = []
@@ -28,6 +28,9 @@ class Map(object):
             exit_error("Invalid map file: No player defined")
         # Print the map entirely for the first time
         s.full_display()
+
+    def get_player(s):
+        return s.get_entity_from_pos(s.player_pos)
 
     def load_map_from_json(s, input):
         with open(f"./maps/{input}.json", 'r') as f:
@@ -57,18 +60,55 @@ class Map(object):
             data = ent_data["obstacles"][c]
             return Obstacle(c, data["fg_c"], data["bg_c"])
 
-    def get_player_data(s):
-        return
-
     def full_display(s):
         for y, l in enumerate(s.map):
-            print(f"\033[{y+1};1H")
+            print(f"\033[K\033[{y+1};1H")
             for entity in l:
                 if not entity:
                     print(" ", end='')
                 else:
                     print(entity, end='\x1b[0m')
         print(f"\033[{len(s.map)+1};1H")
+        # for l in s.map:
+        #     for e in l:
+        #         if e:
+        #             print(e, end='')
+        #         else:
+        #             print(" ", end='')
+        #     print()
+
+    def get_entity_from_pos(s, y, x=None):
+        if x: return s.map[y][x]
+        else: return s.map[y.y][y.x]  # Yeah... no overloading in python...
+
+    def set_entity_to_pos(s, entity, y, x=None):
+        if x: s.map[y][x] = entity
+        else: s.map[y.y][y.x] = entity # Yeah... no overloading in python...
+
+    def is_valid_pos(s, pos):
+        return pos.y > 0 and (pos.y < len(s.map)) and pos.x > 0 and (pos.x < len(s.map[pos.y]))
+
+    def move_entity_absolute(s, from_p, to):
+        if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
+        entity = s.get_entity_from_pos(from_p)
+        next_case = s.get_entity_from_pos(to)
+        if not next_case:
+            s.set_entity_to_pos(entity, to)
+            s.set_entity_to_pos(None, from_p)
+            return True
+
+    def move_entity_relative(s, from_p, delta):
+        to = from_p + delta
+        if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
+        entity = s.get_entity_from_pos(from_p)
+        next_case = s.get_entity_from_pos(to)
+        if not next_case:
+            # print(f"MOVING {type(entity)} FROM {from_p} TO:{to} ({type(next_case)})")
+            s.set_entity_to_pos(entity, to)
+            s.set_entity_to_pos(None, from_p)
+            return True
+
+
 
     # def refresh_display(s):
     #     """Reprint only the parts which moved during last turn"""

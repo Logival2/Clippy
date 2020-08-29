@@ -1,9 +1,9 @@
 {
         "entities": {
                 "player": {
-                        "P": {
-                                "fg_c": 36,
-                                "bg_c": 49
+                        "!": {
+                                "fg_c": 34,
+                                "bg_c": 106
                         }
                 },
                 "enemies": {
@@ -31,5 +31,5 @@
                         }
                 }
         },
-        "map": "xxxoxxXxxx\nx        x\nx  P     xxxxXxxxx\noxx     e        x\n  o       E      x\n  x              x\n  xxxXXxxxx      x\n          x      x\n          x  z   x\n          x      x\n          xxxxxxxx"
+        "map": "xxxoxxXxxx\nx        x\nx  !     xxxxXxxxx\noxx     e        x\n  o       E      x\n  x              x\n  xxxXXxxxx      x\n          x      x\n          x  z   x\n          x      x\n          xxxxxxxx"
 }

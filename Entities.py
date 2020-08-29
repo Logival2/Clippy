@@ -5,7 +5,7 @@ class Entity(object):
         s.bg_color = bg_color
 
     def __repr__(s):
-        return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}"
+        return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}\x1b[0m"
 
 class Obstacle(Entity):
     pass
