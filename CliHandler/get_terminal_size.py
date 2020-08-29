@@ -6,7 +6,12 @@ import subprocess
 
 
 def get_terminal_size():
-    """ get width and height of console, works on linux,os x,windows,cygwin"""
+    tmp_term_size = get_terminal_size_raw()
+    return tmp_term_size[1], tmp_term_size[0]
+
+
+def get_terminal_size_raw():
+    """ get width and height of console, works on linux,os x, windows, cygwin"""
     current_os = platform.system()
     tuple_xy = None
     if current_os == 'Windows':

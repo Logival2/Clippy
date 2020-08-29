@@ -1,8 +1,9 @@
 class Entity(object):
-    def __init__(s, repr_char, fg_color=39, bg_color=49):
+    def __init__(s, repr_char, is_collider=True, fg_color=39, bg_color=49):
         s.repr_char = repr_char
         s.fg_color = fg_color
         s.bg_color = bg_color
+        s.is_collider = is_collider
 
     def __repr__(s):
         return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}\x1b[0m"
@@ -20,4 +21,10 @@ class Player(LivingEntity):
     pass
 
 class Enemy(LivingEntity):
+    pass
+
+class Floor(Entity):
+    pass
+
+class Empty(Entity):
     pass

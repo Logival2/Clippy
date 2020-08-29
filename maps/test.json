@@ -1,5 +1,19 @@
 {
         "entities": {
+                "floor": {
+                        "░": {
+                                "fg_c": 34,
+                                "bg_c": 47
+                        },
+                        "▒": {
+                                "fg_c": 34,
+                                "bg_c": 47
+                        },
+                        "▓": {
+                                "fg_c": 34,
+                                "bg_c": 47
+                        }
+                },
                 "player": {
                         "!": {
                                 "fg_c": 34,
@@ -19,17 +33,17 @@
                 "obstacles": {
                         "X": {
                                 "fg_c": 90,
-                                "bg_c": 107
+                                "bg_c": 40
                         },
                         "o": {
                                 "fg_c": 97,
-                                "bg_c": 107
+                                "bg_c": 40
                         },
                         "x": {
-                                "fg_c": 37,
-                                "bg_c": 107
+                                "fg_c": 30,
+                                "bg_c": 40
                         }
                 }
         },
-        "map": "xxxoxxXxxx\nx        x\nx  !     xxxxXxxxx\noxx     e        x\n  o       E      x\n  x              x\n  xxxXXxxxx      x\n          x      x\n          x  z   x\n          x      x\n          xxxxxxxx"
+        "map": "oooooooooo\noffffffffo\noffpfffffooooooooo\nooofffffeffffffffo\n  offfffffeffffffo\n  offffffffffffffo\n  oooooooooffffff\n          offffffo\n          offfffff\n          offffffo\n          oooooooo"
 }

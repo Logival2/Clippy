@@ -1,4 +1,5 @@
 import json
+import random
 
 from utils import *
 from Entities import *
@@ -7,7 +8,7 @@ from Entities import *
 class MapHandler(object):
     def __init__(s, input):
         s.updates = []
-        # Maybe add an update registering system, in order to draw only the
+        # TODO add an update registering system, in order to draw only the
         # screen areas which changed
         s.map = []
         s.player_pos = None
@@ -39,8 +40,9 @@ class MapHandler(object):
         with open(f"./maps/{input}.json", 'r') as f:
             data = f.read()
         data = json.loads(data)
-        if not all(e in data["entities"].keys() for e in ["player", "enemies", "obstacles"]):
+        if not all(e in data["entities"].keys() for e in ['floor', 'enemies', 'player']):
             exit_error("Invalid map file, not enough entities defined")
+
         map = [l for l in data["map"].split('\n') if l]
         for line in map:
             tmp_line = []
@@ -50,18 +52,30 @@ class MapHandler(object):
 
     def create_entity(s, c, ent_data):
         """Entity Factory, returns none if the char is not defined as any entity"""
+        # Create null
+        if c == ' ':
+            return
         # Create player
-        if c in ent_data["player"].keys():
-            data = ent_data["player"][c]
-            return Player(c, data["fg_c"], data["bg_c"])
+        if c == 'p':
+            char = random.choice(list(ent_data["player"].keys()))
+            data = ent_data["player"][char]
+            return Player(char, data["fg_c"], data["bg_c"])
         # Create enemy
-        if c in ent_data["enemies"].keys():
-            data = ent_data["enemies"][c]
-            return Enemy(c, data["fg_c"], data["bg_c"])
+        if c == 'e':
+            char = random.choice(list(ent_data["enemies"].keys()))
+            data = ent_data["enemies"][char]
+            return Enemy(char, data["fg_c"], data["bg_c"])
         # Create obstacle
-        if c in ent_data["obstacles"].keys():
-            data = ent_data["obstacles"][c]
-            return Obstacle(c, data["fg_c"], data["bg_c"])
+        if c == 'o':
+            char = random.choice(list(ent_data["obstacles"].keys()))
+            data = ent_data["obstacles"][char]
+            return Obstacle(char, data["fg_c"], data["bg_c"])
+        # Create floor
+        if c == 'f':
+            char = random.choice(list(ent_data["floor"].keys()))
+            data = ent_data["floor"][char]
+            return Floor(char, False, data["fg_c"], data["bg_c"])
+        exit_error("Invalid map file, unknown character: " + c)
 
     def full_display(s):
         for y, l in enumerate(s.map):
@@ -95,7 +109,7 @@ class MapHandler(object):
         if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
         entity = s.get_entity_from_pos(from_p)
         next_case = s.get_entity_from_pos(to)
-        if not next_case:
+        if next_case and not next_case.is_collider:
             s.set_entity_to_pos(entity, to)
             s.set_entity_to_pos(None, from_p)
             return True
@@ -105,8 +119,15 @@ class MapHandler(object):
         if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
         entity = s.get_entity_from_pos(from_p)
         next_case = s.get_entity_from_pos(to)
-        if not next_case:
+        if next_case and not next_case.is_collider:
             # print(f"MOVING {type(entity)} FROM {from_p} TO:{to} ({type(next_case)})")
             s.set_entity_to_pos(entity, to)
             s.set_entity_to_pos(None, from_p)
             return True
+
+    def get_max_width(s):
+        max = 0
+        for l in s.map:
+            if len(l) > max:
+                max = len(l)
+        return max
