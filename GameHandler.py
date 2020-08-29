@@ -31,10 +31,6 @@ class GameHandler(object):
                 exit()
             s.handle_inputs(inputs)
             s.map_handler.full_display()
-            # print(f"\033[6;100HPlopinet")
-            # print("->", inputs, "\033[K", end="\r", flush=True)
-            # print("->", inputs, '\r')
-
             s.framerate_handler.end_frame()
 
 

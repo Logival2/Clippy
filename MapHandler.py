@@ -7,6 +7,8 @@ from Entities import *
 class MapHandler(object):
     def __init__(s, input):
         s.updates = []
+        # Maybe add an update registering system, in order to draw only the
+        # screen areas which changed
         s.map = []
         s.player_pos = None
         if isinstance(input, Pos):
@@ -27,6 +29,7 @@ class MapHandler(object):
         if not found_flag:
             exit_error("Invalid map file: No player defined")
         # Print the map entirely for the first time
+        print("\033[2J")
         s.full_display()
 
     def get_player(s):
@@ -107,10 +110,3 @@ class MapHandler(object):
             s.set_entity_to_pos(entity, to)
             s.set_entity_to_pos(None, from_p)
             return True
-
-
-
-    # def refresh_display(s):
-    #     """Reprint only the parts which moved during last turn"""
-    #     for update in s.updates:
-    #         print(f"\033[{update.pos.y};{update.pos.y}H{update.entity.__repr__()}")
