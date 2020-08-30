@@ -3,15 +3,11 @@
                 "floor": {
                         "░": {
                                 "fg_c": 34,
-                                "bg_c": 47
+                                "bg_c": 40
                         },
                         "▒": {
                                 "fg_c": 34,
-                                "bg_c": 47
-                        },
-                        "▓": {
-                                "fg_c": 34,
-                                "bg_c": 47
+                                "bg_c": 40
                         }
                 },
                 "player": {
@@ -20,17 +16,17 @@
                                 "bg_c": 106
                         }
                 },
-                "enemies": {
+                "enemy": {
                         "E": {
                                 "fg_c": 91,
-                                "bg_c": 49
+                                "bg_c": 101
                         },
                         "e": {
                                 "fg_c": 31,
-                                "bg_c": 49
+                                "bg_c": 101
                         }
                 },
-                "obstacles": {
+                "wall": {
                         "X": {
                                 "fg_c": 90,
                                 "bg_c": 40
@@ -45,5 +41,5 @@
                         }
                 }
         },
-        "map": "oooooooooo\noffffffffo\noffpfffffooooooooo\nooofffffeffffffffo\n  offfffffeffffffo\n  offffffffffffffo\n  oooooooooffffff\n          offffffo\n          offfffff\n          offffffo\n          oooooooo"
+        "map": "wwwwwwwwww\nwffffffffw\nwffpfffffwwwwwwwww\nwwwfffffeffffffffw\n  wfffffffeffffffw\n  wffffffffffffffw\n  wwwwwwwwwffffff\n          wffffffw\n          wfffffff\n          wffffffw\n          wwwwwwww"
 }

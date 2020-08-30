@@ -1,3 +1,19 @@
+class Square(object):
+    def __init__(s, low_ent, top_ent=None):
+        s.low_ent = low_ent
+        s.top_ent = top_ent
+        s.is_free_flag = True if not s.top_ent or not s.top_ent.is_collider else False
+
+    def is_free(s):
+        s.is_free_flag = True if not s.top_ent or not s.top_ent.is_collider else False
+        return s.is_free_flag
+
+    def __repr__(s):
+        if s.top_ent:
+            return s.top_ent.__repr__()
+        return s.low_ent.__repr__()
+
+
 class Entity(object):
     def __init__(s, repr_char, is_collider=True, fg_color=39, bg_color=49):
         s.repr_char = repr_char
@@ -8,7 +24,7 @@ class Entity(object):
     def __repr__(s):
         return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}\x1b[0m"
 
-class Obstacle(Entity):
+class Wall(Entity):
     pass
 
 # Alive entities
@@ -24,7 +40,4 @@ class Enemy(LivingEntity):
     pass
 
 class Floor(Entity):
-    pass
-
-class Empty(Entity):
     pass

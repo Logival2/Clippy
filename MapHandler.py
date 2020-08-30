@@ -22,7 +22,7 @@ class MapHandler(object):
         found_flag = False
         for y, line in enumerate(s.map):
             for x, ent in enumerate(line):
-                if isinstance(ent, Player):
+                if isinstance(ent.top_ent, Player):
                     s.player_pos = Pos(y, x)
                     found_flag = True
                     break
@@ -34,47 +34,48 @@ class MapHandler(object):
         s.full_display()
 
     def get_player(s):
-        return s.get_entity_from_pos(s.player_pos)
+        return s.get_square_from_pos(s.player_pos)
 
     def load_map_from_json(s, input):
         with open(f"./maps/{input}.json", 'r') as f:
             data = f.read()
         data = json.loads(data)
-        if not all(e in data["entities"].keys() for e in ['floor', 'enemies', 'player']):
+        if not all(e in data["entities"].keys() for e in ['floor', 'enemy', 'player']):
             exit_error("Invalid map file, not enough entities defined")
-
-        map = [l for l in data["map"].split('\n') if l]
-        for line in map:
+        raw_map = [l for l in data["map"].split('\n') if l]
+        for line in raw_map:
             tmp_line = []
             for c in line:
                 tmp_line.append(s.create_entity(c, data["entities"]))
             s.map.append(tmp_line)
 
     def create_entity(s, c, ent_data):
-        """Entity Factory, returns none if the char is not defined as any entity"""
+        """Entity Factory"""
         # Create null
         if c == ' ':
             return
+        # Create default floor
+        char = random.choice(list(ent_data["floor"].keys()))
+        data = ent_data["floor"][char]
+        floor = Floor(char, False, data["fg_c"], data["bg_c"])
+        # Create floor
+        if c == 'f': return Square(floor)
+        # Create wall
+        if c == 'w':
+            char = random.choice(list(ent_data["wall"].keys()))
+            data = ent_data["wall"][char]
+            return Square(None, Wall(char, data["fg_c"], data["bg_c"]))
+        ### Living entities
         # Create player
         if c == 'p':
             char = random.choice(list(ent_data["player"].keys()))
             data = ent_data["player"][char]
-            return Player(char, data["fg_c"], data["bg_c"])
+            return Square(floor, Player(char, data["fg_c"], data["bg_c"]))
         # Create enemy
         if c == 'e':
-            char = random.choice(list(ent_data["enemies"].keys()))
-            data = ent_data["enemies"][char]
-            return Enemy(char, data["fg_c"], data["bg_c"])
-        # Create obstacle
-        if c == 'o':
-            char = random.choice(list(ent_data["obstacles"].keys()))
-            data = ent_data["obstacles"][char]
-            return Obstacle(char, data["fg_c"], data["bg_c"])
-        # Create floor
-        if c == 'f':
-            char = random.choice(list(ent_data["floor"].keys()))
-            data = ent_data["floor"][char]
-            return Floor(char, False, data["fg_c"], data["bg_c"])
+            char = random.choice(list(ent_data["enemy"].keys()))
+            data = ent_data["enemy"][char]
+            return Square(floor, Enemy(char, data["fg_c"], data["bg_c"]))
         exit_error("Invalid map file, unknown character: " + c)
 
     def full_display(s):
@@ -94,36 +95,31 @@ class MapHandler(object):
         #             print(" ", end='')
         #     print()
 
-    def get_entity_from_pos(s, y, x=None):
+    def get_square_from_pos(s, y, x=None):
         if x: return s.map[y][x]
         else: return s.map[y.y][y.x]  # Yeah... no overloading in python...
 
-    def set_entity_to_pos(s, entity, y, x=None):
-        if x: s.map[y][x] = entity
-        else: s.map[y.y][y.x] = entity # Yeah... no overloading in python...
+    def set_top_ent_to_pos(s, entity, y, x=None):
+        if x: s.map[y][x].top_ent = entity
+        else: s.map[y.y][y.x].top_ent = entity # Yeah... no overloading in python...
 
     def is_valid_pos(s, pos):
         return pos.y > 0 and (pos.y < len(s.map)) and pos.x > 0 and (pos.x < len(s.map[pos.y]))
 
     def move_entity_absolute(s, from_p, to):
+        # s.move_entity_absolute(from_p, to)
         if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
-        entity = s.get_entity_from_pos(from_p)
-        next_case = s.get_entity_from_pos(to)
-        if next_case and not next_case.is_collider:
-            s.set_entity_to_pos(entity, to)
-            s.set_entity_to_pos(None, from_p)
+        from_square = s.get_square_from_pos(from_p)
+        next_square = s.get_square_from_pos(to)
+        if next_square and next_square.is_free():
+            # print(f"MOVING {type(from_square)} FROM {from_p} TO:{to} ({type(next_square)})")
+            s.set_top_ent_to_pos(from_square.top_ent, to)
+            s.set_top_ent_to_pos(None, from_p)
             return True
 
     def move_entity_relative(s, from_p, delta):
         to = from_p + delta
-        if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
-        entity = s.get_entity_from_pos(from_p)
-        next_case = s.get_entity_from_pos(to)
-        if next_case and not next_case.is_collider:
-            # print(f"MOVING {type(entity)} FROM {from_p} TO:{to} ({type(next_case)})")
-            s.set_entity_to_pos(entity, to)
-            s.set_entity_to_pos(None, from_p)
-            return True
+        return s.move_entity_absolute(from_p, to)
 
     def get_max_width(s):
         max = 0
