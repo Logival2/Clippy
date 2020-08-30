@@ -24,24 +24,23 @@ class Update(object):
 
 
 class TermLayout(object):
-    def __init__(s, map_max_width, info_column_width):
+    def __init__(s, raw_map_width, info_column_width):
         s.info_column_width = info_column_width
-        s.map_max_width = map_max_width
-        s.term_size = None
+        s.raw_map_width = raw_map_width
+        s.term_size = 0
+        s.map_size_factor = 1
+        s.info_column_pos = 0
         s.update_term_size()
         s.compute_layout()
 
     def update_term_size(s):
         s.term_size = Pos(*get_terminal_size.get_terminal_size())
-        empty = s.term_size.x - s.info_column_width
-        print(f"term size = {s.term_size}")
-
-    def get_info_column_pos(s):
-        return
 
     def compute_layout(s):
-        available_space = s.term_size.x
-        min_width = s.map_max_width + 3 + s.info_column_width
+        map_available_space = s.term_size.x - (s.info_column_width + 3)
+        s.map_size_factor = map_available_space // s.raw_map_width
+        s.info_column_pos = s.raw_map_width * s.map_size_factor + 3
+        # print(f"{s.term_size.x} / {map_available_space} / {s.map_size_factor} / {s.info_column_pos}")
 
 
 def getch(inputs_queue):

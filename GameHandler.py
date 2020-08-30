@@ -22,12 +22,11 @@ class GameHandler(object):
         # Display related
         s.term_layout = TermLayout(
                             s.map_handler.get_max_width(),
-                            info_column_width=70)
+                            info_column_width=25)
         # Game related
         s.score = 0
         s.start_time = time.time()
         s.player = s.map_handler.get_player()
-        s.draw_hud()
 
     def launch(s):
         while 42:
@@ -40,6 +39,7 @@ class GameHandler(object):
                 exit()
             s.handle_inputs(inputs)
             s.map_handler.full_display()
+            s.draw_hud()
             s.framerate_handler.end_frame()
 
     def handle_inputs(s, inputs):
@@ -54,6 +54,15 @@ class GameHandler(object):
                 s.map_handler.player_pos += delta
 
     def draw_hud(s):
-        pass
-        # print(f"Win size = {s.term_size}")
-                    # print(f"\033[K\033[{y+1};1H")
+        hud_height = 10
+        center_space = s.term_layout.info_column_width - 2
+        print(f"\033[{1};{s.term_layout.info_column_pos}H╔{'═'*center_space}╗")
+        for i in range(2, hud_height):
+            print(f"\033[{i};{s.term_layout.info_column_pos}H║{' '*center_space}║")
+
+        print(f"\033[{2};{s.term_layout.info_column_pos + 2}HScore: {s.score}")
+        print(f"\033[{4};{s.term_layout.info_column_pos + 2}HTime: {int(time.time() - s.start_time)}")
+
+        print(f"\033[{hud_height};{s.term_layout.info_column_pos}H╚{'═'*center_space}╝")
+        # Reset cursor
+        print(f"\033[{len(s.map_handler.map)+1};1H")

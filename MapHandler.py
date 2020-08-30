@@ -80,20 +80,13 @@ class MapHandler(object):
 
     def full_display(s):
         for y, l in enumerate(s.map):
-            print(f"\033[K\033[{y+1};1H")
+            print(f"\033[K\033[{y + 1};1H", end='')  # \033[K erase line
             for entity in l:
                 if not entity:
                     print(" ", end='')
                 else:
                     print(entity, end='\x1b[0m')
-        print(f"\033[{len(s.map)+1};1H")
-        # for l in s.map:
-        #     for e in l:
-        #         if e:
-        #             print(e, end='')
-        #         else:
-        #             print(" ", end='')
-        #     print()
+        print(f"\033[{len(s.map)+1};1H")  # Reset cursor
 
     def get_square_from_pos(s, y, x=None):
         if x: return s.map[y][x]
@@ -101,18 +94,16 @@ class MapHandler(object):
 
     def set_top_ent_to_pos(s, entity, y, x=None):
         if x: s.map[y][x].top_ent = entity
-        else: s.map[y.y][y.x].top_ent = entity # Yeah... no overloading in python...
+        else: s.map[y.y][y.x].top_ent = entity
 
     def is_valid_pos(s, pos):
         return pos.y > 0 and (pos.y < len(s.map)) and pos.x > 0 and (pos.x < len(s.map[pos.y]))
 
     def move_entity_absolute(s, from_p, to):
-        # s.move_entity_absolute(from_p, to)
         if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
         from_square = s.get_square_from_pos(from_p)
         next_square = s.get_square_from_pos(to)
         if next_square and next_square.is_free():
-            # print(f"MOVING {type(from_square)} FROM {from_p} TO:{to} ({type(next_square)})")
             s.set_top_ent_to_pos(from_square.top_ent, to)
             s.set_top_ent_to_pos(None, from_p)
             return True
