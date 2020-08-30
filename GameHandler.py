@@ -3,8 +3,8 @@ import queue
 import threading
 
 from MapHandler import MapHandler
-from utils import Pos, TermLayout, getch
-from CliHandler import FramerateHandler
+from utils import Pos, getch
+from CliHandler import FramerateHandler, TermLayout, Displayer
 
 
 class GameHandler(object):
@@ -20,8 +20,8 @@ class GameHandler(object):
                                         daemon = True)
         s.inputs_thread.start()
         # Display related
-        s.term_layout = TermLayout(
-                            s.map_handler.get_max_width(),
+        s.term_layout = TermLayout.TermLayout(
+                            s.map_handler.get_raw_sizes(),
                             info_column_width=25)
         # Game related
         s.score = 0
@@ -38,7 +38,7 @@ class GameHandler(object):
                 print("bye :)")
                 exit()
             s.handle_inputs(inputs)
-            s.map_handler.full_display()
+            Displayer.display_map(s.term_layout.map_size_factor, s.map_handler.map)
             s.draw_hud()
             s.framerate_handler.end_frame()
 
@@ -65,4 +65,4 @@ class GameHandler(object):
 
         print(f"\033[{hud_height};{s.term_layout.info_column_pos}H╚{'═'*center_space}╝")
         # Reset cursor
-        print(f"\033[{len(s.map_handler.map)+1};1H")
+        print(f"\033[{len(s.map_handler.map) * s.term_layout.map_size_factor.y +1};1H")  # Reset cursor

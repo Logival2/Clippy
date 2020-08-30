@@ -31,7 +31,6 @@ class MapHandler(object):
             exit_error("Invalid map file: No player defined")
         # Print the map entirely for the first time
         print("\033[2J")
-        s.full_display()
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
@@ -54,18 +53,18 @@ class MapHandler(object):
         # Create null
         if c == ' ':
             return
+        # Create wall
+        if c == 'w':
+            char = random.choice(list(ent_data["wall"].keys()))
+            data = ent_data["wall"][char]
+            return Square(None, Wall(char, data["fg_c"], data["bg_c"]))
         # Create default floor
         char = random.choice(list(ent_data["floor"].keys()))
         data = ent_data["floor"][char]
         floor = Floor(char, False, data["fg_c"], data["bg_c"])
         # Create floor
         if c == 'f': return Square(floor)
-        # Create wall
-        if c == 'w':
-            char = random.choice(list(ent_data["wall"].keys()))
-            data = ent_data["wall"][char]
-            return Square(None, Wall(char, data["fg_c"], data["bg_c"]))
-        ### Living entities
+        ### Living entities ###
         # Create player
         if c == 'p':
             char = random.choice(list(ent_data["player"].keys()))
@@ -77,16 +76,6 @@ class MapHandler(object):
             data = ent_data["enemy"][char]
             return Square(floor, Enemy(char, data["fg_c"], data["bg_c"]))
         exit_error("Invalid map file, unknown character: " + c)
-
-    def full_display(s):
-        for y, l in enumerate(s.map):
-            print(f"\033[K\033[{y + 1};1H", end='')  # \033[K erase line
-            for entity in l:
-                if not entity:
-                    print(" ", end='')
-                else:
-                    print(entity, end='\x1b[0m')
-        print(f"\033[{len(s.map)+1};1H")  # Reset cursor
 
     def get_square_from_pos(s, y, x=None):
         if x: return s.map[y][x]
@@ -112,9 +101,9 @@ class MapHandler(object):
         to = from_p + delta
         return s.move_entity_absolute(from_p, to)
 
-    def get_max_width(s):
+    def get_raw_sizes(s):
         max = 0
         for l in s.map:
             if len(l) > max:
                 max = len(l)
-        return max
+        return Pos(len(s.map), max)
