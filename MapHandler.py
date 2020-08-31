@@ -6,19 +6,13 @@ from Entities import *
 
 
 class MapHandler(object):
-    def __init__(s, input):
+    def __init__(s, map_name):
         s.updates = []
         # TODO add an update registering system, in order to draw only the
         # screen areas which changed
         s.map = []
         s.player_pos = None
-        if isinstance(input, Pos):
-            # Map Generator
-            for y in range(input.y):
-                line = [Entity('x')] * input.x
-                s.map.append(line)
-        else:
-            s.load_map_from_json(input)
+        s.load_map_from_json(map_name)
         found_flag = False
         for y, line in enumerate(s.map):
             for x, ent in enumerate(line):
@@ -29,24 +23,26 @@ class MapHandler(object):
             if found_flag: break
         if not found_flag:
             exit_error("Invalid map file: No player defined")
-        # Print the map entirely for the first time
-        print("\033[2J")
+        print("\033[2J")  # Clear screen
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
 
-    def load_map_from_json(s, input):
-        with open(f"./maps/{input}.json", 'r') as f:
+    def load_map_from_json(s, map_name):
+        with open(f"./maps/{map_name}.json", 'r') as f:
             data = f.read()
         data = json.loads(data)
         if not all(e in data["entities"].keys() for e in ['floor', 'enemy', 'player']):
             exit_error("Invalid map file, not enough entities defined")
-        raw_map = [l for l in data["map"].split('\n') if l]
-        for line in raw_map:
-            tmp_line = []
-            for c in line:
-                tmp_line.append(s.create_entity(c, data["entities"]))
-            s.map.append(tmp_line)
+        if "map" in data:
+            raw_map = [l for l in data["map"].split('\n') if l]
+            for line in raw_map:
+                tmp_line = []
+                for c in line:
+                    tmp_line.append(s.create_entity(c, data["entities"]))
+                s.map.append(tmp_line)
+        else:
+            s.map = generate_map()
 
     def create_entity(s, c, ent_data):
         """Entity Factory"""

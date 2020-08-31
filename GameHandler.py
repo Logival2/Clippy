@@ -59,7 +59,7 @@ class GameHandler(object):
         print(f"\033[{len(s.map_handler.map) + 1};1H")  # Reset cursor
 
     def handle_inputs(s, inputs):
-        for last_input in inputs[-3:]:
+        for last_input in inputs[-2:]:
             if not last_input in ['z', 'q', 's', 'd']: continue
             delta = None
             if last_input == 'z':   delta = Pos(-1, 0)
