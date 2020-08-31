@@ -51,6 +51,7 @@ class GameHandler(object):
             print(f"\033[{i};{s.term_layout.info_column_pos}H║{' '*center_space}║")
 
         print(f"\033[{2};{s.term_layout.info_column_pos + 2}HScore: {s.score}")
+        print(f"\033[{3};{s.term_layout.info_column_pos}H╟{'─'*center_space}╢")
         print(f"\033[{4};{s.term_layout.info_column_pos + 2}HTime: {int(time.time() - s.start_time)}")
 
         print(f"\033[{hud_height};{s.term_layout.info_column_pos}H╚{'═'*center_space}╝")
