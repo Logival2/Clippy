@@ -1,4 +1,3 @@
-import json
 import random
 
 from utils import *
@@ -6,70 +5,71 @@ from Entities import *
 
 
 class MapHandler(object):
-    def __init__(s, map_name):
+    def __init__(s):
         s.updates = []
         # TODO add an update registering system, in order to draw only the
         # screen areas which changed
         s.map = []
+        s.config = load_theme_file()
+        if len(sys.argv) > 1:
+            s.load_map_from_json(sys.argv[1])
+        else:
+            s.map = generate_room()
+        # Check if player exists
         s.player_pos = None
-        s.load_map_from_json(map_name)
         found_flag = False
         for y, line in enumerate(s.map):
             for x, ent in enumerate(line):
-                if isinstance(ent.top_ent, Player):
+                if ent and isinstance(ent.top_ent, Player):
                     s.player_pos = Pos(y, x)
                     found_flag = True
                     break
             if found_flag: break
         if not found_flag:
             exit_error("Invalid map file: No player defined")
+
         print("\033[2J")  # Clear screen
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
 
     def load_map_from_json(s, map_name):
-        with open(f"./maps/{map_name}.json", 'r') as f:
+        with open(f"./maps/{map_name}.map", 'r') as f:
             data = f.read()
-        data = json.loads(data)
-        if not all(e in data["entities"].keys() for e in ['floor', 'enemy', 'player']):
-            exit_error("Invalid map file, not enough entities defined")
-        if "map" in data:
-            raw_map = [l for l in data["map"].split('\n') if l]
-            for line in raw_map:
-                tmp_line = []
-                for c in line:
-                    tmp_line.append(s.create_entity(c, data["entities"]))
-                s.map.append(tmp_line)
-        else:
-            s.map = generate_map()
+        raw_map = [l for l in data.split('\n') if l]
+        map = []
+        for line in raw_map:
+            tmp_line = []
+            for c in line:
+                tmp_line.append(s.create_entity(c))
+            s.map.append(tmp_line)
 
-    def create_entity(s, c, ent_data):
+    def create_entity(s, c):
         """Entity Factory"""
         # Create null
         if c == ' ':
             return
         # Create wall
         if c == 'w':
-            char = random.choice(list(ent_data["wall"].keys()))
-            data = ent_data["wall"][char]
+            char = random.choice(list(s.config["wall"].keys()))
+            data = s.config["wall"][char]
             return Square(None, Wall(char, True, data["fg_c"], data["bg_c"]))
         # Create default floor
-        char = random.choice(list(ent_data["floor"].keys()))
-        data = ent_data["floor"][char]
+        char = random.choice(list(s.config["floor"].keys()))
+        data = s.config["floor"][char]
         floor = Entity(char, False, data["fg_c"], data["bg_c"])
         # Create floor
         if c == 'f': return Square(floor)
         ### Living entities ###
         # Create player
         if c == 'p':
-            char = random.choice(list(ent_data["player"].keys()))
-            data = ent_data["player"][char]
+            char = random.choice(list(s.config["player"].keys()))
+            data = s.config["player"][char]
             return Square(floor, Player(char, True, data["fg_c"], data["bg_c"]))
         # Create enemy
         if c == 'e':
-            char = random.choice(list(ent_data["enemy"].keys()))
-            data = ent_data["enemy"][char]
+            char = random.choice(list(s.config["enemy"].keys()))
+            data = s.config["enemy"][char]
             return Square(floor, Enemy(char, True, data["fg_c"], data["bg_c"]))
         exit_error("Invalid map file, unknown character: " + c)
 

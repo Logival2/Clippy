@@ -1,5 +1,7 @@
+import os
 import sys
 import tty
+import json
 import queue
 import termios
 
@@ -38,3 +40,21 @@ def getch(inputs_queue):
 def exit_error(msg):
     print(msg)
     exit()
+
+
+def load_theme_file():
+    theme_file_path = sys.argv[1] if len(sys.argv) > 1 else "default_theme"
+    try:
+        with open(f"./maps/{theme_file_path}.json", 'r') as f:
+            data = f.read()
+    except FileNotFoundError:
+        with open(f"./maps/default_theme.json", 'r') as f:
+            data = f.read()
+    data = json.loads(data)
+    if not all(e in data.keys() for e in ['floor', 'enemy', 'player']):
+        exit_error("Invalid map file, not enough entities defined")
+    return data
+
+
+def generate_room():
+    return

@@ -13,6 +13,7 @@ class TermLayout(object):
         s.raw_map_size = raw_map_size
         s.term_size = None
         s.info_column_pos = 0
+        s.end_y_idx = 0
         s.update_term_size()
         s.compute_layout()
 
@@ -21,10 +22,8 @@ class TermLayout(object):
 
     def compute_layout(s):
         x_available_space = s.term_size.x - (s.raw_map_size.x * 2)
-        if x_available_space > 2 * s.info_column_width:
-            s.info_column_pos = (s.raw_map_size.x * 2) + 4
-        else:
-            s.info_column_pos = s.term_size.x - (s.info_column_width)
+        s.info_column_pos = s.term_size.x - (s.info_column_width)
+        s.end_y_idx = s.term_size.y - 3
 
 
 def get_terminal_size():
