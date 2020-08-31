@@ -38,20 +38,10 @@ class GameHandler(object):
                 print("bye :)")
                 exit()
             s.handle_inputs(inputs)
-            Displayer.display_map(s.term_layout.map_size_factor, s.map_handler.map)
+            Displayer.display_map(s.map_handler.map)
             s.draw_hud()
+            s.term_layout.compute_layout()
             s.framerate_handler.end_frame()
-
-    def handle_inputs(s, inputs):
-        for last_input in inputs[-3:]:
-            if not last_input in ['z', 'q', 's', 'd']: continue
-            delta = None
-            if last_input == 'z':   delta = Pos(-1, 0)
-            elif last_input == 's': delta = Pos(1, 0)
-            if last_input == 'q':   delta = Pos(0, -1)
-            elif last_input == 'd': delta = Pos(0, 1)
-            if delta and s.map_handler.move_entity_relative(s.map_handler.player_pos, delta):
-                s.map_handler.player_pos += delta
 
     def draw_hud(s):
         hud_height = 10
@@ -65,4 +55,15 @@ class GameHandler(object):
 
         print(f"\033[{hud_height};{s.term_layout.info_column_pos}H╚{'═'*center_space}╝")
         # Reset cursor
-        print(f"\033[{len(s.map_handler.map) * s.term_layout.map_size_factor.y +1};1H")  # Reset cursor
+        print(f"\033[{len(s.map_handler.map) + 1};1H")  # Reset cursor
+
+    def handle_inputs(s, inputs):
+        for last_input in inputs[-3:]:
+            if not last_input in ['z', 'q', 's', 'd']: continue
+            delta = None
+            if last_input == 'z':   delta = Pos(-1, 0)
+            elif last_input == 's': delta = Pos(1, 0)
+            if last_input == 'q':   delta = Pos(0, -1)
+            elif last_input == 'd': delta = Pos(0, 1)
+            if delta and s.map_handler.move_entity_relative(s.map_handler.player_pos, delta):
+                s.map_handler.player_pos += delta

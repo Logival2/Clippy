@@ -11,8 +11,7 @@ class TermLayout(object):
     def __init__(s, raw_map_size, info_column_width):
         s.info_column_width = info_column_width
         s.raw_map_size = raw_map_size
-        s.term_size = 0
-        s.map_size_factor = Pos(1, 1)
+        s.term_size = None
         s.info_column_pos = 0
         s.update_term_size()
         s.compute_layout()
@@ -21,17 +20,11 @@ class TermLayout(object):
         s.term_size = Pos(*get_terminal_size())
 
     def compute_layout(s):
-        # X factor
-        x_map_available_space = (s.term_size.x - (s.info_column_width + 4)) // 2
-        x_factor = x_map_available_space // s.raw_map_size.x
-        # Y factor
-        y_factor = (s.term_size.y - 2) // s.raw_map_size.y
-        # Use the smallest
-        s.map_size_factor.y = min(y_factor, x_factor)
-        # Two char width for one height, to make things square
-        s.map_size_factor.x = 2 * s.map_size_factor.y
-
-        s.info_column_pos = (s.raw_map_size.x * s.map_size_factor.x) + 4
+        x_available_space = s.term_size.x - (s.raw_map_size.x * 2)
+        if x_available_space > 2 * s.info_column_width:
+            s.info_column_pos = (s.raw_map_size.x * 2) + 4
+        else:
+            s.info_column_pos = s.term_size.x - (s.info_column_width)
 
 
 def get_terminal_size():
