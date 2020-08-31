@@ -25,7 +25,7 @@ class TermLayout(object):
         x_map_available_space = (s.term_size.x - (s.info_column_width + 4)) // 2
         x_factor = x_map_available_space // s.raw_map_size.x
         # Y factor
-        y_factor = (s.term_size.y - 8) // s.raw_map_size.y
+        y_factor = (s.term_size.y - 2) // s.raw_map_size.y
         # Use the smallest
         s.map_size_factor.y = min(y_factor, x_factor)
         # Two char width for one height, to make things square

@@ -9,35 +9,31 @@ class Square(object):
         return s.is_free_flag
 
     def __repr__(s):
-        if s.top_ent:
-            return s.top_ent.__repr__()
+        if s.top_ent: return s.top_ent.__repr__()
         return s.low_ent.__repr__()
 
 
 class Entity(object):
-    def __init__(s, repr_char, is_collider=True, fg_color=39, bg_color=49):
+    def __init__(s, repr_char, is_collider=True, fg_color=39, bg_color=0):
         s.repr_char = repr_char
         s.fg_color = fg_color
         s.bg_color = bg_color
         s.is_collider = is_collider
 
     def __repr__(s):
-        return f"\x1b[{s.bg_color};{s.fg_color}m{s.repr_char}\x1b[0m"
+        return f"\x1b[{s.fg_color};48;5;{s.bg_color}m{s.repr_char}\x1b[0m"
 
 class Wall(Entity):
     pass
 
 # Alive entities
 class LivingEntity(Entity):
-    def __init__(s, repr_char, fg_color=39, bg_color=49, name="default_name"):
-        super(LivingEntity, s).__init__(repr_char, fg_color, bg_color)
+    def __init__(s, repr_char, is_collider=True, fg_color=39, bg_color=0, name="default_name"):
+        super(LivingEntity, s).__init__(repr_char, is_collider, fg_color, bg_color)
         s.name = name
 
 class Player(LivingEntity):
     pass
 
 class Enemy(LivingEntity):
-    pass
-
-class Floor(Entity):
     pass

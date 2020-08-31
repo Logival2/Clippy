@@ -57,11 +57,11 @@ class MapHandler(object):
         if c == 'w':
             char = random.choice(list(ent_data["wall"].keys()))
             data = ent_data["wall"][char]
-            return Square(None, Wall(char, data["fg_c"], data["bg_c"]))
+            return Square(None, Wall(char, True, data["fg_c"], data["bg_c"]))
         # Create default floor
         char = random.choice(list(ent_data["floor"].keys()))
         data = ent_data["floor"][char]
-        floor = Floor(char, False, data["fg_c"], data["bg_c"])
+        floor = Entity(char, False, data["fg_c"], data["bg_c"])
         # Create floor
         if c == 'f': return Square(floor)
         ### Living entities ###
@@ -69,12 +69,12 @@ class MapHandler(object):
         if c == 'p':
             char = random.choice(list(ent_data["player"].keys()))
             data = ent_data["player"][char]
-            return Square(floor, Player(char, data["fg_c"], data["bg_c"]))
+            return Square(floor, Player(char, True, data["fg_c"], data["bg_c"]))
         # Create enemy
         if c == 'e':
             char = random.choice(list(ent_data["enemy"].keys()))
             data = ent_data["enemy"][char]
-            return Square(floor, Enemy(char, data["fg_c"], data["bg_c"]))
+            return Square(floor, Enemy(char, True, data["fg_c"], data["bg_c"]))
         exit_error("Invalid map file, unknown character: " + c)
 
     def get_square_from_pos(s, y, x=None):
