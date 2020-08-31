@@ -4,27 +4,6 @@ import struct
 import platform
 import subprocess
 
-from utils import Pos
-
-
-class TermLayout(object):
-    def __init__(s, raw_map_size, info_column_width):
-        s.info_column_width = info_column_width
-        s.raw_map_size = raw_map_size
-        s.term_size = None
-        s.info_column_pos = 0
-        s.end_y_idx = 0
-        s.update_term_size()
-        s.compute_layout()
-
-    def update_term_size(s):
-        s.term_size = Pos(*get_terminal_size())
-
-    def compute_layout(s):
-        x_available_space = s.term_size.x - (s.raw_map_size.x * 2)
-        s.info_column_pos = s.term_size.x - (s.info_column_width)
-        s.end_y_idx = s.term_size.y - 3
-
 
 def get_terminal_size():
     tmp_term_size = get_terminal_size_raw()
