@@ -2,7 +2,7 @@ import time
 import queue
 import threading
 
-from CliHandler import get_terminal_size
+from CliHandler.get_terminal_size import get_terminal_size
 from utils import Pos, getch
 
 
@@ -19,7 +19,7 @@ class CliHandler(object):
         s.delta = 1 / fps
         s.frame_start = time.time()
         # Display related
-        s.term_size = Pos(*get_terminal_size.get_terminal_size())
+        s.term_size = Pos(*get_terminal_size())
         s.info_column_width = info_column_width
         s.info_column_x_pos = s.term_size.x - (s.info_column_width)
         s.end_y_idx = s.term_size.y - 3
@@ -39,7 +39,7 @@ class CliHandler(object):
                 for entity in l:
                     if entity:
                         repr = entity.__repr__()
-                        print(repr * 2, end='')
+                        print(repr, end='')
                     else:
                         print("  ", end='')
                 map_end = y
@@ -67,6 +67,7 @@ class CliHandler(object):
             print(f"\033[{i};{s.info_column_x_pos}H║{' '*center_space}║")
         # Last line
         print(f"\033[{s.end_y_idx};{s.info_column_x_pos}H╩{'═'*center_space}╝")
+        print(f"\033[{s.end_y_idx + 1};{1}H")
 
     def get_inputs(s):
         inputs = []

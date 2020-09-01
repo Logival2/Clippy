@@ -11,7 +11,7 @@ class Square(object):
     def __repr__(s):
         if s.top_ent:
             if s.top_ent.bg_color == -1:  # Transparent background entity
-                return f"\x1b[{s.top_ent.fg_color};48;5;{s.low_ent.bg_color}m{s.top_ent.repr_char}\x1b[0m"
+                return f"\x1b[{s.top_ent.fg_color};48;5;{s.low_ent.bg_color}m {s.top_ent.repr_char}\x1b[0m"
             return s.top_ent.__repr__()
         return s.low_ent.__repr__()
 
@@ -24,7 +24,7 @@ class Entity(object):
         s.is_collider = is_collider
 
     def __repr__(s):
-        return f"\x1b[{s.fg_color};48;5;{s.bg_color}m{s.repr_char}\x1b[0m"
+        return f"\x1b[{s.fg_color};48;5;{s.bg_color}m {s.repr_char}\x1b[0m"
 
 class Wall(Entity):
     pass
