@@ -6,9 +6,6 @@ from Entities import *
 
 class MapHandler(object):
     def __init__(s):
-        s.updates = []
-        # TODO add an update registering system, in order to draw only the
-        # screen areas which changed
         s.map = []
         s.config = load_theme_file()
         if len(sys.argv) > 1:
@@ -27,8 +24,7 @@ class MapHandler(object):
             if found_flag: break
         if not found_flag:
             exit_error("Invalid map file: No player defined")
-
-        print("\033[2J")  # Clear screen
+        s.map_size = s.get_raw_map_size()
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
@@ -97,7 +93,7 @@ class MapHandler(object):
         to = from_p + delta
         return s.move_entity_absolute(from_p, to)
 
-    def get_raw_sizes(s):
+    def get_raw_map_size(s):
         max = 0
         for l in s.map:
             if len(l) > max:

@@ -12,7 +12,15 @@ class Pos(object):
         s.x = x
 
     def __add__(s, other):
-        return Pos(s.y + other.y, s.x + other.x)
+        if isinstance(other, Pos):
+            return Pos(s.y + other.y, s.x + other.x)
+        return Pos(s.y + other, s.x + other)
+
+    def __sub__(s, other):
+        return Pos(s.y - other.y, s.x - other.x)
+
+    def __floordiv__(s, factor):
+        return Pos(s.y // factor, s.x // factor)
 
     def __repr__(s):
         return f"Pos y={s.y}/x={s.x}"
