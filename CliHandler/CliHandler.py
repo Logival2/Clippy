@@ -41,50 +41,33 @@ class CliHandler(object):
         s.handle_sleep()
 
     def copy_map_to_buffer(s, map_handler):
-        # shift_y = 0
-        #
-        # avail_chars_l_and_total_square_number = s.t_map_available_space // 2
-        #
-        # needed_squares_left = avail_chars_l_and_total_square_number.x // 2
-        #
-        # square_nbr_left_of_player = map_handler.player_pos.x + 1
-        #
-        # squares_to_pad_left = needed_squares_left - square_nbr_left_of_player
-        #
-        # shift_x = squares_to_pad_left * 2 if squares_to_pad_left > 0 else 0
-        #
-        # start_x = 0
-        #
-        # if shift_x:  # La map est trop petite sur la gauche, padding
-        #
-        #     return map_handler.map, Pos(shift_y, shift_x)
-        # else:  # La map depasse sur la gauche, on doit couper a gauche la map
-        #     start_x =
-        #     return crop(-to_pad_left), Pos(0, 0)
-        #
-        # # Nombre de squares a droite du joueur (decouper au dela la map)
-        # avail_chars_l_and_total_square_number // 2 - 1
-
-        needed_lines_top = needed_lines_bottom = (s.t_map_available_space.y - 1) // 2  # nbr lignes dispo
+        needed_lines_top = (s.t_map_available_space.y - 1) // 2  # nbr lignes dispo
         to_add_top = needed_lines_top - (map_handler.player_pos.y + 1) + 1
         shift_y = 0 if to_add_top < 0 else to_add_top
-        start_y = 0 if to_add_top >= 0 else -to_add_top
-        # end_y =
+        map_y_idx = 0 if to_add_top >= 0 else -to_add_top
 
-        map_y_idx = start_y
+        needed_squares_left = ((s.t_map_available_space.x - 1) // 2) // 2  # nbr lignes dispo
+        avail_square_left = (map_handler.player_pos.x + 1)
+        squares_to_add_left = needed_squares_left - avail_square_left
+        shift_x = 0 if squares_to_add_left < 0 else squares_to_add_left
+        shift_x *= 2  # Square to char
+        shift_x += 3  # Borders
+        map_x_idx = 0 if squares_to_add_left >= 0 else -squares_to_add_left
+
         for y_idx in range(shift_y + 1, s.end_y_idx):
             try:
-                line = map_handler.map[map_y_idx]
+                line = map_handler.map[map_y_idx][map_x_idx:]
             except IndexError:
                 break
             buf = ""
+            # line_cropped = line[:needed_squares_left - (map_handler.player_pos.x + 1)]
             for entity in line:
                 if entity:
                     repr = entity.__repr__()
                     buf += repr
                 else:
                     buf += "  "
-            s.n_fill_line(y_idx, 3, buf, len(line) * 2 + 3) # En attendant pour pas que ca depasse a droite
+            s.n_fill_line(y_idx, shift_x, buf, len(line) * 2 + shift_x) # En attendant pour pas que ca depasse a droite
             map_y_idx += 1
 
     def copy_hud_to_buffer(s, info_list):
