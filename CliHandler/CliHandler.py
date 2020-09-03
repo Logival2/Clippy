@@ -84,8 +84,7 @@ class CliHandler(object):
                     buf += repr
                 else:
                     buf += "  "
-            # s.fill_line(y_idx, 3, "plpop") # En attendant pour pas que ca depasse a droite
-            s.fill_line(y_idx, 3, buf[:5]) # En attendant pour pas que ca depasse a droite
+            s.n_fill_line(y_idx, 3, buf, len(line) * 2 + 3) # En attendant pour pas que ca depasse a droite
             map_y_idx += 1
 
     def copy_hud_to_buffer(s, info_list):
@@ -104,12 +103,17 @@ class CliHandler(object):
 
     def fill_line(s, y_idx, x_start_idx, new_data):
         if len(new_data) + x_start_idx > len(s.term_repr[0]):
-            exit_error("T'a CHIEEE")
+            exit_error("T'a CHIEEE 1")
         final_line = s.term_repr[y_idx][:x_start_idx]
         final_line += new_data
         final_line += s.term_repr[y_idx][len(final_line):]
         s.term_repr[y_idx] = final_line
-        print(len(final_line))
+
+    def n_fill_line(s, y_idx, x_start_idx, new_data, new_data_len):
+        final_line = s.term_repr[y_idx][:x_start_idx]
+        final_line += new_data
+        final_line += s.term_repr[y_idx][new_data_len:]
+        s.term_repr[y_idx] = final_line
 
     def get_inputs(s):
         inputs = []
