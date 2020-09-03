@@ -46,21 +46,24 @@ class CliHandler(object):
         shift_y = 0 if to_add_top < 0 else to_add_top
         map_y_idx = 0 if to_add_top >= 0 else -to_add_top
 
-        needed_squares_left = ((s.t_map_available_space.x - 1) // 2) // 2  # nbr lignes dispo
+        needed_squares_left = ((s.t_map_available_space.x - 2) // 2) // 2  # nbr lignes dispo
         avail_square_left = (map_handler.player_pos.x + 1)
         squares_to_add_left = needed_squares_left - avail_square_left
         shift_x = 0 if squares_to_add_left < 0 else squares_to_add_left
         shift_x *= 2  # Square to char
         shift_x += 3  # Borders
-        map_x_idx = 0 if squares_to_add_left >= 0 else -squares_to_add_left
+        map_x_start = 0 if squares_to_add_left >= 0 else -squares_to_add_left
+
+        avail_squares_right = ((s.t_map_available_space.x + 2) // 2) // 2
+        map_x_end = map_handler.player_pos.x + avail_squares_right + 1
+
 
         for y_idx in range(shift_y + 1, s.end_y_idx):
             try:
-                line = map_handler.map[map_y_idx][map_x_idx:]
+                line = map_handler.map[map_y_idx][map_x_start:map_x_end]
             except IndexError:
                 break
             buf = ""
-            # line_cropped = line[:needed_squares_left - (map_handler.player_pos.x + 1)]
             for entity in line:
                 if entity:
                     repr = entity.__repr__()
