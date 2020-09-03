@@ -25,6 +25,9 @@ class Pos(object):
     def __repr__(s):
         return f"Pos y={s.y}/x={s.x}"
 
+    def __eq__(s, other):
+        return s.y == other.y and s.x == other.x 
+
 
 class Update(object):
     def __init__(s, arg):

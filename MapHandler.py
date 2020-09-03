@@ -2,6 +2,7 @@ import random
 
 from utils import *
 from Entities import *
+from map_gen import MapGenerator
 
 
 class MapHandler(object):
@@ -11,7 +12,9 @@ class MapHandler(object):
         if len(sys.argv) > 1:
             s.load_map_from_json(sys.argv[1])
         else:
-            s.map = generate_room()
+            s.map_generator = MapGenerator(Pos(200, 200))
+            s.load_map_from_string(s.map_generator.get_map())
+            # s.map = generate_room()
         # Check if player exists
         s.player_pos = None
         found_flag = False
@@ -32,6 +35,9 @@ class MapHandler(object):
     def load_map_from_json(s, map_name):
         with open(f"./maps/{map_name}.map", 'r') as f:
             data = f.read()
+        s.load_map_from_string(data)
+
+    def load_map_from_string(s, data):
         raw_map = [l for l in data.split('\n') if l]
         map = []
         for line in raw_map:

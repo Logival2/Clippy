@@ -18,9 +18,10 @@ class CliHandler(object):
             exit_error("Display error: Terminal is too small (min 15H x 70W)")
         s.info_column_width = info_column_width
         s.info_column_x_pos = s.term_size.x - s.info_column_width
-        s.init_term_repr = []
+        s.empty_term_repr = []
         s.term_repr = []
         s.end_y_idx = s.term_size.y - 3
+        
         s.t_map_available_space = Pos(s.end_y_idx - 2, s.info_column_x_pos - 3)
         s.t_map_center = s.t_map_available_space // 2
         s.t_map_center += Pos(1, 2)
@@ -34,7 +35,7 @@ class CliHandler(object):
         s.inputs_thread.start()
 
     def draw(s, map_handler, info_list):
-        s.term_repr = copy.copy(s.init_term_repr)
+        s.term_repr = copy.copy(s.empty_term_repr)
         s.copy_hud_to_buffer(info_list)
         s.copy_map_to_buffer(map_handler)
         print(f"\033[1;0H{''.join(s.term_repr)}", end= '', flush=True)
@@ -121,8 +122,8 @@ class CliHandler(object):
     def init_map_repr(s):
         center_space = s.info_column_width - 2
         # Top border
-        s.init_term_repr.append(f" ╔{'═' * s.t_map_available_space.x}╦{'═' * center_space}╗ ")
+        s.empty_term_repr.append(f" ╔{'═' * s.t_map_available_space.x}╦{'═' * center_space}╗ ")
         for i in range(1, s.end_y_idx):
-            s.init_term_repr.append(f" ║{' ' * s.t_map_available_space.x}║{' ' * center_space}║ ")
+            s.empty_term_repr.append(f" ║{' ' * s.t_map_available_space.x}║{' ' * center_space}║ ")
         # Bottom border
-        s.init_term_repr.append(f" ╚{'═' * s.t_map_available_space.x}╩{'═' * center_space}╝ ")
+        s.empty_term_repr.append(f" ╚{'═' * s.t_map_available_space.x}╩{'═' * center_space}╝ ")
