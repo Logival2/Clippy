@@ -1,3 +1,4 @@
+import time
 import random
 
 
@@ -30,8 +31,8 @@ def exit_error(msg):
 
 
 def log_to_file(msg):
-    with open('./log.txt', 'a') as f:
-        f.write(f"{msg}\n")
+    with open('./log.txt', 'w') as f:
+        f.write(f"{time.time()}:\t{msg}\n")
 
 
 def get_random_unicode_from_range(ranges_list, length=1):

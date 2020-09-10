@@ -131,10 +131,13 @@ class CliHandler(object):
             return color_pair_idx
 
     def get_inputs(s):
+        keys = None
         try:
-            return s.stdscr.getkey()
+            keys = s.stdscr.getkey()
         except curses.error:
-            return []
+            pass
+        curses.flushinp()
+        return keys
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)

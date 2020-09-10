@@ -4,7 +4,7 @@ import sys
 
 from utils import *
 from Entities import *
-from map_gen import MapGenerator
+from MapGenerator import MapGenerator
 
 
 class MapHandler(object):
@@ -36,7 +36,7 @@ class MapHandler(object):
         if not s.player_pos:
             exit_error("Invalid map file: No player defined")
         s.map_size = s.get_raw_map_size()
-        # Ensure that the map is square (filled with None)
+        # Ensure that the map is square (padd with None)
         for line in s.map:
             line += [None] * (s.map_size.x - len(line))
 
