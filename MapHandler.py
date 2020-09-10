@@ -1,4 +1,6 @@
+import json
 import random
+import sys
 
 from utils import *
 from Entities import *
@@ -6,28 +8,37 @@ from map_gen import MapGenerator
 
 
 class MapHandler(object):
-    def __init__(s):
+    def __init__(s, seed=0):
+        random.seed(seed)
         s.map = []
-        s.config = load_theme_file()
+        ### Load unicode ranges dict
+        s.unicode_ranges = {
+            "chasse":   [( 0x02B0, 0x02FF )],
+            "braille":  [( 0x2800, 0x28FF )],
+            "kangxi":   [( 0x2F00, 0x2FD5 )],
+            "hangul":   [( 0xC000, 0xCFFF )],
+            "walls":    [( 0x2596, 0x259F )],
+            "enemies":    [( 0x29D1, 0x29D7 ), ( 0x29E8, 0x29E9 )],
+        }
         if len(sys.argv) > 1:
             s.load_map_from_json(sys.argv[1])
         else:
-            s.map_generator = MapGenerator(Pos(200, 200))
+            s.map_generator = MapGenerator(Pos(500, 500), seed)
             s.load_map_from_string(s.map_generator.get_map())
-            # s.map = generate_room()
         # Check if player exists
         s.player_pos = None
-        found_flag = False
         for y, line in enumerate(s.map):
             for x, ent in enumerate(line):
                 if ent and isinstance(ent.top_ent, Player):
                     s.player_pos = Pos(y, x)
-                    found_flag = True
                     break
-            if found_flag: break
-        if not found_flag:
+            if s.player_pos: break
+        if not s.player_pos:
             exit_error("Invalid map file: No player defined")
         s.map_size = s.get_raw_map_size()
+        # Ensure that the map is square (filled with None)
+        for line in s.map:
+            line += [None] * (s.map_size.x - len(line))
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
@@ -53,27 +64,32 @@ class MapHandler(object):
             return
         # Create wall
         if c == 'w':
-            char = random.choice(list(s.config["wall"].keys()))
-            data = s.config["wall"][char]
-            return Square(None, Wall(char, True, data["fg_c"], data["bg_c"]))
+            range_list = s.unicode_ranges["walls"]
+            repr = f" {get_random_unicode_from_range(range_list, 1)}"
+            fg_color = random.randint(246, 250)
+            bg_color = 15
+            return Square(None, Wall(repr, fg_color, bg_color))
         # Create default floor
-        char = random.choice(list(s.config["floor"].keys()))
-        data = s.config["floor"][char]
-        floor = Entity(char, False, data["fg_c"], data["bg_c"])
+        repr = get_random_unicode_from_range(s.unicode_ranges["braille"], 2)
+        fg_color = random.randint(233, 237)
+        bg_color = random.randint(233, 237)
+        floor = Entity(repr, fg_color, bg_color, False)
         # Create floor
         if c == 'f': return Square(floor)
         ### Living entities ###
         # Create player
         if c == 'p':
-            char = random.choice(list(s.config["player"].keys()))
-            data = s.config["player"][char]
-            return Square(floor, Player(char, True, data["fg_c"], data["bg_c"]))
+            repr = "⧱ "
+            fg_color = 82
+            bg_color = -1
+            return Square(floor, Player(repr, fg_color, bg_color))
         # Create enemy
         if c == 'e':
-            char = random.choice(list(s.config["enemy"].keys()))
-            data = s.config["enemy"][char]
-            return Square(floor, Enemy(char, True, data["fg_c"], data["bg_c"]))
-        exit_error("Invalid map file, unknown character: " + c)
+            repr = f"{get_random_unicode_from_range(s.unicode_ranges['enemies'])} "
+            fg_color = 9
+            bg_color = -1
+            return Square(floor, Enemy(repr, fg_color, bg_color))
+        exit_error("Invalid map file, unknown repracter: " + c)
 
     def get_square_from_pos(s, y, x=None):
         if x: return s.map[y][x]
@@ -87,7 +103,8 @@ class MapHandler(object):
         return pos.y > 0 and (pos.y < len(s.map)) and pos.x > 0 and (pos.x < len(s.map[pos.y]))
 
     def move_entity_absolute(s, from_p, to):
-        if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return
+        if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return  # Bound check
+        if not s.get_square_from_pos(from_p) or not s.get_square_from_pos(to): return  # Void check
         from_square = s.get_square_from_pos(from_p)
         next_square = s.get_square_from_pos(to)
         if next_square and next_square.is_free():

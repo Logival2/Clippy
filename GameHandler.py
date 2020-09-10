@@ -8,8 +8,8 @@ from utils import Pos
 
 
 class GameHandler(object):
-    def __init__(s):
-        s.map_handler = MapHandler()
+    def __init__(s, stdscr, seed=0):
+        s.map_handler = MapHandler(seed)
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
         s.hud_infos["CLIPPY"] = None
@@ -17,7 +17,7 @@ class GameHandler(object):
         s.hud_infos["score"] = 0
         s.hud_infos["empty"] = None
         s.hud_infos["time"] = int(time.time() - s.start_time)
-        s.cli_handler = CliHandler.CliHandler()
+        s.cli_handler = CliHandler(stdscr, fps=20)
 
     def launch(s):
         while 42:
