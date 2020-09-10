@@ -4,7 +4,7 @@ import sys
 
 from utils import *
 from Entities import *
-from MapGenerator import MapGenerator
+from MapGenerator.MapGenerator import MapGenerator
 
 
 class MapHandler(object):
@@ -18,7 +18,8 @@ class MapHandler(object):
             "kangxi":   [( 0x2F00, 0x2FD5 )],
             "hangul":   [( 0xC000, 0xCFFF )],
             "walls":    [( 0x2596, 0x259F )],
-            "enemies":    [( 0x29D1, 0x29D7 ), ( 0x29E8, 0x29E9 )],
+            "enemies":  [( 0x29D1, 0x29D7 ), ( 0x29E8, 0x29E9 )],
+            "grass":    [( 0x0F20, 0x0F2F )],
         }
         if len(sys.argv) > 1:
             s.load_map_from_json(sys.argv[1])
@@ -76,6 +77,11 @@ class MapHandler(object):
         floor = Entity(repr, fg_color, bg_color, False)
         # Create floor
         if c == 'f': return Square(floor)
+        if c == 'g':
+            repr = f"{get_random_unicode_from_range(s.unicode_ranges['grass'])} "
+            fg_color = 46
+            bg_color = 28
+            return Square(Entity(repr, fg_color, bg_color, False))
         ### Living entities ###
         # Create player
         if c == 'p':

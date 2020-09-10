@@ -18,7 +18,7 @@ class MapGenerator(object):
         s.noise_scale = noise_scale
         s.simplex = OpenSimplex(seed)
         # Load biomes configuration files
-        with open("./biomes.json", 'r') as f:
+        with open("./MapGenerator/biomes.json", 'r') as f:
             s.biomes = json.loads(f.read())
         # Create biome float values range to convert simplex noise float values to specific biomes
         s.compute_biome_values_ranges()
