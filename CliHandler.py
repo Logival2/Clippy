@@ -43,12 +43,15 @@ class CliHandler(object):
         s.stdscr.nodelay(True)
         ### Draw borders ###
         map_screen_width = s.map_scr.getmaxyx()[1]
-        s.stdscr.addstr(0, 1, f"╔{'═' * map_screen_width}╦{'═' * s.hud_width}╗")
-        for y in range(1, s.screen_size.y):
-            s.stdscr.addstr(y, 1, '║')
-            s.stdscr.addstr(y, 2 + map_screen_width, '║')
-            s.stdscr.addstr(y, s.screen_size.x - 2, '║')
-        s.stdscr.addstr(s.screen_size.y, 1, f"╚{'═' * map_screen_width}╩{'═' * s.hud_width}╝")
+        try:
+            s.stdscr.addstr(0, 1, f"╔{'═' * map_screen_width}╦{'═' * s.hud_width}╗")
+            for y in range(1, s.screen_size.y):
+                s.stdscr.addstr(y, 1, '║')
+                s.stdscr.addstr(y, 2 + map_screen_width, '║')
+                s.stdscr.addstr(y, s.screen_size.x - 2, '║')
+            s.stdscr.addstr(s.screen_size.y, 1, f"╚{'═' * map_screen_width}╩{'═' * s.hud_width}╝")
+        except:
+            pass
         s.stdscr.refresh()
 
     def draw(s, map_handler, info_list):

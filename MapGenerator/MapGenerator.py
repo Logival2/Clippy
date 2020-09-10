@@ -23,7 +23,7 @@ class MapGenerator(object):
         # Create biome float values range to convert simplex noise float values to specific biomes
         s.compute_biome_values_ranges()
 
-    def get_region(s, anchor, scale):
+    def get_map(s, anchor, scale):
         """ Build and return the region (double array of Square objects)
         defined by the anchor (top left position)"""
         region_biomes = s.get_region_biomes(anchor, scale)
