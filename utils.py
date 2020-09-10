@@ -1,9 +1,4 @@
-import os
-import sys
-import tty
-import json
-import queue
-import termios
+import random
 
 
 class Pos(object):
@@ -12,29 +7,21 @@ class Pos(object):
         s.x = x
 
     def __add__(s, other):
-        return Pos(s.y + other.y, s.x + other.x)
+        if isinstance(other, Pos):
+            return Pos(s.y + other.y, s.x + other.x)
+        return Pos(s.y + other, s.x + other)
+
+    def __sub__(s, other):
+        return Pos(s.y - other.y, s.x - other.x)
+
+    def __floordiv__(s, factor):
+        return Pos(s.y // factor, s.x // factor)
 
     def __repr__(s):
         return f"Pos y={s.y}/x={s.x}"
 
-
-class Update(object):
-    def __init__(s, arg):
-        s.arg = arg
-
-
-def getch(inputs_queue):
-    """This function is launched in another thread, owned by GameHandler"""
-    fd = sys.stdin.fileno()
-    cli_attr = termios.tcgetattr(fd)
-    while 42:
-        try:
-            tty.setraw(fd)
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, cli_attr)
-        inputs_queue.put(ch)
-        if ch == '\x1b': return # Escape, stop input reading thread
+    def __eq__(s, other):
+        return s.y == other.y and s.x == other.x
 
 
 def exit_error(msg):
@@ -42,19 +29,20 @@ def exit_error(msg):
     exit()
 
 
-def load_theme_file():
-    theme_file_path = sys.argv[1] if len(sys.argv) > 1 else "default_theme"
+def log_to_file(msg):
+    with open('./log.txt', 'a') as f:
+        f.write(f"{msg}\n")
+
+
+def get_random_unicode_from_range(ranges_list, length=1):
+    """ Receives a list of tuples (list of (range_start, range_end))
+    returns {length} chars at random from this range """
     try:
-        with open(f"./maps/{theme_file_path}.json", 'r') as f:
-            data = f.read()
-    except FileNotFoundError:
-        with open(f"./maps/default_theme.json", 'r') as f:
-            data = f.read()
-    data = json.loads(data)
-    if not all(e in data.keys() for e in ['floor', 'enemy', 'player']):
-        exit_error("Invalid map file, not enough entities defined")
-    return data
-
-
-def generate_room():
-    return
+        get_char = unichr
+    except NameError:
+        get_char = chr
+    res = ""
+    for i in range(length):
+        selected_range = random.choice(ranges_list)
+        res += get_char(random.randint(*selected_range))
+    return res
