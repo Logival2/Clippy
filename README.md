@@ -31,3 +31,6 @@ https://jonasjacek.github.io/colors/ for color list
 
 #### Unicode chars display  
 https://fr.wikipedia.org/wiki/Table_des_caract%C3%A8res_Unicode_(0000-0FFF)  
+
+
+https://github.com/seanfisk/ecs

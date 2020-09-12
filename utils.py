@@ -13,7 +13,9 @@ class Pos(object):
         return Pos(s.y + other, s.x + other)
 
     def __sub__(s, other):
-        return Pos(s.y - other.y, s.x - other.x)
+        if isinstance(other, Pos):
+            return Pos(s.y - other.y, s.x - other.x)
+        return Pos(s.y + other, s.x + other)
 
     def __floordiv__(s, factor):
         return Pos(s.y // factor, s.x // factor)
@@ -23,6 +25,20 @@ class Pos(object):
 
     def __eq__(s, other):
         return s.y == other.y and s.x == other.x
+
+    def __gt__(s, other):
+        return s.y > other.y or s.x > other.x
+
+    def __lt__(s, other):
+        return s.y < other.y or s.x < other.x
+
+    def __mul__(s, other):
+        if isinstance(other, Pos):
+            return Pos(s.y * other.y, s.x * other.x)
+        return Pos(s.y * other, s.x * other)
+
+    def get_tuple(s):
+        return (s.x, s.y)
 
 
 def exit_error(msg):

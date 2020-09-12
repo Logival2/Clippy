@@ -7,5 +7,6 @@ def main(stdscr=None):
     gameHandler = GameHandler(stdscr)
     gameHandler.launch()
 
-
-curses.wrapper(main)
+if __name__ == '__main__':
+    main()
+# curses.wrapper(main)

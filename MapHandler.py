@@ -40,6 +40,7 @@ class MapHandler(object):
         # Ensure that the map is square (padd with None)
         for line in s.map:
             line += [None] * (s.map_size.x - len(line))
+        s.view_target = s.player_pos
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
