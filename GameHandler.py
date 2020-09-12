@@ -30,9 +30,11 @@ class GameHandler(object):
         return
 
     def handle_inputs(s, player_input):
-        if not player_input or player_input not in ['z', 'q', 's', 'd']:
+        if not player_input or player_input not in ['z', 'q', 's', 'd', '\u001b']:
             return
         delta = None
+        if player_input == '\u001b':
+            exit(0)
         if player_input == 'z':   delta = Pos(-1, 0)
         elif player_input == 's': delta = Pos(1, 0)
         if player_input == 'q':   delta = Pos(0, -1)
