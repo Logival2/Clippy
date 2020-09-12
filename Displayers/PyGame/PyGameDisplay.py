@@ -65,7 +65,7 @@ class PyGameDisplay(object):
         shift_x = 0 if squares_to_add_left <= 0 else squares_to_add_left
         map_x_start = 0 if squares_to_add_left >= 0 else -squares_to_add_left
 
-        avail_squares_right = s.map_squares_nbr.x // 2
+        avail_squares_right = s.map_squares_nbr.x // 2 + 2
         map_x_end = map_handler.player_pos.x + avail_squares_right
 
         final_player_pos = Pos(
@@ -73,7 +73,7 @@ class PyGameDisplay(object):
                             shift_x + (map_handler.player_pos.x - map_x_start) * 2
                         )
 
-        while term_y_idx < s.map_squares_nbr.y:
+        while term_y_idx < s.map_squares_nbr.y + 1:
             try:
                 tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
             except IndexError:
