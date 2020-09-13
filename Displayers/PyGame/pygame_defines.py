@@ -6,3 +6,14 @@ RED = (231, 76, 60)
 DARK_BLUE = (44, 62, 80)
 LIGHT_BLUE = (52, 152, 219)
 MEDIUM_BLUE = (41, 128, 185)
+
+IMAGES_NAMES = [
+    ["player", None, None, None, None, None, None, None],
+    ["floor", None, None, None, None, None, None, None],
+    ["wall", None, None, None, None, None, None, None],
+    ["enemy", None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+]

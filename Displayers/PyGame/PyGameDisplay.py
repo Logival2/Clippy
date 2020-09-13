@@ -3,7 +3,6 @@ from os import listdir
 from os.path import isfile, join
 
 import pygame
-# import pygame.freetype
 from pygame.locals import *
 
 from utils import Pos
@@ -14,7 +13,10 @@ class PyGameDisplay(object):
     def __init__(s, fps=20, target_resolution=None, hud_width=10):
         ### Pygame related ###
         pygame.init()
-        s.square_size = 26  # Should be even
+        # Square size should be even
+        s.square_size = 32
+        # Ensure that the final resolution makes for an even square_nbr, based on
+        # the square size (in px)
         if target_resolution:
             tmp_screen_size = target_resolution
         else:
@@ -29,7 +31,7 @@ class PyGameDisplay(object):
         s.hud_squares_nbr = hud_width
         s.map_squares_nbr = Pos(x=s.squares_nbr.x - 3 - s.hud_squares_nbr, y=s.squares_nbr.y - 2)
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
-        pygame.display.set_caption('Name')
+        pygame.display.set_caption('Clippy')
         ### FPS related ###
         s.delta = 1 / fps
         s.frame_start = time.time()
@@ -46,7 +48,7 @@ class PyGameDisplay(object):
         s.display.fill(BLACK)
         s.draw_borders()
         s.draw_map(map_handler)
-        s.draw_grid()
+        # s.draw_grid()
         pygame.display.update()
         s.handle_sleep()
 
@@ -104,6 +106,9 @@ class PyGameDisplay(object):
                     )
 
     def draw_hud(s, info_list):
+        # TEXT TEST
+        # text_surface = s.font.render('mega', False, RED)
+        # s.display.blit(text_surface, (50, 50))
         pass
 
     def draw_borders(s):
@@ -123,9 +128,6 @@ class PyGameDisplay(object):
         # HUD border
         for x in range(hud_x_start, hud_x_start + s.square_size):
             pygame.draw.line(s.display, WHITE, (x, 0), (x, s.screen_size.y))
-        # TEXT TEST
-        # text_surface = s.font.render('mega', False, RED)
-        # s.display.blit(text_surface, (50, 50))
 
     def draw_grid(s):
         for y in range(0, s.screen_size.y, s.square_size):
@@ -161,13 +163,15 @@ class PyGameDisplay(object):
             return 'DOWN'
 
     def load_available_images(s):
-        images_dir_path = 'Displayers/PyGame/images/'
-        images_names_list = [f[:f.find('.')] for f in listdir(images_dir_path) if isfile(join(images_dir_path, f))]
-        print(f"[+] Loading textures: {', '.join(images_names_list)}")
-        for image_name in images_names_list:
-            tmp_img = pygame.image.load(f'Displayers/PyGame/images/{image_name}.png')
-            tmp_img = pygame.transform.scale(tmp_img, (s.square_size, s.square_size))
-            s.images[image_name] = tmp_img
+        name = '8'
+        delta = int(name)
+        master_img = pygame.image.load(f'Displayers/PyGame/images/{name}px.png')
+        for y_idx, line in enumerate(IMAGES_NAMES):
+            for x_idx, name in enumerate(line):
+                if not name: continue
+                subsurface = master_img.subsurface((x_idx * delta, y_idx * delta, delta, delta))
+                subsurface = pygame.transform.scale(subsurface, (s.square_size, s.square_size))
+                s.images[name] = subsurface
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)
