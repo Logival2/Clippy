@@ -1,4 +1,6 @@
 import time
+from os import listdir
+from os.path import isfile, join
 
 import pygame
 # import pygame.freetype
@@ -26,7 +28,7 @@ class PyGameDisplay(object):
         ### FPS related ###
         s.delta = 1 / fps
         s.frame_start = time.time()
-        ### Assets ###
+        ### FONTS ###
         # Main font
         s.main_font = pygame.font.Font('Displayers/PyGame/fonts/CozetteVector.ttf', 32)
         # Resize unicode font till it fits into a single square
@@ -37,12 +39,12 @@ class PyGameDisplay(object):
         #     s.font = pygame.font.Font('Displayers/PyGame/fonts/Everson_Mono.ttf', font_start_size)
         #     x, y = s.font.size('x')
         #     font_start_size -= 1
-        print(font_start_size)
-
+        ### IMAGES ###
         s.images = {}
-        s.load_sprite('player')
-        s.load_sprite('floor')
-        s.load_sprite('grass')
+        s.load_available_images()
+        # s.load_sprite('player')
+        # s.load_sprite('floor')
+        # s.load_sprite('grass')
 
     def __del__(s):
         pygame.quit()
@@ -82,22 +84,45 @@ class PyGameDisplay(object):
                 break
             for x_idx, square in enumerate(tmp_line):
                 if square:
-                    char = square.get_char()
-                    name = 'floor'
-                    color = WHITE
-                    if char == '⧱ ':
-                        color = GREEN
-                        name = 'player'
-                    elif char == 'w':
-                        name = 'wall'
-                    text_surface = s.font.render(char[1], False, color)
-                    s.display.blit(text_surface, s.get_square_px_pos(Pos(x=shift_x + x_idx, y=term_y_idx)).get_tuple())
+                    types = square.get_types()
+                    s.display_entity(types, Pos(x=shift_x + x_idx, y=term_y_idx))
+                    # name = 'floor'
+                    # color = WHITE
+                    # if char == '⧱ ':
+                    #     color = GREEN
+                    #     name = 'player'
+                    # elif char == 'w':
+                    #     name = 'wall'
+                    # text_surface = s.font.render(char[1], False, color)
+                    # # s.display.blit(text_surface, s.get_square_px_pos(Pos(x=shift_x + x_idx, y=term_y_idx)).get_tuple())
                     # s.display.blit(
                     #             s.images[name],
                     #             s.get_square_px_pos(Pos(x=shift_x + x_idx, y=term_y_idx)).get_tuple()
                     #         )
             term_y_idx += 1
             map_y_idx += 1
+
+    def display_entity(s, ent_types, pos):
+        # First, draw lower entity
+        if ent_types[1]:
+            if ent_types[1] not in s.images.keys():
+                name = 'fallback'
+            else:
+                name = ent_types[1]
+            s.display.blit(
+                        s.images[name],
+                        s.get_square_px_pos(pos).get_tuple()
+                    )
+        # Now draw top entity
+        if ent_types[0]:
+            if ent_types[0] not in s.images.keys():
+                name = 'fallback'
+            else:
+                name = ent_types[0]
+            s.display.blit(
+                        s.images[name],
+                        s.get_square_px_pos(pos).get_tuple()
+                    )
 
     def draw_hud(s, info_list):
         pass
@@ -156,8 +181,12 @@ class PyGameDisplay(object):
         if keys[K_DOWN] or keys[K_s]:
             return 'DOWN'
 
-    def load_sprite(s, name):
-        s.images[name] = pygame.image.load(f'Displayers/PyGame/images/{name}.png')
+    def load_available_images(s):
+        images_dir_path = 'Displayers/PyGame/images/'
+        images_names_list = [f[:f.find('.')] for f in listdir(images_dir_path) if isfile(join(images_dir_path, f))]
+        print(f"loading textures:\n{images_names_list}")
+        for image_name in images_names_list:
+            s.images[image_name] = pygame.image.load(f'Displayers/PyGame/images/{image_name}.png')
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)

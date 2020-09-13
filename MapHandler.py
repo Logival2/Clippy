@@ -67,35 +67,35 @@ class MapHandler(object):
         # Create wall
         if c == 'w':
             range_list = s.unicode_ranges["walls"]
-            repr = f" {get_random_unicode_from_range(range_list, 1)}"
-            fg_color = random.randint(246, 250)
-            bg_color = 15
-            return Square(None, Wall(repr, fg_color, bg_color))
+            # repr = f" {get_random_unicode_from_range(range_list, 1)}"
+            # fg_color = random.randint(246, 250)
+            # bg_color = 15
+            return Square(None, Entity('wall'))
         # Create default floor
-        repr = get_random_unicode_from_range(s.unicode_ranges["braille"], 2)
-        fg_color = random.randint(233, 237)
-        bg_color = random.randint(233, 237)
-        floor = Entity(repr, fg_color, bg_color, False)
+        # repr = get_random_unicode_from_range(s.unicode_ranges["braille"], 2)
+        # fg_color = random.randint(233, 237)
+        # bg_color = random.randint(233, 237)
+        floor = Entity('floor', False)
         # Create floor
         if c == 'f': return Square(floor)
         if c == 'g':
-            repr = f"{get_random_unicode_from_range(s.unicode_ranges['grass'])} "
-            fg_color = 46
-            bg_color = 28
-            return Square(Entity(repr, fg_color, bg_color, False))
+            # repr = f"{get_random_unicode_from_range(s.unicode_ranges['grass'])} "
+            # fg_color = 46
+            # bg_color = 28
+            return Square(Entity('grass', False))
         ### Living entities ###
         # Create player
         if c == 'p':
-            repr = "⧱ "
-            fg_color = 82
-            bg_color = -1
-            return Square(floor, Player(repr, fg_color, bg_color))
+            # repr = "⧱ "
+            # fg_color = 82
+            # bg_color = -1
+            return Square(floor, Player('player'))
         # Create enemy
         if c == 'e':
-            repr = f"{get_random_unicode_from_range(s.unicode_ranges['enemies'])} "
-            fg_color = 9
-            bg_color = -1
-            return Square(floor, Enemy(repr, fg_color, bg_color))
+            # repr = f"{get_random_unicode_from_range(s.unicode_ranges['enemies'])} "
+            # fg_color = 9
+            # bg_color = -1
+            return Square(floor, Enemy('enemy'))
         exit_error("Invalid map file, unknown repracter: " + c)
 
     def get_square_from_pos(s, y, x=None):

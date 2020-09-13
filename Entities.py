@@ -11,7 +11,6 @@ class Square(object):
     def get_colors(s):
         if s.top_ent:
             if s.top_ent.bg_color == -1:  # If top ent has a transparent background
-                # exit()
                 return (s.top_ent.fg_color, s.low_ent.bg_color)
             return (s.top_ent.fg_color, s.top_ent.bg_color)
         return (s.low_ent.fg_color, s.low_ent.bg_color)
@@ -21,23 +20,22 @@ class Square(object):
             return s.top_ent.repr_char
         return s.low_ent.repr_char
 
+    def get_types(s):
+        if s.top_ent and s.low_ent:
+            return (s.top_ent.type, s.low_ent.type)
+        if s.top_ent:
+            return (s.top_ent.type, None)
+        return (None, s.low_ent.type)
 
 class Entity(object):
-    def __init__(s, repr_char, fg_color, bg_color, is_collider=True):
-        s.repr_char = repr_char
-        s.fg_color = fg_color
-        s.bg_color = bg_color
+    def __init__(s, type, is_collider=True):
+        s.type = type
         s.is_collider = is_collider
-
-
-class Wall(Entity):
-    pass
-
 
 # Alive entities
 class LivingEntity(Entity):
-    def __init__(s, repr_char, fg_color, bg_color, is_collider=True, name="default_name"):
-        super(LivingEntity, s).__init__(repr_char, fg_color, bg_color, is_collider)
+    def __init__(s, type, is_collider=True, name="default_name"):
+        super(LivingEntity, s).__init__(type, is_collider)
         s.name = name
 
 
