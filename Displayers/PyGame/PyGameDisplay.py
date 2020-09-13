@@ -13,10 +13,11 @@ class PyGameDisplay(object):
         ### Pygame related ###
         pygame.init()
         s.screen_size = pygame.display.Info()
-        s.screen_size = Pos(960, 1760)
+        s.screen_size = Pos(x=1920, y=1080)
         # s.screen_size = Pos(s.screen_size.current_h, s.screen_size.current_w)
         s.square_size = 16  # Must be even
         s.squares_nbr = s.screen_size // s.square_size
+        # print(s.squares_nbr)
         s.hud_squares_nbr = hud_width
         s.map_squares_nbr = Pos(x=s.squares_nbr.x - 3 - s.hud_squares_nbr, y=s.squares_nbr.y - 2)
         # ((0,0),pygame.FULLSCREEN)
@@ -29,13 +30,14 @@ class PyGameDisplay(object):
         # Main font
         s.main_font = pygame.font.Font('Displayers/PyGame/fonts/CozetteVector.ttf', 32)
         # Resize unicode font till it fits into a single square
-        font_start_size = 32
+        font_start_size = 22
         s.font = pygame.font.Font('Displayers/PyGame/fonts/Everson_Mono.ttf', font_start_size)
-        x, y = s.font.size('x')
-        while x > s.square_size or y > s.square_size:
-            s.font = pygame.font.Font('Displayers/PyGame/fonts/Everson_Mono.ttf', font_start_size)
-            x, y = s.font.size('x')
-            font_start_size -= 1
+        # x, y = s.font.size('x')
+        # while x > s.square_size or y > s.square_size:
+        #     s.font = pygame.font.Font('Displayers/PyGame/fonts/Everson_Mono.ttf', font_start_size)
+        #     x, y = s.font.size('x')
+        #     font_start_size -= 1
+        print(font_start_size)
 
         s.images = {}
         s.load_sprite('player')
