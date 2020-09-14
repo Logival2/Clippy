@@ -1,7 +1,9 @@
 class Square(object):
-    def __init__(s, low_ent, top_ent=None):
+    def __init__(s, noise_value, low_ent, top_ent=None):
         s.low_ent = low_ent
         s.top_ent = top_ent
+        s.noise_value = noise_value
+
         s.is_free_flag = s.is_free()
 
     def is_free(s):

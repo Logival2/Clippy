@@ -13,10 +13,7 @@ class GameHandler(object):
         s.map_handler = MapHandler(seed)
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
-        s.hud_infos["CLIPPY"] = None
-        s.hud_infos["separator"] = None
         s.hud_infos["score"] = 0
-        s.hud_infos["empty"] = None
         s.hud_infos["time"] = int(time.time() - s.start_time)
         # s.cli_handler = CliDisplay(stdscr, fps=10)
         s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=900))

@@ -1,6 +1,7 @@
 import time
 from os import listdir
 from os.path import isfile, join
+# from ctypes import *
 
 import pygame
 from pygame.locals import *
@@ -10,7 +11,7 @@ from Displayers.PyGame.pygame_defines import *
 
 
 class PyGameDisplay(object):
-    def __init__(s, fps=20, target_resolution=None, hud_width=10):
+    def __init__(s, fps=20, target_resolution=None, hud_width=10, seed=0):
         ### Pygame related ###
         pygame.init()
         # Square size should be even
@@ -40,6 +41,9 @@ class PyGameDisplay(object):
         ### IMAGES ###
         s.images = {}
         s.load_available_images()
+        ### Open simplex (noise) related ###
+        # s.open_simplex = CDLL('Displayers/PyGame/open_simplex.so')
+        # print(s.open_simplex.wrap(10, 0, 24, 0))
 
     def __del__(s):
         pygame.quit()
@@ -80,28 +84,36 @@ class PyGameDisplay(object):
             for x_idx, square in enumerate(tmp_line):
                 if square:
                     types = square.get_types()
-                    s.display_entity(types, Pos(x=shift_x + x_idx, y=term_y_idx))
+                    noise_value = square.noise_value
+                    # print(noise_value)
+                    s.display_entity(types, Pos(x=shift_x + x_idx, y=term_y_idx), noise_value)
             map_y_idx += 1
 
-    def display_entity(s, ent_types, pos):
+    def display_entity(s, ent_types, pos, noise_value):
+        low_ent_type = ent_types[1]
+        top_ent_type = ent_types[0]
         # First, draw lower entity
-        if ent_types[1]:
-            if ent_types[1] not in s.images.keys():
+        if low_ent_type:
+            if low_ent_type not in s.images.keys():
                 name = 'fallback'
+                img_idx = 0
             else:
-                name = ent_types[1]
+                name = low_ent_type
+                img_idx = int(noise_value * IMAGES[name])
             s.display.blit(
-                        s.images[name],
+                        s.images[name][img_idx],
                         s.get_square_px_pos(pos).get_tuple()
                     )
         # Now draw top entity
         if ent_types[0]:
             if ent_types[0] not in s.images.keys():
                 name = 'fallback'
+                img_idx = 0
             else:
                 name = ent_types[0]
+                img_idx = int(noise_value * IMAGES[name])
             s.display.blit(
-                        s.images[name],
+                        s.images[name][img_idx],
                         s.get_square_px_pos(pos).get_tuple()
                     )
 
@@ -182,12 +194,14 @@ class PyGameDisplay(object):
         name = '8'
         delta = int(name)
         master_img = pygame.image.load(f'Displayers/PyGame/images/{name}px.png')
-        for y_idx, line in enumerate(IMAGES_NAMES):
-            for x_idx, name in enumerate(line):
-                if not name: continue
+        for y_idx, image_item in enumerate(IMAGES.items()):
+            tmp_type_images = []
+            for x_idx in range(image_item[1]):
                 subsurface = master_img.subsurface((x_idx * delta, y_idx * delta, delta, delta))
                 subsurface = pygame.transform.scale(subsurface, (s.square_size, s.square_size))
-                s.images[name] = subsurface
+                subsurface.convert()
+                tmp_type_images.append(subsurface)
+            s.images[image_item[0]] = tmp_type_images
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)

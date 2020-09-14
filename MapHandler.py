@@ -2,6 +2,8 @@ import json
 import random
 import sys
 
+from opensimplex import OpenSimplex
+
 from utils import *
 from Entities import *
 from MapGenerator.MapGenerator import MapGenerator
@@ -11,6 +13,8 @@ class MapHandler(object):
     def __init__(s, seed=0):
         random.seed(seed)
         s.map = []
+        s.simplex = OpenSimplex(seed)
+        s.noise_scale = 5
         ### Load unicode ranges dict
         s.unicode_ranges = {
             "chasse":   [( 0x02B0, 0x02FF )],
@@ -42,6 +46,7 @@ class MapHandler(object):
             line += [None] * (s.map_size.x - len(line))
         s.view_target = s.player_pos
 
+
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)
 
@@ -53,13 +58,17 @@ class MapHandler(object):
     def load_map_from_string(s, data):
         raw_map = [l for l in data.split('\n') if l]
         map = []
-        for line in raw_map:
+        for y_idx, line in enumerate(raw_map):
             tmp_line = []
-            for c in line:
-                tmp_line.append(s.create_entity(c))
+            for x_idx, c in enumerate(line):
+                noise_value = s.simplex.noise2d(
+                                        x=x_idx / s.noise_scale,
+                                        y=y_idx / s.noise_scale)
+                noise_value = (noise_value + 1) / 2  # To get a value between 0 and 1
+                tmp_line.append(s.create_entity(c, noise_value))
             s.map.append(tmp_line)
 
-    def create_entity(s, c):
+    def create_entity(s, c, noise_value):
         """Entity Factory"""
         # Create null
         if c == ' ':
@@ -67,35 +76,20 @@ class MapHandler(object):
         # Create wall
         if c == 'w':
             range_list = s.unicode_ranges["walls"]
-            # repr = f" {get_random_unicode_from_range(range_list, 1)}"
-            # fg_color = random.randint(246, 250)
-            # bg_color = 15
-            return Square(None, Entity('wall'))
+            return Square(noise_value, None, Entity('wall'))
         # Create default floor
-        # repr = get_random_unicode_from_range(s.unicode_ranges["braille"], 2)
-        # fg_color = random.randint(233, 237)
-        # bg_color = random.randint(233, 237)
         floor = Entity('floor', False)
         # Create floor
-        if c == 'f': return Square(floor)
+        if c == 'f': return Square(noise_value, floor, None)
         if c == 'g':
-            # repr = f"{get_random_unicode_from_range(s.unicode_ranges['grass'])} "
-            # fg_color = 46
-            # bg_color = 28
-            return Square(Entity('grass', False))
+            return Square(noise_value, Entity('grass', False))
         ### Living entities ###
         # Create player
         if c == 'p':
-            # repr = "⧱ "
-            # fg_color = 82
-            # bg_color = -1
-            return Square(floor, Player('player'))
+            return Square(noise_value, floor, Player('player'))
         # Create enemy
         if c == 'e':
-            # repr = f"{get_random_unicode_from_range(s.unicode_ranges['enemies'])} "
-            # fg_color = 9
-            # bg_color = -1
-            return Square(floor, Enemy('enemy'))
+            return Square(noise_value, floor, Enemy('enemy'))
         exit_error("Invalid map file, unknown repracter: " + c)
 
     def get_square_from_pos(s, y, x=None):
