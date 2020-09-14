@@ -71,25 +71,22 @@ class MapHandler(object):
     def create_entity(s, c, noise_value):
         """Entity Factory"""
         # Create null
-        if c == ' ':
-            return
+        if c == ' ': return
         # Create wall
-        if c == 'w':
-            range_list = s.unicode_ranges["walls"]
-            return Square(noise_value, None, Entity('wall'))
+        if c == 'w': return Square(noise_value, None, Entity('wall', True))
+        # Create grass
+        if c == 'g': return Square(noise_value, Entity('grass', False), None)
+        # Create water
+        if c == 'l': return Square(noise_value, Entity('water', True), None)
         # Create default floor
         floor = Entity('floor', False)
         # Create floor
-        if c == 'f': return Square(1- noise_value, floor, None)
-        if c == 'g':
-            return Square(noise_value, Entity('grass', False))
+        if c == 'f': return Square(1 - noise_value, floor, None)
         ### Living entities ###
         # Create player
-        if c == 'p':
-            return Square(noise_value, floor, Player('player'))
+        if c == 'p': return Square(noise_value, floor, Player('player', True))
         # Create enemy
-        if c == 'e':
-            return Square(noise_value, floor, Enemy('enemy'))
+        if c == 'e': return Square(noise_value, floor, Enemy('enemy', True))
         exit_error("Invalid map file, unknown repracter: " + c)
 
     def get_square_from_pos(s, y, x=None):

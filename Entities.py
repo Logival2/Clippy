@@ -1,5 +1,5 @@
 class Square(object):
-    def __init__(s, noise_value, low_ent, top_ent=None):
+    def __init__(s, noise_value, low_ent, top_ent):
         s.low_ent = low_ent
         s.top_ent = top_ent
         s.noise_value = noise_value
@@ -7,7 +7,10 @@ class Square(object):
         s.is_free_flag = s.is_free()
 
     def is_free(s):
-        s.is_free_flag = True if not s.top_ent or not s.top_ent.is_collider else False
+        s.is_free_flag = False
+        if not s.top_ent or not s.top_ent.is_collider:
+            if not s.low_ent or not s.low_ent.is_collider:
+                s.is_free_flag = True
         return s.is_free_flag
 
     def get_colors(s):
@@ -30,13 +33,13 @@ class Square(object):
         return (None, s.low_ent.type)
 
 class Entity(object):
-    def __init__(s, type, is_collider=True):
+    def __init__(s, type, is_collider):
         s.type = type
         s.is_collider = is_collider
 
 # Alive entities
 class LivingEntity(Entity):
-    def __init__(s, type, is_collider=True, name="default_name"):
+    def __init__(s, type, is_collider, name="default_name"):
         super(LivingEntity, s).__init__(type, is_collider)
         s.name = name
 

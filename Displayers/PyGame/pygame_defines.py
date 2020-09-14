@@ -8,9 +8,12 @@ LIGHT_BLUE = (52, 152, 219)
 MEDIUM_BLUE = (41, 128, 185)
 
 IMAGES = {
+    # Name, nbr of sprites, allow sprite rotation
     'player': [1, False],
     'enemy': [2, False],
     'floor': [4, True],
     'wall': [2, True],
-    'fallback': [1, True],
+    'grass': [2, True],
+    'water': [1, False],
+    'fallback': [1, False],
 }

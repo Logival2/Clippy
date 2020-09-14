@@ -194,7 +194,7 @@ class PyGameDisplay(object):
                 subsurface = pygame.transform.scale(subsurface, (s.square_size, s.square_size))
                 subsurface.convert()
                 tmp_type_images.append(subsurface)
-                # If rotation is activated for this kind of sprites
+            # If rotation is activated for this kind of sprites
             if image_item[1][1]:
                 rotations = []
                 for image in tmp_type_images:
@@ -203,8 +203,6 @@ class PyGameDisplay(object):
                 tmp_type_images += rotations
                 image_item[1][0] *= 4
             s.images[image_item[0]] = tmp_type_images
-        # for key, item in s.images.items():
-            # print(key, len(item))
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)
