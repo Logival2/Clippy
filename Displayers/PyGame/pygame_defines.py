@@ -9,7 +9,7 @@ MEDIUM_BLUE = (41, 128, 185)
 
 IMAGES = {
     'player': [1, False],
-    'enemy': [1, False],
+    'enemy': [2, False],
     'floor': [4, True],
     'wall': [2, True],
     'fallback': [1, True],
