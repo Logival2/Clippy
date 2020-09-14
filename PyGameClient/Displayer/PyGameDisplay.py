@@ -15,8 +15,8 @@ class PyGameDisplay(object):
         pygame.init()
         s.square_size = config['square_size']
         s.borders_width = config['borders_width']
-        # Ensure that the final resolution makes for an even square_nbr, based on
-        # the square size (in px)
+        # Based on the square size (px), ensure that the final resolution makes for an even
+        # number of squares
         if config['target_resolution']:
             tmp_screen_size = config['target_resolution']
         else:

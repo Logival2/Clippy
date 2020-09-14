@@ -15,16 +15,6 @@ class MapHandler(object):
         s.map = []
         s.simplex = OpenSimplex(seed)
         s.noise_scale = 5
-        ### Load unicode ranges dict
-        s.unicode_ranges = {
-            "chasse":   [( 0x02B0, 0x02FF )],
-            "braille":  [( 0x2800, 0x28FF )],
-            "kangxi":   [( 0x2F00, 0x2FD5 )],
-            "hangul":   [( 0xC000, 0xCFFF )],
-            "walls":    [( 0x2596, 0x259F )],
-            "enemies":  [( 0x29D1, 0x29D7 ), ( 0x29E8, 0x29E9 )],
-            "grass":    [( 0x0F20, 0x0F2F )],
-        }
         if len(sys.argv) > 1:
             s.load_map_from_json(sys.argv[1])
         else:
@@ -45,7 +35,6 @@ class MapHandler(object):
         for line in s.map:
             line += [None] * (s.map_size.x - len(line))
         s.view_target = s.player_pos
-
 
     def get_player(s):
         return s.get_square_from_pos(s.player_pos)

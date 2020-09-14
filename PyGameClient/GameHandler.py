@@ -18,7 +18,7 @@ class GameHandler(object):
             'fps': 4,
             'target_resolution': Pos(x=1800, y=1000),
             'hud_width_px': 200,
-            'square_size': 32,
+            'square_size': 2,
             'borders_width': 2,
         }
         s.cli_handler = PyGameDisplay(s.display_config)
@@ -40,6 +40,8 @@ class GameHandler(object):
         return
 
     def handle_inputs(s):
+        """ Exit if needed, otherwise try to execute the first move, if not successful (collision)
+        try the next one etc, otherwise return """
         player_inputs = s.cli_handler.get_inputs()
         if not player_inputs: return
         if "EXIT" in player_inputs: exit()
