@@ -1,0 +1,37 @@
+{
+        "Corridors": {
+                "proportion": 1,
+                "color": 236,
+                "room_probability": 10,
+                "mean_room_size": 3,
+                "avg_link_nbr": 90
+        },
+        "Small rooms": {
+                "proportion": 2,
+                "color": 239,
+                "room_probability": 50,
+                "mean_room_size": 10,
+                "avg_link_nbr": 50
+        },
+        "Medium rooms": {
+                "proportion": 2,
+                "color": 241,
+                "room_probability": 50,
+                "mean_room_size": 20,
+                "avg_link_nbr": 50
+        },
+        "Big rooms": {
+                "proportion": 3,
+                "color": 248,
+                "room_probability": 30,
+                "mean_room_size": 30,
+                "avg_link_nbr": 50
+        },
+        "Boss": {
+                "proportion": 6,
+                "color": 255,
+                "room_probability": 10,
+                "mean_room_size": 60,
+                "avg_link_nbr": 50
+        }
+}
