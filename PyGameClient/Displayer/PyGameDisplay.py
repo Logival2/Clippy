@@ -1,13 +1,12 @@
 import time
 from os import listdir
 from os.path import isfile, join
-# from ctypes import *
 
 import pygame
 from pygame.locals import *
 
 from utils import Pos
-from Displayers.PyGame.pygame_defines import *
+from Displayer.config import *
 
 
 class PyGameDisplay(object):
@@ -16,7 +15,7 @@ class PyGameDisplay(object):
         pygame.init()
         # Square size should be even
         s.square_size = 32
-        # Ensure that the final resolution makes for an even square_nbr, based on
+        # Now ensure that the final resolution makes for an even square_nbr, based on
         # the square size (in px)
         if target_resolution:
             tmp_screen_size = target_resolution
@@ -24,21 +23,20 @@ class PyGameDisplay(object):
             tmp_screen_size = pygame.display.Info()
             tmp_screen_size = Pos(x=tmp_screen_size.current_w, y=tmp_screen_size.current_h)
         s.squares_nbr =  tmp_screen_size // s.square_size
-        if s.squares_nbr.x % 2:
-            s.squares_nbr.x -=1
-        if s.squares_nbr.y % 2:
-            s.squares_nbr.y -=1
+        if s.squares_nbr.x % 2: s.squares_nbr.x -=1
+        if s.squares_nbr.y % 2: s.squares_nbr.y -=1
+        # Set variables
         s.screen_size = s.squares_nbr * s.square_size
         s.hud_squares_nbr = hud_width
         s.map_squares_nbr = Pos(x=s.squares_nbr.x - 3 - s.hud_squares_nbr, y=s.squares_nbr.y - 2)
+        # Launch display
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### FPS related ###
         s.delta = 1 / fps
         s.frame_start = time.time()
-        ### FONTS ###
-        s.font = pygame.font.Font('Displayers/PyGame/fonts/CozetteVector.ttf', 24)
-        ### IMAGES ###
+        ### ASSETS ###
+        s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
         s.images = {}
         s.load_available_images()
 
@@ -55,6 +53,7 @@ class PyGameDisplay(object):
         s.handle_sleep()
 
     def draw_map(s, map_handler):
+        """ Draw the map sent by the server, keeping the player at the center of the screen """
         # Nbr of lines available from the player (-1) to the top of the map screen
         needed_lines_top = s.map_squares_nbr.y // 2 + 2
         to_add_top = needed_lines_top - map_handler.player_pos.y
@@ -75,27 +74,21 @@ class PyGameDisplay(object):
             for x_idx, square in enumerate(tmp_line):
                 if square:
                     types = square.get_types()
+                    pos = Pos(x=shift_x + x_idx, y=term_y_idx)
                     noise_value = square.noise_value
-                    s.display_entities(types, Pos(x=shift_x + x_idx, y=term_y_idx), noise_value)
+                    if types[1]: s.display_entity(types[1], pos, noise_value)
+                    if types[0]: s.display_entity(types[0], pos, noise_value)
             map_y_idx += 1
 
-    def display_entities(s, ent_types, pos, noise_value):
-        # Draw low entity first
-        if ent_types[1]:
-            s.display_entity(ent_types[1], pos, noise_value)
-        if ent_types[0]:
-            s.display_entity(ent_types[0], pos, noise_value)
-
     def display_entity(s, ent_type, pos, noise_value):
-        if ent_type not in s.images.keys():
-            name = 'fallback'
-            img_idx = 0
-        else:
+        """ Get an entity type, position and the noise value assigned to this position
+        (computed server side) and draws it"""
+        name = 'fallback'
+        img_idx = 0
+        if ent_type in s.images.keys():
             name = ent_type
             img_idx = int(noise_value * IMAGES[name][0])
-        s.display.blit(
-                    s.images[name][img_idx],
-                    s.get_square_px_pos(pos).get_tuple())
+        s.display.blit(s.images[name][img_idx], (pos * s.square_size).get_tuple())
 
     def draw_hud(s, info_list):
         hud_text_x_start = (3 + s.map_squares_nbr.x) * s.square_size
@@ -151,22 +144,14 @@ class PyGameDisplay(object):
                                 (s.screen_size.x - s.square_size + border_width - 1, y))
 
     def draw_grid(s):
+        """ Draws a grid on the whole screen, for debugging purposes """
         for y in range(0, s.screen_size.y, s.square_size):
             pygame.draw.line(s.display, WHITE, (0, y), (s.screen_size.x, y), 1)
         for x in range(0, s.screen_size.x, s.square_size):
             pygame.draw.line(s.display, WHITE, (x, 0), (x, s.screen_size.y), 1)
 
-    def draw_square(s, pos):
-        # Check square filling
-        pos = s.get_square_px_pos(Pos(x=pos.x, y=pos.y))
-        for y in range(pos.y, pos.y + s.square_size):
-            for x in range(pos.x, pos.x + s.square_size):
-                s.display.set_at((x, y), RED)
-
-    def get_square_px_pos(s, pos):
-        return pos * s.square_size
-
     def get_inputs(s):
+        """ Convert PyGame inputs into the formatted ones """
         for event in pygame.event.get():
             if event.type == QUIT:
                 return ['EXIT']
@@ -175,28 +160,32 @@ class PyGameDisplay(object):
             return ['EXIT']
         # Actual inputs
         res = []
-        if keys[K_LEFT] or keys[K_q]:
-            res.append('LEFT')
-        if keys[K_RIGHT] or keys[K_d]:
-            res.append('RIGHT')
-        if keys[K_UP] or keys[K_z]:
-            res.append('UP')
-        if keys[K_DOWN] or keys[K_s]:
-            res.append('DOWN')
+        if keys[K_LEFT] or keys[K_q]: res.append('LEFT')
+        if keys[K_RIGHT] or keys[K_d]: res.append('RIGHT')
+        if keys[K_UP] or keys[K_z]: res.append('UP')
+        if keys[K_DOWN] or keys[K_s]: res.append('DOWN')
         return res
 
     def load_available_images(s):
+        """ Load the master image with all the sprites, and extract each small one,
+        create its rotated versions if specified """
         name = '16'
         delta = int(name)
-        master_img = pygame.image.load(f'Displayers/PyGame/images/{name}px.png')
+        master_img = pygame.image.load(f'Displayer/images/{name}px.png')
+        # For each image family (type) defined in config
         for y_idx, image_item in enumerate(IMAGES.items()):
             tmp_type_images = []
+            # For each item of a specific family
             for x_idx in range(image_item[1][0]):
+                # Load the item from the master image (which contains all the sprites)
                 subsurface = master_img.subsurface((x_idx * delta, y_idx * delta, delta, delta))
+                # Scale it to the square size
                 subsurface = pygame.transform.scale(subsurface, (s.square_size, s.square_size))
+                # Transform it to a pygame friendly format (quicker drawing)
                 subsurface.convert()
                 tmp_type_images.append(subsurface)
-            # If rotation is activated for this kind of sprites
+            # If rotation is activated for this family of sprites, create and load
+            # all rotated versions
             if image_item[1][1]:
                 rotations = []
                 for image in tmp_type_images:
@@ -207,6 +196,7 @@ class PyGameDisplay(object):
             s.images[image_item[0]] = tmp_type_images
 
     def handle_sleep(s):
+        """ Maintains the framerate """
         to_sleep = s.delta - (time.time() - s.frame_start)
         if to_sleep > 0:
             pygame.time.wait(int(to_sleep * 1000))
