@@ -169,19 +169,21 @@ class PyGameDisplay(object):
     def get_inputs(s):
         for event in pygame.event.get():
             if event.type == QUIT:
-                return 'EXIT'
+                return ['EXIT']
         keys = pygame.key.get_pressed()
         if keys[K_ESCAPE]:
-            return 'EXIT'
+            return ['EXIT']
         # Actual inputs
+        res = []
         if keys[K_LEFT] or keys[K_q]:
-            return 'LEFT'
+            res.append('LEFT')
         if keys[K_RIGHT] or keys[K_d]:
-            return 'RIGHT'
+            res.append('RIGHT')
         if keys[K_UP] or keys[K_z]:
-            return 'UP'
+            res.append('UP')
         if keys[K_DOWN] or keys[K_s]:
-            return 'DOWN'
+            res.append('DOWN')
+        return res
 
     def load_available_images(s):
         name = '16'
