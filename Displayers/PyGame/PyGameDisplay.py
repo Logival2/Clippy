@@ -15,7 +15,7 @@ class PyGameDisplay(object):
         ### Pygame related ###
         pygame.init()
         # Square size should be even
-        s.square_size = 32
+        s.square_size = 24
         # Ensure that the final resolution makes for an even square_nbr, based on
         # the square size (in px)
         if target_resolution:
@@ -41,18 +41,16 @@ class PyGameDisplay(object):
         ### IMAGES ###
         s.images = {}
         s.load_available_images()
-        ### Open simplex (noise) related ###
-        # s.open_simplex = CDLL('Displayers/PyGame/open_simplex.so')
-        # print(s.open_simplex.wrap(10, 0, 24, 0))
 
     def __del__(s):
         pygame.quit()
 
     def draw(s, map_handler, info_list):
         s.display.fill(BLACK)
-        s.draw_map(map_handler)
-        # s.draw_grid()
         s.draw_borders()
+        # s.draw_hud(info_list)
+        s.draw_map(map_handler)
+        # s.draw_grid()  # Useful for debugging
         pygame.display.update()
         s.handle_sleep()
 
@@ -71,57 +69,37 @@ class PyGameDisplay(object):
         avail_squares_right = s.map_squares_nbr.x // 2 + 1
         map_x_end = map_handler.player_pos.x + avail_squares_right
 
-        final_player_pos = Pos(
-                            term_y_idx + map_handler.player_pos.y - map_y_idx,
-                            shift_x + (map_handler.player_pos.x - map_x_start) * 2
-                        )
-        while term_y_idx < s.map_squares_nbr.y:
+        while term_y_idx < s.map_squares_nbr.y and map_y_idx < len(map_handler.map):
             term_y_idx += 1
-            try:
-                tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
-            except IndexError:
-                break
+            tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
             for x_idx, square in enumerate(tmp_line):
                 if square:
                     types = square.get_types()
                     noise_value = square.noise_value
-                    # print(noise_value)
-                    s.display_entity(types, Pos(x=shift_x + x_idx, y=term_y_idx), noise_value)
+                    s.display_entities(types, Pos(x=shift_x + x_idx, y=term_y_idx), noise_value)
             map_y_idx += 1
 
-    def display_entity(s, ent_types, pos, noise_value):
-        low_ent_type = ent_types[1]
-        top_ent_type = ent_types[0]
-        # First, draw lower entity
-        if low_ent_type:
-            if low_ent_type not in s.images.keys():
-                name = 'fallback'
-                img_idx = 0
-            else:
-                name = low_ent_type
-                img_idx = int(noise_value * IMAGES[name])
-            s.display.blit(
-                        s.images[name][img_idx],
-                        s.get_square_px_pos(pos).get_tuple()
-                    )
-        # Now draw top entity
+    def display_entities(s, ent_types, pos, noise_value):
+        # Draw low entity first
+        if ent_types[1]:
+            s.display_entity(ent_types[1], pos, noise_value)
         if ent_types[0]:
-            if ent_types[0] not in s.images.keys():
-                name = 'fallback'
-                img_idx = 0
-            else:
-                name = ent_types[0]
-                img_idx = int(noise_value * IMAGES[name])
-            s.display.blit(
-                        s.images[name][img_idx],
-                        s.get_square_px_pos(pos).get_tuple()
-                    )
+            s.display_entity(ent_types[0], pos, noise_value)
+
+    def display_entity(s, ent_type, pos, noise_value):
+        if ent_type not in s.images.keys():
+            name = 'fallback'
+            img_idx = 0
+        else:
+            name = ent_type
+            img_idx = int(noise_value * IMAGES[name])
+        s.display.blit(
+                    s.images[name][img_idx],
+                    s.get_square_px_pos(pos).get_tuple())
 
     def draw_hud(s, info_list):
-        # TEXT TEST
-        # text_surface = s.font.render('mega', False, RED)
-        # s.display.blit(text_surface, (50, 50))
-        pass
+        text_surface = s.main_font.render('mega', False, RED)
+        s.display.blit(text_surface, (s.square_size * 2, s.square_size * 2))
 
     def draw_borders(s):
         border_width = 4
