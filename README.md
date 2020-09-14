@@ -8,6 +8,8 @@ Theme: A space explorator crashed on a planet, must find all the needed parts fo
 Turn by Turn?  
 Permadeath?  
 
+## Character creation ?
+
 ## Multiplayer coop (target 4 players)
 
 ## Procedural generation  
@@ -40,9 +42,6 @@ How big should a region be? Needs playtesting to see how much time is needed per
 #### Strange animals made with Conway game of life (mushroom like?)  
 
 #### Simulate water, and food  
-
-#### Menus  
-* Character creation
 
 ## Clients
 #### Curses  
