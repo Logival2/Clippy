@@ -37,7 +37,7 @@ class PyGameDisplay(object):
         s.delta = 1 / fps
         s.frame_start = time.time()
         ### FONTS ###
-        s.main_font = pygame.font.Font('Displayers/PyGame/fonts/CozetteVector.ttf', 32)
+        s.font = pygame.font.Font('Displayers/PyGame/fonts/CozetteVector.ttf', 24)
         ### IMAGES ###
         s.images = {}
         s.load_available_images()
@@ -48,7 +48,7 @@ class PyGameDisplay(object):
     def draw(s, map_handler, info_list):
         s.display.fill(BLACK)
         s.draw_borders()
-        # s.draw_hud(info_list)
+        s.draw_hud(info_list)
         s.draw_map(map_handler)
         # s.draw_grid()  # Useful for debugging
         pygame.display.update()
@@ -98,42 +98,57 @@ class PyGameDisplay(object):
                     s.get_square_px_pos(pos).get_tuple())
 
     def draw_hud(s, info_list):
-        text_surface = s.main_font.render('mega', False, RED)
-        s.display.blit(text_surface, (s.square_size * 2, s.square_size * 2))
+        hud_text_x_start = (3 + s.map_squares_nbr.x) * s.square_size
+        # Draw title
+        text_surface = s.font.render('CLIPPY', False, WHITE)
+        s.display.blit(text_surface, (hud_text_x_start, s.square_size * 2))
+        # Draw informations
+        y_idx = 4
+        for key, value in info_list.items():
+            final_str = f"{key}: {value}" if value != None else f"{key}"
+            text_surface = s.font.render(final_str, False, WHITE)
+            s.display.blit(text_surface, (hud_text_x_start, s.square_size * y_idx))
+            y_idx += 1
 
     def draw_borders(s):
-        border_width = 4
+        border_width = 2
         # Top border
         for y in range(s.square_size - border_width, s.square_size):
             pygame.draw.line(s.display, WHITE,
                                 (s.square_size - border_width, y),
-                                (s.screen_size.x - s.square_size + border_width, y))
+                                (s.screen_size.x - s.square_size + border_width - 1, y))
         # Bottom border
         for y in range(s.screen_size.y - s.square_size, s.screen_size.y - s.square_size + border_width):
             pygame.draw.line(s.display, WHITE,
                                 (s.square_size - border_width, y),
-                                (s.screen_size.x - s.square_size + border_width, y))
+                                (s.screen_size.x - s.square_size + border_width - 1, y))
         # Left border
         for x in range(s.square_size - border_width, s.square_size):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         # Right border
-        for x in range(s.screen_size.x - s.square_size, s.screen_size.x - s.square_size + border_width + 1):
+        for x in range(s.screen_size.x - s.square_size, s.screen_size.x - s.square_size + border_width):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         hud_x_start = (1 + s.map_squares_nbr.x) * s.square_size
         # Right Map border
-        for x in range(hud_x_start, hud_x_start + border_width + 1):
+        for x in range(hud_x_start, hud_x_start + border_width):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         # Left HUD border
-        for x in range(hud_x_start + s.square_size - border_width, hud_x_start + s.square_size + 1):
+        for x in range(hud_x_start + s.square_size - border_width, hud_x_start + s.square_size):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
+        # Top HUD border
+        hud_line_y_start = s.square_size * 3 + s.square_size // 2
+        for y in range(hud_line_y_start, hud_line_y_start + border_width):
+            pygame.draw.line(s.display, WHITE,
+                                (hud_x_start + s.square_size, y),
+                                (s.screen_size.x - s.square_size + border_width - 1, y))
 
     def draw_grid(s):
         for y in range(0, s.screen_size.y, s.square_size):
