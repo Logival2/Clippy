@@ -13,9 +13,9 @@ class PyGameDisplay(object):
     def __init__(s, fps=20, target_resolution=None, hud_width=10, seed=0):
         ### Pygame related ###
         pygame.init()
-        # Square size should be even
         s.square_size = 32
-        # Now ensure that the final resolution makes for an even square_nbr, based on
+        s.border_width = 2
+        # Ensure that the final resolution makes for an even square_nbr, based on
         # the square size (in px)
         if target_resolution:
             tmp_screen_size = target_resolution
@@ -38,7 +38,7 @@ class PyGameDisplay(object):
         ### ASSETS ###
         s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
         s.images = {}
-        s.load_available_images()
+        s.load_available_images(16)
 
     def __del__(s):
         pygame.quit()
@@ -54,7 +54,6 @@ class PyGameDisplay(object):
 
     def draw_map(s, map_handler):
         """ Draw the map sent by the server, keeping the player at the center of the screen """
-        # Nbr of lines available from the player (-1) to the top of the map screen
         needed_lines_top = s.map_squares_nbr.y // 2 + 2
         to_add_top = needed_lines_top - map_handler.player_pos.y
         term_y_idx = 0 if to_add_top <= 0 else to_add_top
@@ -104,44 +103,43 @@ class PyGameDisplay(object):
             y_idx += 1
 
     def draw_borders(s):
-        border_width = 2
         # Top border
-        for y in range(s.square_size - border_width, s.square_size):
+        for y in range(s.square_size - s.border_width, s.square_size):
             pygame.draw.line(s.display, WHITE,
-                                (s.square_size - border_width, y),
-                                (s.screen_size.x - s.square_size + border_width - 1, y))
+                                (s.square_size - s.border_width, y),
+                                (s.screen_size.x - s.square_size + s.border_width - 1, y))
         # Bottom border
-        for y in range(s.screen_size.y - s.square_size, s.screen_size.y - s.square_size + border_width):
+        for y in range(s.screen_size.y - s.square_size, s.screen_size.y - s.square_size + s.border_width):
             pygame.draw.line(s.display, WHITE,
-                                (s.square_size - border_width, y),
-                                (s.screen_size.x - s.square_size + border_width - 1, y))
+                                (s.square_size - s.border_width, y),
+                                (s.screen_size.x - s.square_size + s.border_width - 1, y))
         # Left border
-        for x in range(s.square_size - border_width, s.square_size):
+        for x in range(s.square_size - s.border_width, s.square_size):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         # Right border
-        for x in range(s.screen_size.x - s.square_size, s.screen_size.x - s.square_size + border_width):
+        for x in range(s.screen_size.x - s.square_size, s.screen_size.x - s.square_size + s.border_width):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         hud_x_start = (1 + s.map_squares_nbr.x) * s.square_size
         # Right Map border
-        for x in range(hud_x_start, hud_x_start + border_width):
+        for x in range(hud_x_start, hud_x_start + s.border_width):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         # Left HUD border
-        for x in range(hud_x_start + s.square_size - border_width, hud_x_start + s.square_size):
+        for x in range(hud_x_start + s.square_size - s.border_width, hud_x_start + s.square_size):
             pygame.draw.line(s.display, WHITE,
                                 (x, s.square_size),
                                 (x, s.screen_size.y - s.square_size))
         # Top HUD border
         hud_line_y_start = s.square_size * 3 + s.square_size // 2
-        for y in range(hud_line_y_start, hud_line_y_start + border_width):
+        for y in range(hud_line_y_start, hud_line_y_start + s.border_width):
             pygame.draw.line(s.display, WHITE,
                                 (hud_x_start + s.square_size, y),
-                                (s.screen_size.x - s.square_size + border_width - 1, y))
+                                (s.screen_size.x - s.square_size + s.border_width - 1, y))
 
     def draw_grid(s):
         """ Draws a grid on the whole screen, for debugging purposes """
@@ -166,12 +164,10 @@ class PyGameDisplay(object):
         if keys[K_DOWN] or keys[K_s]: res.append('DOWN')
         return res
 
-    def load_available_images(s):
+    def load_available_images(s, delta):
         """ Load the master image with all the sprites, and extract each small one,
         create its rotated versions if specified """
-        name = '16'
-        delta = int(name)
-        master_img = pygame.image.load(f'Displayer/images/{name}px.png')
+        master_img = pygame.image.load(f'Displayer/images/{delta}px.png')
         # For each image family (type) defined in config
         for y_idx, image_item in enumerate(IMAGES.items()):
             tmp_type_images = []
