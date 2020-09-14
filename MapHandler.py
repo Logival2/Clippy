@@ -80,7 +80,7 @@ class MapHandler(object):
         # Create default floor
         floor = Entity('floor', False)
         # Create floor
-        if c == 'f': return Square(noise_value, floor, None)
+        if c == 'f': return Square(1- noise_value, floor, None)
         if c == 'g':
             return Square(noise_value, Entity('grass', False))
         ### Living entities ###

@@ -15,7 +15,7 @@ class PyGameDisplay(object):
         ### Pygame related ###
         pygame.init()
         # Square size should be even
-        s.square_size = 24
+        s.square_size = 32
         # Ensure that the final resolution makes for an even square_nbr, based on
         # the square size (in px)
         if target_resolution:
@@ -92,7 +92,7 @@ class PyGameDisplay(object):
             img_idx = 0
         else:
             name = ent_type
-            img_idx = int(noise_value * IMAGES[name])
+            img_idx = int(noise_value * IMAGES[name][0])
         s.display.blit(
                     s.images[name][img_idx],
                     s.get_square_px_pos(pos).get_tuple())
@@ -184,17 +184,27 @@ class PyGameDisplay(object):
             return 'DOWN'
 
     def load_available_images(s):
-        name = '8'
+        name = '16'
         delta = int(name)
         master_img = pygame.image.load(f'Displayers/PyGame/images/{name}px.png')
         for y_idx, image_item in enumerate(IMAGES.items()):
             tmp_type_images = []
-            for x_idx in range(image_item[1]):
+            for x_idx in range(image_item[1][0]):
                 subsurface = master_img.subsurface((x_idx * delta, y_idx * delta, delta, delta))
                 subsurface = pygame.transform.scale(subsurface, (s.square_size, s.square_size))
                 subsurface.convert()
                 tmp_type_images.append(subsurface)
+                # If rotation is activated for this kind of sprites
+            if image_item[1][1]:
+                rotations = []
+                for image in tmp_type_images:
+                    for angle in [90, 180, 270]:
+                        rotations.append(pygame.transform.rotate(image, angle))
+                tmp_type_images += rotations
+                image_item[1][0] *= 4
             s.images[image_item[0]] = tmp_type_images
+        # for key, item in s.images.items():
+            # print(key, len(item))
 
     def handle_sleep(s):
         to_sleep = s.delta - (time.time() - s.frame_start)

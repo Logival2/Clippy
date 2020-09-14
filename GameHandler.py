@@ -16,7 +16,7 @@ class GameHandler(object):
         s.hud_infos["score"] = 0
         s.hud_infos["time"] = int(time.time() - s.start_time)
         # s.cli_handler = CliDisplay(stdscr, fps=10)
-        s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=900))
+        s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=1000))
 
     def launch(s):
         while 42:

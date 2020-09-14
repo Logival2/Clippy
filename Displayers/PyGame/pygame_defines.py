@@ -8,9 +8,9 @@ LIGHT_BLUE = (52, 152, 219)
 MEDIUM_BLUE = (41, 128, 185)
 
 IMAGES = {
-    'player': 1,
-    'floor': 4,
-    'wall': 2,
-    'enemy': 1,
-    'fallback': 1,
+    'player': [1, False],
+    'enemy': [1, False],
+    'floor': [4, True],
+    'wall': [2, True],
+    'fallback': [1, True],
 }
