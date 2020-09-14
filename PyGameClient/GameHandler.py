@@ -14,7 +14,14 @@ class GameHandler(object):
         s.hud_infos = OrderedDict()
         s.hud_infos["score"] = 0
         s.hud_infos["time"] = int(time.time() - s.start_time)
-        s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=1000))
+        s.display_config = {
+            'fps': 4,
+            'target_resolution': Pos(x=1800, y=1000),
+            'hud_width_px': 10,  # TODO, change hud width from squares to pixels
+            'square_size': 32,
+            'borders_width': 2,
+        }
+        s.cli_handler = PyGameDisplay(s.display_config)
         s.avail_inputs = {
             'UP': Pos(-1, 0),
             'DOWN': Pos(1, 0),
