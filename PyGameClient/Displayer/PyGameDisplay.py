@@ -27,7 +27,7 @@ class PyGameDisplay(object):
         if s.squares_nbr.y % 2: s.squares_nbr.y -=1
         # Set variables
         s.screen_size = s.squares_nbr * s.square_size
-        s.hud_squares_nbr = config['hud_width_px']
+        s.hud_squares_nbr = (config['hud_width_px'] // s.square_size) + 1
         s.map_squares_nbr = Pos(x=s.squares_nbr.x - 3 - s.hud_squares_nbr, y=s.squares_nbr.y - 2)
         # Launch display
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
@@ -63,7 +63,7 @@ class PyGameDisplay(object):
         shift_x = 0 if squares_to_add_left <= 0 else squares_to_add_left
         shift_x += 1
         map_x_start = 0 if squares_to_add_left >= 0 else -squares_to_add_left
-        avail_squares_right = s.map_squares_nbr.x // 2 + 1
+        avail_squares_right = s.map_squares_nbr.x // 2
         map_x_end = map_handler.player_pos.x + avail_squares_right
 
         while term_y_idx < s.map_squares_nbr.y and map_y_idx < len(map_handler.map):

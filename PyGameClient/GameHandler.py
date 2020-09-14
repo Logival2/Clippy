@@ -17,7 +17,7 @@ class GameHandler(object):
         s.display_config = {
             'fps': 4,
             'target_resolution': Pos(x=1800, y=1000),
-            'hud_width_px': 10,  # TODO, change hud width from squares to pixels
+            'hud_width_px': 200,  # TODO, change hud width from squares to pixels
             'square_size': 32,
             'borders_width': 2,
         }
