@@ -49,6 +49,17 @@ How big should a region be? Needs playtesting to see how much time is needed per
 * Snow
 * Plains
 
+#### Layouts
+Each state will then be splitted into **layout types**
+* Big rooms
+* Normal rooms
+* Small rooms
+* Mostly corridors
+* Caves (organic shapes rather than straight corridors)
+* Outside world?
+
+The layout assets will still be defined by the state but will allow for a more varied gameplay
+
 #### World Building Process
 ###### States Creation  
 1 - Place capitals  
@@ -63,8 +74,7 @@ How big should a region be? Needs playtesting to see how much time is needed per
 7 - Generate a name for the leader / king etc  
 8 - Generate a quick story about the state (will be displayed when the player enters the state for the 1st time)  
 ###### Layout Creation
-For each state use a simplex noise (faster, less artifacts than perlin) to subdivide the state into **layout types** (Big rooms / normal rooms / small rooms / mostly corridors / caves)  
-The layouts will use its state assets but allow for a more varied gameplay
+For each state use a simplex noise (faster, less artifacts than perlin) to subdivide the
 
 ###### Add Objects and NPCs
 
