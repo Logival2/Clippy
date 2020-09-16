@@ -2,7 +2,6 @@ import time
 from collections import OrderedDict
 
 from Displayers.CliDisplay import CliDisplay
-from Displayers.PyGame.PyGameDisplay import PyGameDisplay
 from MapHandler import MapHandler
 from Entities import *
 from utils import *
@@ -15,8 +14,7 @@ class GameHandler(object):
         s.hud_infos = OrderedDict()
         s.hud_infos["score"] = 0
         s.hud_infos["time"] = int(time.time() - s.start_time)
-        # s.cli_handler = CliDisplay(stdscr, fps=10)
-        s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=1000))
+        s.cli_handler = CliDisplay(stdscr, fps=10)
         s.avail_inputs = {
             'UP': Pos(-1, 0),
             'DOWN': Pos(1, 0),

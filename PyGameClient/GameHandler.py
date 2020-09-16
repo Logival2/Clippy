@@ -18,7 +18,7 @@ class GameHandler(object):
             'fps': 4,
             'target_resolution': Pos(x=1800, y=1000),
             'hud_width_px': 200,
-            'square_size': 2,
+            'square_size': 32,
             'borders_width': 2,
         }
         s.cli_handler = PyGameDisplay(s.display_config)
