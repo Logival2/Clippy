@@ -34,10 +34,21 @@ After a few minutes the world is populated and its history develops for the amou
 The ticker stops at the designated "years" value, at which point the world can be saved for use in any game mode. Should the player choose to retire a fortress, or should they be defeated, this world will persist and will become available for further games.
 ```
 
-#### States (biomes)
-For States: [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)  
+#### Dimensions:
+Smallest unit = the Tile  
+Chunks size = 128 * 128 tiles  
+Map size = 1024 * 1024 chunks  
+Total = 131_072 * 131_072 tiles  
+(17_179_869_184 tiles)
 
-5 States (equivalent to a minecraft biome) with a specific civilisation each time (kinda like Horizon zero dawn) with each region having:  
+The MapHandler class should handle the chunk loading based on the players positions:
+if already generated, load from disk, otherwise generate it.  
+Chunks which have been generated during the session and are deloaded (player is leaving the area) must be written to disk    
+
+#### Regions (biomes)
+For Regions: [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)  
+
+5 Regions (equivalent to a minecraft biome) with a specific civilisation each time (kinda like Horizon zero dawn) with each region having:  
 * specific language
 * specific colors
 * specific behaviors?
@@ -50,7 +61,7 @@ How big should a region be? Needs playtesting to see how much time is needed per
 * Plains
 
 #### Layouts
-Each state will then be splitted into **layout types**
+Each region will then be splitted into **layout types**
 * Big rooms
 * Normal rooms
 * Small rooms
@@ -58,23 +69,28 @@ Each state will then be splitted into **layout types**
 * Caves (organic shapes rather than straight corridors)
 * Outside world?
 
-The layout assets will still be defined by the state but will allow for a more varied gameplay
+The layout assets will still be defined by the region but will allow for a more varied gameplay
 
 #### World Building Process
-###### States Creation  
+###### Regions Creation  
+Based on a seed, capitals will be placed at the same place every time  
+No need to compute the voronoi diagram for the whole map, just need to check for each chunk's tile the shortest distance to a capital to determine the region  
+
+
 1 - Place capitals  
-*Maybe give more than 5 capitals to the Voronoi algo, to get a more complex map (some states will have 2 capitals)*  
-2 - Compute Voronoi diagram to get each state bounds  
+*Maybe give more than 5 capitals to the Voronoi algo, to get a more complex map (some Regions will have 2 capitals)*  
+2 - Compute Voronoi diagram to get each region bounds  
+*Regions will be defined in chunks rather than in tiles (maybe add a blending feature later on)*   
 3 - Slightly change each capital position?  
 *May be needed as the Voronoi split is visible*  
-4 - Generate the state name  
-5 - Choose the state's alphabet  
+4 - Generate the region name  
+5 - Choose the region's alphabet  
 *Unicode char ranges*    
-6 - Assign the state to one of the 5 predefined states style (Desert etc...)  
+6 - Assign the region to one of the 5 predefined Regions style (Desert etc...)  
 7 - Generate a name for the leader / king etc  
-8 - Generate a quick story about the state (will be displayed when the player enters the state for the 1st time)  
+8 - Generate a quick story about the region (will be displayed when the player enters the region for the 1st time)  
 ###### Layout Creation
-For each state use a simplex noise (faster, less artifacts than perlin) to subdivide the
+For each region use a simplex noise (faster, less artifacts than perlin) to subdivide the
 
 ###### Add Objects and NPCs
 

@@ -1,4 +1,4 @@
-class Square(object):
+class Tile(object):
     def __init__(s, noise_value, low_ent, top_ent):
         s.low_ent = low_ent
         s.top_ent = top_ent

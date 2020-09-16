@@ -8,7 +8,8 @@ from utils import *
 
 
 class GameHandler(object):
-    def __init__(s, stdscr, seed=0):
+    def __init__(s, seed=0):
+        random.seed(seed)
         s.map_handler = MapHandler(seed)
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
@@ -18,7 +19,7 @@ class GameHandler(object):
             'fps': 4,
             'target_resolution': Pos(x=1800, y=1000),
             'hud_width_px': 200,
-            'square_size': 32,
+            'tile_size': 32,
             'borders_width': 2,
         }
         s.cli_handler = PyGameDisplay(s.display_config)

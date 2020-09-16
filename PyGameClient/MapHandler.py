@@ -11,7 +11,6 @@ from MapGenerator.MapGenerator import MapGenerator
 
 class MapHandler(object):
     def __init__(s, seed=0):
-        random.seed(seed)
         s.map = []
         s.simplex = OpenSimplex(seed)
         s.noise_scale = 5
@@ -37,7 +36,7 @@ class MapHandler(object):
         s.view_target = s.player_pos
 
     def get_player(s):
-        return s.get_square_from_pos(s.player_pos)
+        return s.get_tile_from_pos(s.player_pos)
 
     def load_map_from_json(s, map_name):
         with open(f"./maps/{map_name}.map", 'r') as f:
@@ -62,23 +61,23 @@ class MapHandler(object):
         # Create null
         if c == ' ': return
         # Create wall
-        if c == 'w': return Square(noise_value, None, Entity('wall', True))
+        if c == 'w': return Tile(noise_value, None, Entity('wall', True))
         # Create grass
-        if c == 'g': return Square(noise_value, Entity('grass', False), None)
+        if c == 'g': return Tile(noise_value, Entity('grass', False), None)
         # Create water
-        if c == 'l': return Square(noise_value, Entity('water', True), None)
+        if c == 'l': return Tile(noise_value, Entity('water', True), None)
         # Create default floor
         floor = Entity('floor', False)
         # Create floor
-        if c == 'f': return Square(1 - noise_value, floor, None)
+        if c == 'f': return Tile(1 - noise_value, floor, None)
         ### Living entities ###
         # Create player
-        if c == 'p': return Square(noise_value, floor, Player('player', True))
+        if c == 'p': return Tile(noise_value, floor, Player('player', True))
         # Create enemy
-        if c == 'e': return Square(noise_value, floor, Enemy('enemy', True))
-        exit_error("Invalid map file, unknown repracter: " + c)
+        if c == 'e': return Tile(noise_value, floor, Enemy('enemy', True))
+        exit_error("Invalid map file, unknown character: " + c)
 
-    def get_square_from_pos(s, y, x=None):
+    def get_tile_from_pos(s, y, x=None):
         if x: return s.map[y][x]
         else: return s.map[y.y][y.x]  # Yeah... no overloading in python...
 
@@ -91,11 +90,11 @@ class MapHandler(object):
 
     def move_entity_absolute(s, from_p, to):
         if not s.is_valid_pos(from_p) or not s.is_valid_pos(to): return  # Bound check
-        if not s.get_square_from_pos(from_p) or not s.get_square_from_pos(to): return  # Void check
-        from_square = s.get_square_from_pos(from_p)
-        next_square = s.get_square_from_pos(to)
-        if next_square and next_square.is_free():
-            s.set_top_ent_to_pos(from_square.top_ent, to)
+        if not s.get_tile_from_pos(from_p) or not s.get_tile_from_pos(to): return  # Void check
+        from_tile = s.get_tile_from_pos(from_p)
+        next_tile = s.get_tile_from_pos(to)
+        if next_tile and next_tile.is_free():
+            s.set_top_ent_to_pos(from_tile.top_ent, to)
             s.set_top_ent_to_pos(None, from_p)
             return True
 
