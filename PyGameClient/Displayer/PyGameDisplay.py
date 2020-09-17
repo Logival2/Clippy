@@ -74,18 +74,23 @@ class PyGameDisplay(object):
                 if tile:
                     types = tile.get_types()
                     pos = Pos(x=shift_x + x_idx, y=term_y_idx)
-                    noise_value = tile.noise_value
-                    if types[1]: s.display_entity(types[1], pos, noise_value)
-                    if types[0]: s.display_entity(types[0], pos, noise_value)
+                    # Lower entity
+                    if types[1]: s.display_entity(tile.low_ent, tile.noise_value, pos)
+                    # Top entity
+                    if types[0]: s.display_entity(tile.top_ent, tile.noise_value, pos)
             map_y_idx += 1
 
-    def display_entity(s, ent_type, pos, noise_value):
+    def display_entity(s, ent, noise_value, pos):
         """ Get an entity type, position and the noise value assigned to this position
         (computed server side) and draws it"""
         name = 'fallback'
         img_idx = 0
-        if ent_type in s.images.keys():
-            name = ent_type
+        if not ent: return
+        if ent.type != 'player' and ent.type != 'fallback':
+            name = f'{ent.region}_{ent.type}'
+        else:
+            name = ent.type
+        if name in s.images.keys():
             img_idx = int(noise_value * IMAGES[name][0])
         s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_tuple())
 

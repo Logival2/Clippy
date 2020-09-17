@@ -10,19 +10,29 @@ from utils import *
 class GameHandler(object):
     def __init__(s, seed=0):
         random.seed(seed)
-        s.map_handler = MapHandler(seed)
-        s.start_time = time.time()
-        s.hud_infos = OrderedDict()
-        s.hud_infos["score"] = 0
-        s.hud_infos["time"] = int(time.time() - s.start_time)
-        s.display_config = {
+        ### MAP ###
+        map_config = {
+            'map_size': 20,
+            'chunk_size': 20,
+            'seed': seed,
+            'noise_scale': 5,
+        }
+        s.map_handler = MapHandler(map_config)
+        ### DISPLAY ###
+        display_config = {
             'fps': 4,
             'target_resolution': Pos(x=1800, y=1000),
             'hud_width_px': 200,
             'tile_size': 32,
             'borders_width': 2,
         }
-        s.cli_handler = PyGameDisplay(s.display_config)
+        s.cli_handler = PyGameDisplay(display_config)
+        ### HUD ###
+        s.start_time = time.time()
+        s.hud_infos = OrderedDict()
+        s.hud_infos["score"] = 0
+        s.hud_infos["time"] = int(time.time() - s.start_time)
+        ### MOVEMENTS ###
         s.avail_inputs = {
             'UP': Pos(-1, 0),
             'DOWN': Pos(1, 0),

@@ -35,8 +35,8 @@ The ticker stops at the designated "years" value, at which point the world can b
 ```
 
 #### Dimensions:
-Smallest unit = the Tile  
-Chunks size = 128 * 128 tiles  
+Smallest unit = the Tile, defined by its pos relative to the chunk's anchor  
+Chunks size = 128 * 128 tiles, defined by its top left corner (anchor)  
 Map size = 1024 * 1024 chunks  
 Total = 131_072 * 131_072 tiles  
 (17_179_869_184 tiles)

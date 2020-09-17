@@ -33,14 +33,15 @@ class Tile(object):
         return (None, s.low_ent.type)
 
 class Entity(object):
-    def __init__(s, type, is_collider):
+    def __init__(s, type, is_collider, region=0):
         s.type = type
         s.is_collider = is_collider
+        s.region = region
 
 # Alive entities
 class LivingEntity(Entity):
-    def __init__(s, type, is_collider, name="default_name"):
-        super(LivingEntity, s).__init__(type, is_collider)
+    def __init__(s, type, is_collider, region=0, name="default_name"):
+        super(LivingEntity, s).__init__(type, is_collider, region)
         s.name = name
 
 
