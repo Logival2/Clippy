@@ -49,22 +49,36 @@ class MapGenerator(object):
                                         x=tile_pos.x / s.config['noise_scale'],
                                         y=tile_pos.y / s.config['noise_scale'])
                 noise_value = (noise_value + 1) / 2  # To get a value between 0 and 1
-                if random.randint(0, 3):
+                value = random.randint(0, 5)
+                if value == 0:
+                    tmp_line.append(Tile(
+                                    noise_value,
+                                    None,
+                                    Entity('wall', True, s.get_pos_region(tile_pos))))
+                elif value == 1:
                     tmp_line.append(Tile(
                                         1 - noise_value,
-                                        Entity('floor', False, s.get_pos_region(tile_pos)),
+                                        Entity('grass', False, s.get_pos_region(tile_pos)),
+                                        None))
+                elif value == 2:
+                    tmp_line.append(Tile(
+                                        1 - noise_value,
+                                        Entity('water', True, s.get_pos_region(tile_pos)),
                                         None))
                 else:
                     tmp_line.append(Tile(
-                                        noise_value,
-                                        None,
-                                        Entity('wall', True, s.get_pos_region(tile_pos))))
+                                    1 - noise_value,
+                                    Entity('floor', False, s.get_pos_region(tile_pos)),
+                                    None))
             chunk.append(tmp_line)
 
         # DEBUGGING, placing player to have something on screen
         middle_x = anchor_pos.x + s.config['chunk_size'] // 2
         middle_y = anchor_pos.y + s.config['chunk_size'] // 2
-        chunk[middle_y][middle_x].top_ent = Player('player', True)
+        chunk[middle_y][middle_x] = Tile(
+                                        0.7,
+                                        Entity('floor', False, s.get_pos_region(Pos(x=middle_x, y=middle_y))),
+                                        Player('player', True))
 
         return chunk
 

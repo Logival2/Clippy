@@ -12,8 +12,8 @@ class GameHandler(object):
         random.seed(seed)
         ### MAP ###
         map_config = {
-            'map_size': 20,
-            'chunk_size': 20,
+            'map_size': 64,
+            'chunk_size': 64,
             'seed': seed,
             'noise_scale': 5,
         }

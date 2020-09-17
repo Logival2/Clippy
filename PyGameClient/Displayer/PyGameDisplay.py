@@ -86,12 +86,12 @@ class PyGameDisplay(object):
         name = 'fallback'
         img_idx = 0
         if not ent: return
-        if ent.type != 'player' and ent.type != 'fallback':
+        if ent.type not in IMAGES.keys():
             name = f'{ent.region}_{ent.type}'
         else:
             name = ent.type
         if name in s.images.keys():
-            img_idx = int(noise_value * IMAGES[name][0])
+            img_idx = int(noise_value * len(s.images[name]))
         s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_tuple())
 
     def draw_hud(s, info_list):
@@ -169,32 +169,51 @@ class PyGameDisplay(object):
         if keys[K_DOWN] or keys[K_s]: res.append('DOWN')
         return res
 
-    def load_available_images(s, delta):
+    def load_available_images(s, sprite_size):
         """ Load the master image with all the sprites, and extract each small one,
         create its rotated versions if specified """
-        master_img = pygame.image.load(f'Displayer/images/{delta}px.png')
-        # For each image family (type) defined in config
-        for y_idx, image_item in enumerate(IMAGES.items()):
-            tmp_type_images = []
-            # For each item of a specific family
-            for x_idx in range(image_item[1][0]):
-                # Load the item from the master image (which contains all the sprites)
-                subsurface = master_img.subsurface((x_idx * delta, y_idx * delta, delta, delta))
-                # Scale it to the tile size
-                subsurface = pygame.transform.scale(subsurface, (s.tile_size, s.tile_size))
-                # Transform it to a pygame friendly format (quicker drawing)
-                subsurface.convert()
-                tmp_type_images.append(subsurface)
-            # If rotation is activated for this family of sprites, create and load
-            # all rotated versions
-            if image_item[1][1]:
-                rotations = []
-                for image in tmp_type_images:
-                    for angle in [90, 180, 270]:
-                        rotations.append(pygame.transform.rotate(image, angle))
-                tmp_type_images += rotations
-                image_item[1][0] *= 4
-            s.images[image_item[0]] = tmp_type_images
+        master_img = pygame.image.load(f'Displayer/images/{sprite_size}px.png')
+        y_idx = 0
+        # Load the non region specific sprites first (player etc)
+        # which are defined in IMAGES (config.py)
+        for image_item in IMAGES.items():
+            s.load_image_line(master_img, sprite_size, y_idx, image_item)
+            y_idx += 1
+        # Now load region specific sprites (which change depending on the region)
+        # defined in regions_nbr (config.py)
+        # The prefix argument is needed to add the region to the asset (region 1 -> 1_ + spriteName)
+        # WARNING: The number of regions (5) is fixed here!
+        for region in range(5):
+            for image_item in REGIONS_IMAGES.items():
+                s.load_image_line(master_img, sprite_size, y_idx, image_item, f'{region}_')
+                y_idx += 1
+
+    def load_image_line(s, master_img, sprite_size, y_idx, image_item, prefix=''):
+        """ Adds an image family (if multiples sprites are defined for an entity) """
+        tmp_type_images = []
+        # For each item of a specific family
+        for x_idx in range(image_item[1][0]):
+            # Load the item from the master image (which contains all the sprites)
+            subsurface = master_img.subsurface((
+                                            x_idx * sprite_size,
+                                            y_idx * sprite_size,
+                                            sprite_size, sprite_size))
+            # Scale it to the tile size
+            subsurface = pygame.transform.scale(subsurface, (s.tile_size, s.tile_size))
+            # Transform it to a pygame friendly format (quicker drawing)
+            subsurface.convert()
+            tmp_type_images.append(subsurface)
+        # If rotation is activated for this family of sprites, create and load
+        # all rotated versions
+        if image_item[1][1]:
+            rotations = []
+            for image in tmp_type_images:
+                for angle in [90, 180, 270]:
+                    rotations.append(pygame.transform.rotate(image, angle))
+            tmp_type_images += rotations
+        name = prefix + image_item[0]
+        print(f'Added sprite {name}')
+        s.images[name] = tmp_type_images
 
     def handle_sleep(s):
         """ Maintains the framerate """
