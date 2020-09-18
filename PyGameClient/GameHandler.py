@@ -20,7 +20,7 @@ class GameHandler(object):
         s.map_handler = MapHandler(map_config)
         ### DISPLAY ###
         display_config = {
-            'fps': 4,
+            'fps': 8,
             'target_resolution': Pos(x=1800, y=1000),
             'hud_width_px': 200,
             'tile_size': 32,
