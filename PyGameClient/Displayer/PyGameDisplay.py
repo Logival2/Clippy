@@ -93,6 +93,9 @@ class PyGameDisplay(object):
         if name in s.images.keys():
             img_idx = int(noise_value * len(s.images[name]))
         s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_tuple())
+        mask_with_alpha = s.images['mask'][0]
+        # mask_with_alpha.set_alpha(noise_value * 127)
+        # s.display.blit(mask_with_alpha, (pos * s.tile_size).get_tuple())
 
     def draw_hud(s, info_list):
         hud_text_x_start = (3 + s.map_tiles_nbr.x) * s.tile_size

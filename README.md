@@ -35,7 +35,7 @@ The ticker stops at the designated "years" value, at which point the world can b
 ```
 
 #### Dimensions:
-Smallest unit = the Tile, defined by its pos relative to the chunk's anchor  
+Smallest unit = the Tile, defined by its position relative to the chunk's anchor  
 Chunks size = 128 * 128 tiles, defined by its top left corner (anchor)  
 Map size = 1024 * 1024 chunks  
 Total = 131_072 * 131_072 tiles  
@@ -43,31 +43,35 @@ Total = 131_072 * 131_072 tiles
 
 The MapHandler class should handle the chunk loading based on the players positions:
 if already generated, load from disk, otherwise generate it.  
-Chunks which have been generated during the session and are deloaded (player is leaving the area) must be written to disk    
+Chunks which have been generated during the session and are de-loaded (player is leaving the area) must be written to disk    
 
 #### Regions (biomes)
 For Regions: [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)  
 
-5 Regions (equivalent to a minecraft biome) with a specific civilisation each time (kinda like Horizon zero dawn) with each region having:  
-* specific language
-* specific colors
-* specific behaviors?
-* specific animals and ecosystems  
+5 Regions (equivalent to a [minecraft biome type](https://minecraft-fr.gamepedia.com/Biome#Biomes_inutilis.C3.A9s)):
+* Dry/warm -> 0  
+* Snowy/Cold -> 1  
+* Temperate/Lush -> 2  
+* Nether -> 3  
+* Aquatic -> 4 (not accessible at first, maybe add a feature later on with a subaquatic respirator allowing to explore it)  
+
+With a specific civilisation each time (kinda like Horizon zero dawn) with each region having:  
+* Specific language with unicode chars [1]
+* Specific colours (needs to define an interface with the displayers)
+* Specific animals and ecosystems  
+* Specific behaviours?
 
 How big should a region be? Needs playtesting to see how much time is needed per area, and how much time should be spent in each region (fun wise)  
 
-* Desert
-* Snow
-* Plains
-
-#### Layouts
-Each region will then be splitted into **layout types**
-* Big rooms
-* Normal rooms
-* Small rooms
-* Mostly corridors
-* Caves (organic shapes rather than straight corridors)
-* Outside world?
+#### Terrain
+The terrain is then generated to create:
+* Rivers / lakes / oceans
+* Regions blocs subtypes (e.g. forest, plains etc repartition in the 2nd region)
+* Structures:
+    * Big structures: Dungeons / Bases / Cities
+        * When entering the big structures the background turns black
+        * Different substructures layouts?   
+    * Other (small) structures? (Villages etc)
 
 The layout assets will still be defined by the region but will allow for a more varied gameplay
 
@@ -90,19 +94,21 @@ No need to compute the voronoi diagram for the whole map, just need to check for
 7 - Generate a name for the leader / king etc  
 8 - Generate a quick story about the region (will be displayed when the player enters the region for the 1st time)  
 ###### Layout Creation
-For each region use a simplex noise (faster, less artifacts than perlin) to subdivide the
+For each region use a simplex noise (faster, less artefacts than perlin noise) to subdivide the
 
 ###### Add Objects and NPCs
 
 ## Clients
 #### PyGame  
-Other one (main one?) using PyGame  
-visual look must be constrained to a pixel art style for ease of development  
+1st client using PyGame  
+Visual look must be constrained to a pixel art style for ease of development  
+Not aimed at a realistic look  
 Max 16px*16px sprites recommended  
-not aimed at a realistic look  
 
 #### Curses  
-One with a Colored CLI using curses (python wrapper around ncurses)  
-https://jonasjacek.github.io/colors/ for terminal color list  
-Uses Unicode chars for display variety:  
-https://fr.wikipedia.org/wiki/Table_des_caract%C3%A8res_Unicode_(0000-0FFF)  
+Second one? with a Colored CLI using curses (python wrapper around ncurses)  
+Uses Unicode chars for display variety [1]  
+
+## References and ressources
+* [1] [Table des caractères Unicode (0000-0FFF)](https://fr.wikipedia.org/wiki/Table_des_caract%C3%A8res_Unicode_(0000-0FFF))
+* [2] [Terminal color list](https://jonasjacek.github.io/colors/)

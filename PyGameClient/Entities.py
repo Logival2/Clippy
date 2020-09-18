@@ -1,9 +1,13 @@
 class Tile(object):
-    def __init__(s, noise_value, low_ent, top_ent):
+    def __init__(s, noise_value, layout, low_ent, top_ent):
         s.low_ent = low_ent
         s.top_ent = top_ent
+        # Provided to the displayers for consistent variations of sprites
         s.noise_value = noise_value
-
+        # Regions are stored in the Entities
+        # as moving entities can move and need to have their region 'with them'
+        # Layout is however linked to the Tiles themselves, as it only affects the terrain
+        s.layout = layout
         s.is_free_flag = s.is_free()
 
     def is_free(s):

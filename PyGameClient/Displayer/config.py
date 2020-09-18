@@ -12,6 +12,7 @@ IMAGES = {
     'fallback': [1, False],
     'player': [1, False],
     'water': [1, False],
+    'mask': [1, False],
 }
 
 REGIONS_IMAGES = {

@@ -5,28 +5,16 @@ from Displayer.PyGameDisplay import PyGameDisplay
 from MapHandler import MapHandler
 from Entities import *
 from utils import *
+from config import MAP_CONFIG, DISPLAY_CONFIG
 
 
 class GameHandler(object):
-    def __init__(s, seed=0):
-        random.seed(seed)
+    def __init__(s):
+        random.seed(MAP_CONFIG['seed'])
         ### MAP ###
-        map_config = {
-            'map_size': 64,
-            'chunk_size': 64,
-            'seed': seed,
-            'noise_scale': 5,
-        }
-        s.map_handler = MapHandler(map_config)
+        s.map_handler = MapHandler(MAP_CONFIG)
         ### DISPLAY ###
-        display_config = {
-            'fps': 8,
-            'target_resolution': Pos(x=1800, y=1000),
-            'hud_width_px': 200,
-            'tile_size': 32,
-            'borders_width': 2,
-        }
-        s.cli_handler = PyGameDisplay(display_config)
+        s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
         ### HUD ###
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
