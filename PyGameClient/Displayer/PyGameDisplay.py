@@ -92,10 +92,7 @@ class PyGameDisplay(object):
             name = ent.type
         if name in s.images.keys():
             img_idx = int(noise_value * len(s.images[name]))
-        s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_tuple())
-        mask_with_alpha = s.images['mask'][0]
-        # mask_with_alpha.set_alpha(noise_value * 127)
-        # s.display.blit(mask_with_alpha, (pos * s.tile_size).get_tuple())
+        s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_xy())
 
     def draw_hud(s, info_list):
         hud_text_x_start = (3 + s.map_tiles_nbr.x) * s.tile_size
@@ -190,6 +187,7 @@ class PyGameDisplay(object):
             for image_item in REGIONS_IMAGES.items():
                 s.load_image_line(master_img, sprite_size, y_idx, image_item, f'{region}_')
                 y_idx += 1
+        print(f'[+] {sum([len(a) for a in s.images.values()])} images created')
 
     def load_image_line(s, master_img, sprite_size, y_idx, image_item, prefix=''):
         """ Adds an image family (if multiples sprites are defined for an entity) """
@@ -215,7 +213,6 @@ class PyGameDisplay(object):
                     rotations.append(pygame.transform.rotate(image, angle))
             tmp_type_images += rotations
         name = prefix + image_item[0]
-        print(f'Added sprite {name}')
         s.images[name] = tmp_type_images
 
     def handle_sleep(s):
