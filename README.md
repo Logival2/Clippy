@@ -49,10 +49,10 @@ Chunks which have been generated during the session and are de-loaded (player is
 For Regions: [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)  
 
 5 Regions (equivalent to a [minecraft biome type](https://minecraft-fr.gamepedia.com/Biome#Biomes_inutilis.C3.A9s)):
-* Dry/warm -> 0  
-* Snowy/Cold -> 1  
-* Temperate/Lush -> 2  
-* Nether -> 3  
+* Desert -> 0  
+* Mountains -> 1  
+* Temperate -> 2  
+* Hell -> 3  
 * Aquatic -> 4 (not accessible at first, maybe add a feature later on with a subaquatic respirator allowing to explore it)  
 
 With a specific civilisation each time (kinda like Horizon zero dawn) with each region having:  
@@ -112,3 +112,4 @@ Uses Unicode chars for display variety [1]
 ## References and ressources
 * [1] [Table des caractères Unicode (0000-0FFF)](https://fr.wikipedia.org/wiki/Table_des_caract%C3%A8res_Unicode_(0000-0FFF))
 * [2] [Terminal color list](https://jonasjacek.github.io/colors/)
+* [3] [Minecraft World generation](https://docs.spongepowered.org/stable/en/plugin/wgen/index.html)

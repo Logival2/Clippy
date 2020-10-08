@@ -14,12 +14,6 @@ class MapHandler(object):
         s.map = []
         s.config = config
         if s.config['chunk_size'] > s.config['map_size']: s.config['chunk_size'] = s.config['map_size']
-        # s.simplex = OpenSimplex(seed)
-        # s.noise_scale = 5
-        # if len(sys.argv) > 1:
-        #     s.load_map_from_json(sys.argv[1])
-        #     s.config['map_size'] = s.get_raw_map_size()
-        # else:
         s.map_generator = MapGenerator(s.config)
         # Debug, get a chunk
         s.map = s.map_generator.get_chunk(Pos(0, 0))
@@ -33,30 +27,9 @@ class MapHandler(object):
             if s.player_pos: break
         if not s.player_pos:
             exit_error("Invalid map file: No player defined")
-        # Ensure that the map is square (padd with None)
-        # for line in s.map:
-        #     line += [None] * (s.config['map_size'].x - len(line))
 
     def get_player(s):
         return s.get_tile_from_pos(s.player_pos)
-
-    # def load_map_from_json(s, map_name):
-    #     with open(f"./maps/{map_name}.map", 'r') as f:
-    #         data = f.read()
-    #     s.load_map_from_string(data)
-    #
-    # def load_map_from_string(s, data):
-    #     raw_map = [l for l in data.split('\n') if l]
-    #     map = []
-    #     for y_idx, line in enumerate(raw_map):
-    #         tmp_line = []
-    #         for x_idx, c in enumerate(line):
-    #             noise_value = s.simplex.noise2d(
-    #                                     x=x_idx / s.noise_scale,
-    #                                     y=y_idx / s.noise_scale)
-    #             noise_value = (noise_value + 1) / 2  # To get a value between 0 and 1
-    #             tmp_line.append(s.create_entity(c, noise_value))
-    #         s.map.append(tmp_line)
 
     def create_entity(s, c, noise_value):
         """Entity Factory, Used when loading from a string map, not used with the map
@@ -97,8 +70,8 @@ class MapHandler(object):
         from_tile = s.get_tile_from_pos(from_p)
         next_tile = s.get_tile_from_pos(to)
         if next_tile and next_tile.is_free():
-            s.set_top_ent_to_pos(from_tile.top_ent, to)
-            s.set_top_ent_to_pos(None, from_p)
+            next_tile.top_ent = from_tile.top_ent
+            from_tile.top_ent = None
             return True
 
     def move_entity_relative(s, from_p, delta):

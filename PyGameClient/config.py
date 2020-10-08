@@ -1,8 +1,9 @@
 from utils import Pos
+from Entities import *
 
 
 DISPLAY_CONFIG = {
-    'fps': 8,
+    'fps': 4,
     'target_resolution': Pos(x=1800, y=1000),
     'hud_width_px': 200,
     'tile_size': 32,
@@ -10,50 +11,48 @@ DISPLAY_CONFIG = {
 }
 
 MAP_CONFIG = {
+    'regions_nbr': 5,
     'map_size': 32,
     'chunk_size': 32,
     'seed': 0,
-    'noise_scale': 5,
-    'layouts': {
-            'Corridors': {
-                'proportion': 1,
-                'room_probability': 10,
-                'mean_room_size': 3,
-                'avg_link_nbr': 90,
-                'range_lower_value': 0,
-                'range_upper_value': 0,
+    'noise_scale': 15,  # Bigger = Zoom in
+    'regions': {
+        'desert': {
+            'water': .05,
+            'sand': .4,
+            'gravel': .5,
+            'grass': .6,
+            'sand': .8,
         },
-            'Small rooms': {
-                'proportion': 2,
-                'room_probability': 50,
-                'mean_room_size': 10,
-                'avg_link_nbr': 50,
-                'range_lower_value': 0,
-                'range_upper_value': 0,
+        'mountain': {
+            'water': .1,
+            'sand': .2,
+            'grass': .5,
+            'stone': 1,
         },
-            'Medium rooms': {
-                'proportion': 2,
-                'room_probability': 50,
-                'mean_room_size': 20,
-                'avg_link_nbr': 50,
-                'range_lower_value': 0,
-                'range_upper_value': 0,
+        'temperate': {
+            'water': .2,
+            'sand': .25,
+            'gravel': .3,
+            'grass': .8,
+            'stone': 1,
         },
-            'Big rooms': {
-                'proportion': 3,
-                'room_probability': 30,
-                'mean_room_size': 30,
-                'avg_link_nbr': 50,
-                'range_lower_value': 0,
-                'range_upper_value': 0,
+        'hell': {
+            'lava': .3,
+            'stone': .4,
+            'gravel': .5,
+            'stone': 1,
         },
-            'Boss': {
-                'proportion': 6,
-                'room_probability': 10,
-                'mean_room_size': 60,
-                'avg_link_nbr': 50,
-                'range_lower_value': 0,
-                'range_upper_value': 0,
+        'ocean': {
+            'water': 1,
         },
     },
+    'blocks': {
+        'grass': Grass,
+        'gravel': Gravel,
+        'lava': Lava,
+        'sand': Sand,
+        'stone': Stone,
+        'water': Water,
+    }
 }
