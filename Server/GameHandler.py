@@ -3,17 +3,14 @@ from collections import OrderedDict
 
 from Displayer.PyGameDisplay import PyGameDisplay
 from GameEngine.Ecs import Ecs
-from MapHandler import MapHandler
 from Entities import *
 from utils import *
-from config import MAP_CONFIG, DISPLAY_CONFIG
+from config import DISPLAY_CONFIG
 
 
 class GameHandler(object):
     def __init__(s):
         random.seed(MAP_CONFIG['seed'])
-        ### MAP ###
-        s.map_handler = MapHandler(MAP_CONFIG)
         ### DISPLAY ###
         s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
         ### HUD ###

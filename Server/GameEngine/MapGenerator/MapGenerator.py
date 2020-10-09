@@ -17,7 +17,6 @@ class MapGenerator(object):
         # with some regions splitted into multiple parts of the map
         s.capitals_positions = []
         s.generate_capitals_positions(int(s.config['regions_nbr'] * 1.5))
-        s.generated_chunks = {}
         # s.compute_layouts_values_ranges()
 
     def get_map(s):
@@ -28,19 +27,6 @@ class MapGenerator(object):
     def save_chunk(s, anchor_pos, chunk):
         """ Saves the chunk (double array of tiles, defined by its anchor pos) to disk"""
         pass
-
-    def get_chunk(s, anchor_pos):
-        """ Get the chunk based on its anchor pos
-        (from anchor_pos to anchor_pos + chunk size)
-        if the chunk has already been generated (in s.generated_chunks) load it from disk
-        otherwise generate it. Those functions return a double array of tiles
-        """
-        if anchor_pos in s.generated_chunks:
-            return None # Load from disk
-        else:
-            chunk = s.generate_chunk(anchor_pos)
-            s.generated_chunks[anchor_pos] = chunk
-            return chunk
 
     def generate_chunk(s, anchor_pos):
         chunk = generate_terrain_chunk(s, anchor_pos)

@@ -7,12 +7,13 @@ from opensimplex import OpenSimplex
 from utils import *
 from Entities import *
 from MapGenerator.MapGenerator import MapGenerator
+from map_config import MAP_CONFIG
 
 
 class MapHandler(object):
-    def __init__(s, config):
+    def __init__(s):
         s.map = []
-        s.config = config
+        s.config = MAP_CONFIG
         if s.config['chunk_size'] > s.config['map_size']: s.config['chunk_size'] = s.config['map_size']
         s.map_generator = MapGenerator(s.config)
         # Debug, get a chunk
@@ -27,31 +28,23 @@ class MapHandler(object):
             if s.player_pos: break
         if not s.player_pos:
             exit_error("Invalid map file: No player defined")
+        s.generated_chunks = {}
+
+    def get_chunk(s, anchor_pos):
+        """ Get the chunk based on its anchor pos
+        (from anchor_pos to anchor_pos + chunk size)
+        if the chunk has already been generated (in s.generated_chunks) load it from disk
+        otherwise generate it. Those functions return a double array of tiles
+        """
+        if anchor_pos in s.generated_chunks:
+            return None # Load from disk
+        else:
+            chunk = s.map_generator.generate_chunk(anchor_pos)
+            s.generated_chunks[anchor_pos] = chunk
+            return chunk
 
     def get_player(s):
         return s.get_tile_from_pos(s.player_pos)
-
-    def create_entity(s, c, noise_value):
-        """Entity Factory, Used when loading from a string map, not used with the map
-        generator """
-        # Create null
-        if c == ' ': return
-        # Create wall
-        if c == 'w': return Tile(noise_value, None, Entity('wall', True))
-        # Create grass
-        if c == 'g': return Tile(noise_value, Entity('grass', False), None)
-        # Create water
-        if c == 'l': return Tile(noise_value, Entity('water', True), None)
-        # Create default floor
-        floor = Entity('floor', False)
-        # Create floor
-        if c == 'f': return Tile(1 - noise_value, floor, None)
-        ### Living entities ###
-        # Create player
-        if c == 'p': return Tile(noise_value, floor, Player('player', True))
-        # Create enemy
-        if c == 'e': return Tile(noise_value, floor, Enemy('enemy', True))
-        exit_error("Invalid map file, unknown character: " + c)
 
     def get_tile_from_pos(s, y, x=None):
         if x: return s.map[y][x]
