@@ -1,8 +1,7 @@
 import time
 from collections import OrderedDict
 
-from Displayers.CliDisplay import CliDisplay
-from Displayers.PyGame.PyGameDisplay import PyGameDisplay
+from Displayer.PyGameDisplay import PyGameDisplay
 from GameEngine.Ecs import Ecs
 from MapHandler import MapHandler
 from Entities import *
