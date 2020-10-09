@@ -1,16 +1,9 @@
 
-class __ECS(object):
-    _instance = None
-
+class Ecs(object):
     def __init__(self):
         self.components = {}
         self.updates = []
         self.entity = 0
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = object.__new__(cls, *args, **kwargs)
-        return cls._instance
 
     def new_entity(self):
         self.entity += 1
@@ -34,9 +27,7 @@ class __ECS(object):
             function()
 
 
-class Ecs(__ECS):
-    pass
-
+ecs = Ecs()
 
 if __name__ == '__main__':
     ecs = Ecs()
