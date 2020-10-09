@@ -34,12 +34,12 @@ class __ECS(object):
             function()
 
 
-class ECS(__ECS):
+class Ecs(__ECS):
     pass
 
 
 if __name__ == '__main__':
-    ecs = ECS()
+    ecs = Ecs()
 
     ecs.add_component(7, int())
     print(ecs.get_component(int))
