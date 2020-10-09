@@ -17,7 +17,7 @@ class MapGenerator(object):
         # with some regions splitted into multiple parts of the map
         s.capitals_positions = []
         s.generate_capitals_positions(int(s.config['regions_nbr'] * 1.5))
-        s.generated_chunks = []
+        s.generated_chunks = {}
         # s.compute_layouts_values_ranges()
 
     def get_map(s):
@@ -38,19 +38,17 @@ class MapGenerator(object):
         if anchor_pos in s.generated_chunks:
             return None # Load from disk
         else:
-            return s.generate_chunk(anchor_pos)
+            chunk = s.generate_chunk(anchor_pos)
+            s.generated_chunks[anchor_pos] = chunk
+            return chunk
 
     def generate_chunk(s, anchor_pos):
         chunk = generate_terrain_chunk(s, anchor_pos)
         # chunk = generate_random_chunk(s, anchor_pos)
-
         # DEBUGGING, placing player to have something on screen
         middle_x = anchor_pos.x + s.config['chunk_size'] // 2
         middle_y = anchor_pos.y + s.config['chunk_size'] // 2
-        chunk[middle_y][middle_x] = Tile(
-                                        0.7,
-                                        Grass(.5, 0),
-                                        Player('player', True))
+        chunk[middle_y][middle_x].top_ent = Player('player', True)
         return chunk
 
     def get_pos_region(s, tile_pos):

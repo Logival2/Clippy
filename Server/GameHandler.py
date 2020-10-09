@@ -1,22 +1,26 @@
 import time
 from collections import OrderedDict
 
-from Displayers.CliDisplay import CliDisplay
-from Displayers.PyGame.PyGameDisplay import PyGameDisplay
+from Displayer.PyGameDisplay import PyGameDisplay
 from MapHandler import MapHandler
 from Entities import *
 from utils import *
+from config import MAP_CONFIG, DISPLAY_CONFIG
 
 
 class GameHandler(object):
-    def __init__(s, stdscr, seed=0):
-        s.map_handler = MapHandler(seed)
+    def __init__(s):
+        random.seed(MAP_CONFIG['seed'])
+        ### MAP ###
+        s.map_handler = MapHandler(MAP_CONFIG)
+        ### DISPLAY ###
+        s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
+        ### HUD ###
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
         s.hud_infos["score"] = 0
         s.hud_infos["time"] = int(time.time() - s.start_time)
-        # s.cli_handler = CliDisplay(stdscr, fps=10)
-        s.cli_handler = PyGameDisplay(fps=4, target_resolution=Pos(x=1800, y=1000))
+        ### MOVEMENTS ###
         s.avail_inputs = {
             'UP': Pos(-1, 0),
             'DOWN': Pos(1, 0),
@@ -35,6 +39,8 @@ class GameHandler(object):
         return
 
     def handle_inputs(s):
+        """ Exit if needed, otherwise try to execute the first move, if not successful (collision)
+        try the next one etc, otherwise return """
         player_inputs = s.cli_handler.get_inputs()
         if not player_inputs: return
         if "EXIT" in player_inputs: exit()

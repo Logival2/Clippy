@@ -43,6 +43,10 @@ class Pos(object):
     def get_xy(s):
         return (s.x, s.y)
 
+    def __hash__(s):
+        ### WARNING, THE HASH SHOULD NEVER CHANGE DURING LIFETIME ###
+        return hash(f'{s.y}|{s.x}')
+
 
 def exit_error(msg):
     print(msg)

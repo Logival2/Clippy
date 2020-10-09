@@ -20,6 +20,9 @@ class Pos(object):
     def __floordiv__(s, factor):
         return Pos(s.y // factor, s.x // factor)
 
+    def __truediv__(s, factor):
+        return Pos(s.y / factor, s.x / factor)
+
     def __repr__(s):
         return f"Pos y={s.y}/x={s.x}"
 
@@ -37,8 +40,12 @@ class Pos(object):
             return Pos(s.y * other.y, s.x * other.x)
         return Pos(s.y * other, s.x * other)
 
-    def get_tuple(s):
+    def get_xy(s):
         return (s.x, s.y)
+
+    def __hash__(s):
+        ### WARNING, THE HASH SHOULD NEVER CHANGE DURING LIFETIME ###
+        return hash(f'{s.y}|{s.x}')
 
 
 def exit_error(msg):

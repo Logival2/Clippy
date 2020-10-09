@@ -1,29 +1,15 @@
-class Square(object):
+class Tile(object):
     def __init__(s, noise_value, low_ent, top_ent):
         s.low_ent = low_ent
         s.top_ent = top_ent
+        # Provided to the displayers for consistent variations of sprites
         s.noise_value = noise_value
-
-        s.is_free_flag = s.is_free()
+        # Regions are stored in the Entities
+        # as moving entities can move and need to have their region 'with them'
+        # Layout is however linked to the Tiles themselves, as it only affects the terrain
 
     def is_free(s):
-        s.is_free_flag = False
-        if not s.top_ent or not s.top_ent.is_collider:
-            if not s.low_ent or not s.low_ent.is_collider:
-                s.is_free_flag = True
-        return s.is_free_flag
-
-    def get_colors(s):
-        if s.top_ent:
-            if s.top_ent.bg_color == -1:  # If top ent has a transparent background
-                return (s.top_ent.fg_color, s.low_ent.bg_color)
-            return (s.top_ent.fg_color, s.top_ent.bg_color)
-        return (s.low_ent.fg_color, s.low_ent.bg_color)
-
-    def get_char(s):
-        if s.top_ent:
-            return s.top_ent.repr_char
-        return s.low_ent.repr_char
+        if not s.top_ent: return True
 
     def get_types(s):
         if s.top_ent and s.low_ent:
@@ -33,16 +19,15 @@ class Square(object):
         return (None, s.low_ent.type)
 
 class Entity(object):
-    def __init__(s, type, is_collider):
+    def __init__(s, type, region=0):
         s.type = type
-        s.is_collider = is_collider
+        s.region = region
 
 # Alive entities
 class LivingEntity(Entity):
-    def __init__(s, type, is_collider, name="default_name"):
-        super(LivingEntity, s).__init__(type, is_collider)
+    def __init__(s, type, region, name="default_name"):
+        super(LivingEntity, s).__init__(type, region)
         s.name = name
-
 
 class Player(LivingEntity):
     pass
@@ -50,3 +35,28 @@ class Player(LivingEntity):
 
 class Enemy(LivingEntity):
     pass
+
+### BLOCKS ###
+class Grass(Entity):
+    def __init__(self, noise_value, region):
+        super(Grass, self).__init__('grass', region)
+
+class Gravel(Entity):
+    def __init__(self, noise_value, region):
+        super(Gravel, self).__init__('gravel', region)
+
+class Lava(Entity):
+    def __init__(self, noise_value, region):
+        super(Lava, self).__init__('lava', region)
+
+class Sand(Entity):
+    def __init__(self, noise_value, region):
+        super(Sand, self).__init__('sand', region)
+
+class Stone(Entity):
+    def __init__(self, noise_value, region):
+        super(Stone, self).__init__('stone', region)
+
+class Water(Entity):
+    def __init__(self, noise_value, region):
+        super(Water, self).__init__('water', region)
