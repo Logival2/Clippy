@@ -5,8 +5,8 @@ from opensimplex import OpenSimplex
 
 from utils import Pos
 from Entities import *
-from MapGenerator.generate_random_chunk import generate_random_chunk
-from MapGenerator.generate_terrain_chunk import generate_terrain_chunk
+from . import generate_random_chunk
+from . import generate_terrain_chunk
 
 
 class MapGenerator(object):
@@ -29,7 +29,7 @@ class MapGenerator(object):
         pass
 
     def generate_chunk(s, anchor_pos):
-        chunk = generate_terrain_chunk(s, anchor_pos)
+        chunk = generate_terrain_chunk.generate_terrain_chunk(s, anchor_pos)
         # chunk = generate_random_chunk(s, anchor_pos)
         # DEBUGGING, placing player to have something on screen
         middle_x = anchor_pos.x + s.config['chunk_size'] // 2

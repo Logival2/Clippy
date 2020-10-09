@@ -1,4 +1,4 @@
-from MapHandler import MapHandler
+from GameEngine.MapHandler import MapHandler
 
 
 class Ecs(object):

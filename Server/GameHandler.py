@@ -10,7 +10,6 @@ from config import DISPLAY_CONFIG
 
 class GameHandler(object):
     def __init__(s):
-        random.seed(MAP_CONFIG['seed'])
         ### DISPLAY ###
         s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
         ### HUD ###
@@ -39,7 +38,7 @@ class GameHandler(object):
         s.hud_infos["time"] = int(time.time() - s.start_time)
 
     def handle_display(s):
-        s.cli_handler.draw(s.map_handler, s.hud_infos)
+        s.cli_handler.draw(s.ecs.map_handler, s.hud_infos)
 
     def handle_ia(s):
         return
@@ -52,6 +51,6 @@ class GameHandler(object):
         if "EXIT" in player_inputs: exit()
         for player_input in player_inputs:
             if player_input in s.avail_inputs.keys():
-                if s.map_handler.move_entity_relative(s.map_handler.player_pos, s.avail_inputs[player_input]):
-                    s.map_handler.player_pos += s.avail_inputs[player_input]
+                if s.ecs.map_handler.move_entity_relative(s.ecs.map_handler.player_pos, s.avail_inputs[player_input]):
+                    s.ecs.map_handler.player_pos += s.avail_inputs[player_input]
                     break

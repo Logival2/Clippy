@@ -6,18 +6,20 @@ from opensimplex import OpenSimplex
 
 from utils import *
 from Entities import *
-from MapGenerator.MapGenerator import MapGenerator
-from map_config import MAP_CONFIG
+from GameEngine.MapGenerator import MapGenerator
+from GameEngine.map_config import MAP_CONFIG
 
 
 class MapHandler(object):
     def __init__(s):
         s.map = []
         s.config = MAP_CONFIG
+        random.seed(MAP_CONFIG['seed'])
         if s.config['chunk_size'] > s.config['map_size']: s.config['chunk_size'] = s.config['map_size']
-        s.map_generator = MapGenerator(s.config)
+        s.map_generator = MapGenerator.MapGenerator(s.config)
+        s.generated_chunks = {}
         # Debug, get a chunk
-        s.map = s.map_generator.get_chunk(Pos(0, 0))
+        s.map = s.get_chunk(Pos(0, 0))
         # Check if player exists
         s.player_pos = None
         for y, line in enumerate(s.map):
@@ -28,7 +30,6 @@ class MapHandler(object):
             if s.player_pos: break
         if not s.player_pos:
             exit_error("Invalid map file: No player defined")
-        s.generated_chunks = {}
 
     def get_chunk(s, anchor_pos):
         """ Get the chunk based on its anchor pos
