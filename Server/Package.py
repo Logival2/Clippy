@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Defines a connection class that handles low-level networking logic
-"""
-import time
-import trio
 from Event import Event
 from Utils.Seq import Seq
 from Utils.Comparable import Comparable
@@ -110,3 +105,20 @@ class Package(Comparable):
             block.extend(len(serialized).to_bytes(2, "big"))
             block.extend(serialized)
         return block
+
+    @classmethod
+    def fromBytes(cls, datagram: bytes) -> "Package":
+        header, payload = Header.deconstructDatagram(datagram)
+        events = cls.__readEventsBlock(payload)
+        result = cls(header, events)
+        result.__datagram = datagram
+        return result
+
+    @staticmethod
+    def __readEventsBlock(block: bytes) -> list:
+        events = []
+        while block:
+            size = int.from_bytes(block[:2], "big")
+            events.append(Event.fromBytes(block[2: size + 2]))
+            block = block[size + 2:]
+        return events
