@@ -5,7 +5,7 @@ from os.path import isfile, join
 import pygame
 from pygame.locals import *
 
-from utils import Pos
+from utils import Pos, exit_error
 from Displayer.config import *
 
 
@@ -13,6 +13,7 @@ class PyGameDisplay(object):
     def __init__(s, config):
         ### Pygame related ###
         pygame.init()
+        s.config = config
         s.tile_size = config['tile_size']
         s.borders_width = config['borders_width']
         # Based on the tile size (px), ensure that the final resolution makes for an even
@@ -38,11 +39,8 @@ class PyGameDisplay(object):
         ### ASSETS ###
         # s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
         s.font = pygame.font.Font('Displayer/fonts/Everson_Mono.ttf', 24)
-        s.images = {}
-        s.load_available_images(16)
-
-    def __del__(s):
-        pygame.quit()
+        s.sprites = {}
+        s.load_available_sprites(16)
 
     def draw(s, map_handler, info_list):
         s.display.fill(BLACK)
@@ -83,16 +81,11 @@ class PyGameDisplay(object):
     def display_entity(s, ent, noise_value, pos):
         """ Get an entity type, position and the noise value assigned to this position
         (computed server side) and draws it"""
-        name = 'fallback'
-        img_idx = 0
         if not ent: return
-        if ent.type not in IMAGES.keys():
-            name = f'{ent.region}_{ent.type}'
-        else:
-            name = ent.type
-        if name in s.images.keys():
-            img_idx = int(noise_value * len(s.images[name]))
-        s.display.blit(s.images[name][img_idx], (pos * s.tile_size).get_xy())
+        if ent.type not in s.sprites.keys():
+            exit_error(f'[-] Texture not found: {ent.type}')
+        sprite_idx = int(noise_value * len(s.sprites[ent.type]))
+        s.display.blit(s.sprites[ent.type][sprite_idx], (pos * s.tile_size).get_xy())
 
     def draw_hud(s, info_list):
         hud_text_x_start = (3 + s.map_tiles_nbr.x) * s.tile_size
@@ -100,12 +93,12 @@ class PyGameDisplay(object):
         text_surface = s.font.render('CLIPPY', False, WHITE)
         s.display.blit(text_surface, (hud_text_x_start, s.tile_size * 2))
         # Draw informations
-        y_idx = 4
+        y_idx = 5
         for key, value in info_list.items():
             final_str = f"{key}: {value}" if value != None else f"{key}"
             text_surface = s.font.render(final_str, False, WHITE)
             s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
-            y_idx += 1
+            y_idx += 2
 
     def draw_borders(s):
         # Top border
@@ -140,7 +133,7 @@ class PyGameDisplay(object):
                                 (x, s.tile_size),
                                 (x, s.screen_size.y - s.tile_size))
         # Top HUD border
-        hud_line_y_start = s.tile_size * 3 + s.tile_size // 2
+        hud_line_y_start = s.tile_size * 4 + s.tile_size // 2
         for y in range(hud_line_y_start, hud_line_y_start + s.borders_width):
             pygame.draw.line(s.display, WHITE,
                                 (hud_x_start + s.tile_size, y),
@@ -155,6 +148,8 @@ class PyGameDisplay(object):
 
     def get_inputs(s):
         """ Convert PyGame inputs into the formatted ones """
+        # TODO: IF A KEY IF MAINTAINED (GO UP) AND THE PLAYER PRESSES A NEW DIRECTION, THE NEW
+        # DIRECTION SHOULD BE USED
         for event in pygame.event.get():
             if event.type == QUIT:
                 return ['EXIT']
@@ -169,51 +164,30 @@ class PyGameDisplay(object):
         if keys[K_DOWN] or keys[K_s]: res.append('DOWN')
         return res
 
-    def load_available_images(s, sprite_size):
-        """ Load the master image with all the sprites, and extract each small one,
-        create its rotated versions if specified """
-        master_img = pygame.image.load(f'Displayer/images/{sprite_size}px.png')
-        y_idx = 0
-        # Load the non region specific sprites first (player etc)
-        # which are defined in IMAGES (config.py)
-        for image_item in IMAGES.items():
-            s.load_image_line(master_img, sprite_size, y_idx, image_item)
-            y_idx += 1
-        # Now load region specific sprites (which change depending on the region)
-        # defined in regions_nbr (config.py)
-        # The prefix argument is needed to add the region to the asset (region 1 -> 1_ + spriteName)
-        # WARNING: The number of regions (5) is fixed here!
-        for region in range(5):
-            for image_item in REGIONS_IMAGES.items():
-                s.load_image_line(master_img, sprite_size, y_idx, image_item, f'{region}_')
-                y_idx += 1
-        print(f'[+] {sum([len(a) for a in s.images.values()])} images created')
+    def load_available_sprites(s, sprite_size):
+        no_rot_path = 'Displayer/sprites/no_rot_sprites'
+        rot_path = 'Displayer/sprites'
+        # Load sprites with no rotation
+        no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
+        rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]
+        for sprite_name in no_rot_sprites:
+            s.sprites[sprite_name] = [s.load_sprite(no_rot_path, sprite_name)]
+        for sprite_name in rot_sprites:
+            s.sprites[sprite_name] = [s.load_sprite(rot_path, sprite_name)]
+        print(f'[+] {len(s.sprites)} sprites loaded')
+        print(s.sprites.keys())
+        # Now create the rotated version of the sprites which need it
+        for sprite_name in rot_sprites:
+            for angle in [90, 180, 270]:
+                s.sprites[sprite_name].append(pygame.transform.rotate(s.sprites[sprite_name][0], angle))
+        print(f'[+] {sum([len(a) for a in s.sprites.values()])} total sprites after rotations')
 
-    def load_image_line(s, master_img, sprite_size, y_idx, image_item, prefix=''):
-        """ Adds an image family (if multiples sprites are defined for an entity) """
-        tmp_type_images = []
-        # For each item of a specific family
-        for x_idx in range(image_item[1][0]):
-            # Load the item from the master image (which contains all the sprites)
-            subsurface = master_img.subsurface((
-                                            x_idx * sprite_size,
-                                            y_idx * sprite_size,
-                                            sprite_size, sprite_size))
-            # Scale it to the tile size
-            subsurface = pygame.transform.scale(subsurface, (s.tile_size, s.tile_size))
+    def load_sprite(s, path, name):
+            tmp_sprite = pygame.image.load(f'{path}/{name}.png')
             # Transform it to a pygame friendly format (quicker drawing)
-            subsurface.convert()
-            tmp_type_images.append(subsurface)
-        # If rotation is activated for this family of sprites, create and load
-        # all rotated versions
-        if image_item[1][1]:
-            rotations = []
-            for image in tmp_type_images:
-                for angle in [90, 180, 270]:
-                    rotations.append(pygame.transform.rotate(image, angle))
-            tmp_type_images += rotations
-        name = prefix + image_item[0]
-        s.images[name] = tmp_type_images
+            tmp_sprite.convert()
+            # Scale it to the tile size
+            return pygame.transform.scale(tmp_sprite, (s.config['tile_size'], s.config['tile_size']))
 
     def handle_sleep(s):
         """ Maintains the framerate """
@@ -221,5 +195,5 @@ class PyGameDisplay(object):
         if to_sleep > 0:
             pygame.time.wait(int(to_sleep * 1000))
         else:
-            print(f"Lagging {-to_sleep} seconds behind")
+            print(f"Lagging {-to_sleep:.2f} seconds behind")
         s.frame_start = time.time()

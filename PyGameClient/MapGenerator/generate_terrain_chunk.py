@@ -13,18 +13,16 @@ def generate_terrain_chunk(s, anchor_pos):
         tmp_line = []
         for x in range(s.config['chunk_size']):
             tile_pos = Pos(x=anchor_pos.x + x, y=anchor_pos.y + y)
+            noise_value = s.get_simplex_value(tile_pos)
             region = s.get_pos_region(tile_pos)
-            noise_value = s.simplex.noise2d(*(tile_pos / s.config['noise_scale']).get_xy())
-            noise_value = (noise_value + 1) / 2  # To get a value between 0 and 1
-
-            if 0 < noise_value < 0.2:
-                tmp_line.append(Tile(noise_value, Entity('water', True, region), None))
-            elif noise_value < .7:
-                if random.randint(0, 3):
-                    tmp_line.append(Tile(1 - noise_value, Entity('floor', False, region), None))
-                else:
-                    tmp_line.append(Tile(noise_value, Entity('grass', False, region), None))
-            else:
-                tmp_line.append(Tile(noise_value, None, Entity('wall', True, region)))
+            tmp_line.append(get_tile(s, noise_value, region))
         chunk.append(tmp_line)
     return chunk
+
+def get_tile(s, noise_value, region):
+    block_name = ''
+    for tmp_block_name, value in s.config['regions'][region].items():
+        block_name = tmp_block_name
+        if noise_value < value: break
+    low_ent = s.config['blocks'][block_name](noise_value, region)
+    return Tile(noise_value, low_ent, None)

@@ -13,12 +13,11 @@ class MapGenerator(object):
     def __init__(s, config):
         s.config = config
         s.simplex = OpenSimplex(s.config['seed'])
-        s.regions_nbr = 5
         # Create a bit more capitals, to give a more interesting region layout,
         # with some regions splitted into multiple parts of the map
         s.capitals_positions = []
-        s.generate_capitals_positions(int(s.regions_nbr * 1.5))
-        s.generated_chunks = []
+        s.generate_capitals_positions(int(s.config['regions_nbr'] * 1.5))
+        s.generated_chunks = {}
         # s.compute_layouts_values_ranges()
 
     def get_map(s):
@@ -39,7 +38,9 @@ class MapGenerator(object):
         if anchor_pos in s.generated_chunks:
             return None # Load from disk
         else:
-            return s.generate_chunk(anchor_pos)
+            chunk = s.generate_chunk(anchor_pos)
+            s.generated_chunks[anchor_pos] = chunk
+            return chunk
 
     def generate_chunk(s, anchor_pos):
         chunk = generate_terrain_chunk(s, anchor_pos)
@@ -47,10 +48,7 @@ class MapGenerator(object):
         # DEBUGGING, placing player to have something on screen
         middle_x = anchor_pos.x + s.config['chunk_size'] // 2
         middle_y = anchor_pos.y + s.config['chunk_size'] // 2
-        chunk[middle_y][middle_x] = Tile(
-                                        0.7,
-                                        Entity('floor', False, s.get_pos_region(Pos(x=middle_x, y=middle_y))),
-                                        Player('player', True))
+        chunk[middle_y][middle_x].top_ent = Player('player', True)
         return chunk
 
     def get_pos_region(s, tile_pos):
@@ -60,28 +58,8 @@ class MapGenerator(object):
             d = math.hypot(capital_pos.x - tile_pos.x, capital_pos.y - tile_pos.y)
             if d < dmin:
                 dmin = d
-                closest_region_idx = idx % s.regions_nbr
-        return closest_region_idx
-
-    # def get_layout_name_from_noise_value(s, noise_value):
-    #     layout_name = ''
-    #     for l_name, l_data in s.config['layouts'].items():
-    #         if l_data["range_lower_value"] < noise_value < l_data["range_upper_value"]:
-    #             return l_name
-    #
-    # def compute_layouts_values_ranges(s):
-    #     """ Define each range of float values in [0;2] to a specific layout,
-    #     according to the proportions specified in s.config['layouts'][layout_type].
-    #     Will store range values in s.config['layouts'][layout_type] """
-    #     # Noise values range from 0 to 2, divide 2 by the total number
-    #     # of sections to get a single gap value
-    #     total = sum([layout_data["proportion"] for layout_data in s.config['layouts'].values()])
-    #     single_gap = 2 / total
-    #     range_lower_value = 0
-    #     for l_name, l_data in s.config['layouts'].items():
-    #         s.config['layouts'][l_name]["range_lower_value"] = range_lower_value
-    #         range_lower_value = range_lower_value + (l_data["proportion"] * single_gap)
-    #         s.config['layouts'][l_name]["range_upper_value"] = range_lower_value
+                closest_region_idx = idx % s.config['regions_nbr']
+        return list(s.config['regions'].keys())[closest_region_idx]
 
     def generate_capitals_positions(s, capitals_nbr):
         for c in range(capitals_nbr):
@@ -92,3 +70,7 @@ class MapGenerator(object):
             while point_y < 0 or point_y >= s.config['map_size']:
                 point_y = random.randint(0, s.config['map_size'])
             s.capitals_positions.append(Pos(x=point_x, y=point_y))
+
+    def get_simplex_value(s, tile_pos):
+        noise_value = s.simplex.noise2d(*(tile_pos / s.config['noise_scale']).get_xy())
+        return (noise_value + 1) / 2  # To get a value between 0 and 1
