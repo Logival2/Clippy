@@ -1,7 +1,9 @@
 import time
+import queue
 from collections import OrderedDict
 
 from Displayer.PyGameDisplay import PyGameDisplay
+from GameEngine.Networking.client.Network import NetworkManager
 from GameEngine.Components.Keyboard import *
 from GameEngine.Ecs import Ecs
 from Entities import *
@@ -11,6 +13,10 @@ from config import DISPLAY_CONFIG
 
 class GameHandler(object):
     def __init__(s):
+        ### NETWORK ###
+        s.input_queue = queue.Queue()
+        s.outuput_queue = queue.Queue()
+        s.networkManager = NetworkManager(s.input_queue, s.outuput_queue)
         ### DISPLAY ###
         s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
         ### HUD ###
@@ -31,6 +37,8 @@ class GameHandler(object):
         ecs.add_update(s.handle_ia)
         ecs.add_update(s.handle_hud)
         ecs.add_update(s.handle_display)
+
+        s.network_thread = s.networkManager.run()
 
     def init_game(s):
         entity = ecs.new_entity()
