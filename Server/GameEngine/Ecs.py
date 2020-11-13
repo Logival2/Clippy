@@ -13,6 +13,9 @@ class Ecs(object):
         return s.entity
 
     def get_component(s, component, entity=None):
+        if type(component()).__name__ not in s.components:
+            print("No component " + type(component()).__name__ + " stored.")
+            return []
         if entity is None:
             return s.components[type(component()).__name__]
         return next(item for item in s.components[type(component()).__name__] if item["entity"] == entity)
