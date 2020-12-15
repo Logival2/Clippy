@@ -7,3 +7,8 @@ DISPLAY_CONFIG = {
     'tile_size': 32,
     'borders_width': 2,
 }
+
+MAP_PARAMETERS = {
+    # A chunk will be composed of SIZE * SIZE tiles
+    'size': 16,
+}

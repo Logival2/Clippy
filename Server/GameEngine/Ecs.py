@@ -1,4 +1,31 @@
+import time
+
+from GameEngine.Components.Tile import Tile
 from GameEngine.MapHandler import MapHandler
+from config import MAP_PARAMETERS
+
+
+class Chunk(object):
+    def __init__(s):
+        s.tiles = [[]]
+        for x in range(MAP_PARAMETERS["size"]):
+            s.tiles.append([])
+            for y in range(MAP_PARAMETERS["size"]):
+                s.tiles[x].append({})
+
+
+class Map(object):
+    def __init__(s, _ecs):
+        s._ecs = _ecs
+        s.chunks = {}
+        pass
+
+    def get_tile(s, x, y):
+        if x not in s.chunks:
+            s.chunks[x] = {}
+        if y not in s.chunks[x]:
+            s.chunks[x][y] = Tile(0)
+        return s.chunks[x][y]
 
 
 class Ecs(object):
@@ -6,7 +33,10 @@ class Ecs(object):
         s.components = {}
         s.updates = []
         s.entity = 0
+        s.tick = 60
+        s.last_timestamp = int(round(time.time() * 1000))
         s.map_handler = MapHandler()
+        s.map = Map(s)
 
     def new_entity(s):
         s.entity += 1
@@ -18,7 +48,7 @@ class Ecs(object):
             return []
         if entity is None:
             return s.components[type(component()).__name__]
-        return next(item for item in s.components[type(component()).__name__] if item["entity"] == entity)
+        return next(item for item in s.components[type(component()).__name__] if item["entity"] == entity)['component']
 
     def add_component(s, entity, component):
         if type(component).__name__ not in s.components:
@@ -31,14 +61,8 @@ class Ecs(object):
     def update(s):
         for function in s.updates:
             function()
+        time.sleep(max((1000/s.tick - (int(round(time.time() * 1000)) - s.last_timestamp))/1000, 0))
+        s.last_timestamp = int(round(time.time() * 1000))
 
 
 ecs = Ecs()
-
-if __name__ == '__main__':
-    ecs = Ecs()
-
-    ecs.add_component(7, int())
-    print(ecs.get_component(int))
-    ecs.add_update(lambda: print("mesboules"))
-    ecs.update()
