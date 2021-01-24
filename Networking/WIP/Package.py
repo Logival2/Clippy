@@ -38,7 +38,7 @@ class Header(Comparable):
         """returns 12 bytes representing the header"""
         result = bytearray(_PROTOCOL_ID)
         result.extend(self.sequence.toSeqBytes())
-        result.extend(self.ack.toSeqBytes)
+        result.extend(self.ack.toSeqBytes())
         result.extend(int(self.ack_bitfield, 2).to_bytes(4, "big"))
         return result
 
