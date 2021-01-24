@@ -1,6 +1,8 @@
 import time
 from collections import OrderedDict
+import queue
 
+from NetworkManager import NetworkManager
 from Displayer.PyGameDisplay import PyGameDisplay
 from MapHandler import MapHandler
 from Entities import *
@@ -14,7 +16,7 @@ class GameHandler(object):
         ### MAP ###
         s.map_handler = MapHandler(MAP_CONFIG)
         ### DISPLAY ###
-        s.cli_handler = PyGameDisplay(DISPLAY_CONFIG)
+        s.display_m = PyGameDisplay(DISPLAY_CONFIG)
         ### HUD ###
         s.start_time = time.time()
         s.hud_infos = OrderedDict()
@@ -27,21 +29,42 @@ class GameHandler(object):
             'LEFT': Pos(0, -1),
             'RIGHT': Pos(0, 1),
         }
+        ### NETWORK ###
+        s.receive_q = queue.Queue(maxsize=0)
+        s.send_q = queue.Queue(maxsize=0)
+        try:
+            s.network_m = NetworkManager(
+                                'Zodiac',
+                                '127.0.0.1', 65432,
+                                s.receive_q, s.send_q
+                            )
+        except ConnectionRefusedError as e:
+            print(f'Connection to  failed: {e}')
+        else:
+            print(f'Connected to 127.0.0.1:65432')
+        s.send_q.put([1, s.client_id])
+
 
     def launch(s):
         while 42:
+            s.handle_network()
             s.handle_inputs()
             s.handle_ia()
             s.hud_infos["time"] = int(time.time() - s.start_time)
-            s.cli_handler.draw(s.map_handler, s.hud_infos)
+            s.display_m.draw(s.map_handler, s.hud_infos)
 
     def handle_ia(s):
         return
 
+    def handle_network(s):
+        # s.send_q.put([200, s.hud_infos["time"]])
+        while not s.receive_q.empty():
+            print("received:", s.receive_q.get())
+
     def handle_inputs(s):
         """ Exit if needed, otherwise try to execute the first move, if not successful (collision)
         try the next one etc, otherwise return """
-        player_inputs = s.cli_handler.get_inputs()
+        player_inputs = s.display_m.get_inputs()
         if not player_inputs: return
         if "EXIT" in player_inputs: exit()
         for player_input in player_inputs:
