@@ -37,8 +37,9 @@ class GameHandler(object):
                                 s.receive_q, s.send_q,
                                 '127.0.0.1', 65432,
                             )
-        except ConnectionRefusedError as e:
-            print(f'Connection to  failed: {e}')
+            s.network_thread = s.network_m.run()
+        except Exception as e:
+            print(f'Failed networkmanager init: {e}')
         else:
             print(f'Connected to 127.0.0.1:65432')
         # s.send_q.put([1, 'jesuisuntest'])
