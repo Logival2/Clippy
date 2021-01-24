@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import trio
+import pickle
 import threading
 
 
@@ -19,14 +20,14 @@ class NetworkManager(object):
         while self.isRunning:
             data = await trio.to_thread.run_sync(self.outgoingQueue.get)
             print(f"network -- sending '{data}'")
-            await self.stream.send_all(data)
+            await self.stream.send_all(pickle.dumps(data))
 
     async def receiver(self):
         print("network -- receiver started")
         async for data in self.stream:
             if not self.isRunning:
                 return
-            await trio.to_thread.run_sync(self.incomingQueue.put, data)
+            await trio.to_thread.run_sync(self.incomingQueue.put, pickle.loads(data))
         print("network -- receiver: connection closed")
         return
 
