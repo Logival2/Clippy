@@ -34,15 +34,15 @@ class GameHandler(object):
         s.send_q = queue.Queue(maxsize=0)
         try:
             s.network_m = NetworkManager(
-                                'Zodiac',
+                                s.receive_q, s.send_q,
                                 '127.0.0.1', 65432,
-                                s.receive_q, s.send_q
                             )
-        except ConnectionRefusedError as e:
-            print(f'Connection to  failed: {e}')
+            s.network_thread = s.network_m.run()
+        except Exception as e:
+            print(f'Failed networkmanager init: {e}')
         else:
             print(f'Connected to 127.0.0.1:65432')
-        s.send_q.put([1, s.client_id])
+        # s.send_q.put([1, 'jesuisuntest'])
 
 
     def launch(s):
@@ -57,7 +57,7 @@ class GameHandler(object):
         return
 
     def handle_network(s):
-        # s.send_q.put([200, s.hud_infos["time"]])
+        s.send_q.put([200, s.hud_infos["time"]])
         while not s.receive_q.empty():
             print("received:", s.receive_q.get())
 
