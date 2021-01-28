@@ -45,7 +45,7 @@ class GameLoop(object):
     def update(s, map_handler, info_list):
         s.display.fill(BLACK)
         s.draw_borders()
-        s.draw_hud(info_list)
+        # s.draw_hud(info_list)
         # s.draw_map(map_handler)
         # s.draw_grid()  # Useful for debugging
         pygame.display.update()
@@ -94,11 +94,11 @@ class GameLoop(object):
         s.display.blit(text_surface, (hud_text_x_start, s.tile_size * 2))
         # Draw informations
         y_idx = 5
-        # for key, value in info_list.items():
-        #     final_str = f"{key}: {value}" if value != None else f"{key}"
-        #     text_surface = s.font.render(final_str, False, WHITE)
-        #     s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
-        #     y_idx += 2
+        for key, value in info_list.items():
+            final_str = f"{key}: {value}" if value != None else f"{key}"
+            text_surface = s.font.render(final_str, False, WHITE)
+            s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
+            y_idx += 2
 
     def draw_borders(s):
         # Top border

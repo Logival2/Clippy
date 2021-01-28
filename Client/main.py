@@ -7,9 +7,8 @@ from config import *
 
 
 class App(object):
-    def __init__(s, win_size, max_fps):
+    def __init__(s):
         # pygame.init()
-        s.max_fps = max_fps
 
         # s.displayer = Displayer(DISPLAY_CONFIG)
         # s.surface = pygame.display.set_mode(win_size)
@@ -29,9 +28,9 @@ class App(object):
             if not s.active_loop.update(events, s.game_loop.display):
                 s.active_loop = s.game_loop
             pygame.display.update()
-            s.clock.tick(s.max_fps)
+            s.clock.tick(60)
 
 
 if __name__ == '__main__':
-    app = App((1200, 900), 60)
+    app = App()
     app.run()

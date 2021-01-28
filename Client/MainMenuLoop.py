@@ -1,7 +1,10 @@
+from pprint import pprint
+
 import pygame
 import pygame_menu
 
 from config import *
+from utils import is_valid_ipv4_address
 
 
 class MainMenuLoop(object):
@@ -22,39 +25,46 @@ class MainMenuLoop(object):
                             widget_font=pygame_menu.font.FONT_MUNRO,
                             title_font=pygame_menu.font.FONT_MUNRO,
                         )
-        s.main_m = pygame_menu.menu.Menu(
-                                    *win_size.get_xy()[::-1],
-                                    'Clippy',
-                                    theme=s.custom_theme
-                                )
-        s.main_m.add_text_input('Player name: ', default='Player 1')
-        s.main_m.add_vertical_margin(40)
-        # s.main_m.add_label("Enter server info")
-        s.main_m.add_text_input('Server IP: ', default='0.0.0.0', maxchar=16)
-        s.main_m.add_text_input(
-            'Server Port: ', default='1337',
-            maxchar=4, input_type=pygame_menu.locals.INPUT_INT
+        s.m = pygame_menu.Menu(
+            *win_size.get_xy()[::-1],
+            'Clippy',
+            theme=s.custom_theme
         )
-        s.main_m.add_vertical_margin(50)
-        s.main_m.add_button('JOIN', s.join)
-        s.main_m.add_button('QUIT', pygame_menu.events.EXIT)
+        s.m.add_label("Player name:")
+        s.m._widgets[-1]._font_color = GREEN
+        s.m.add_text_input('', default='Player 1')
+        s.m.add_vertical_margin(40)
+        s.m.add_label("Server:")
+        s.m._widgets[-1]._font_color = GREEN
+        s.m.add_text_input('', default='127.0.0.1:1337', maxchar=16)
+        s.m.add_label("Connection Failed!")
+        s.m._widgets[-1]._font_color = BLACK
+        s.m.add_label("Invalid IPv4 adress")
+        s.m._widgets[-1]._font_color = BLACK
+        s.m.add_vertical_margin(10)
+        s.m.add_button('JOIN', s.join)
+        s.m.add_button('QUIT', pygame_menu.events.EXIT)
+        # pprint(dir(s.m._widgets[4]))
 
     def join(s):
+        s.m._widgets[-4]._font_color = BLACK
         # Attempt connection here
-        print("Connecting...")
-        # If connection is successful
-        if 42:
+        ip = s.m._widgets[4]._get_input_string()
+        if not is_valid_ipv4_address(ip):
+            s.m._widgets[-4]._font_color = RED
+            s.m._widgets[-5]._font_color = RED
+            return
+        print("Connecting to", ip)
+        if not 42:  # If connection is successful
             s.is_active = False
         else:
-            s.main_m.add_label("Connection Failed!", label_id='err_con')
-
+            s.m._widgets[-5]._font_color = RED
 
     def update(s, events, surface):
         if not s.is_active:
             return False
-        if s.main_m.is_enabled():
-            s.main_m.update(events)
-            s.main_m.draw(surface)
-            for x in range(0, s.win_size.x, 30):
-                pygame.draw.line(surface, WHITE, (x, 70), (x + 20, 70), 6)
+        if s.m.is_enabled():
+            s.m.update(events)
+            s.m.draw(surface)
+            pygame.draw.line(surface, WHITE, (0, 70), (s.win_size.x, 70), 1)
         return True
