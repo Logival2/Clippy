@@ -5,7 +5,7 @@ import pygame
 import pygame_menu
 
 from config import *
-from utils import is_valid_ipv4_address
+from utils import is_valid_ipv4_address, get_random_nickname
 
 
 class MainMenuLoop(object):
@@ -34,7 +34,7 @@ class MainMenuLoop(object):
             theme=s.custom_theme
         )
         s.m.add_label("Player name:", font_color=GREEN)
-        s.m.add_text_input('', default='Player 1')
+        s.m.add_text_input('', default=get_random_nickname())
         s.m.add_vertical_margin(40)
         s.m.add_label("Server:", font_color=GREEN)
         s.m.add_text_input('', default='127.0.0.1:8080', maxchar=21)
@@ -77,7 +77,6 @@ class MainMenuLoop(object):
         return s.client.player_id is not None
 
     def update(s, events, display):
-        # print(s.m.menubar)
         if not s.is_active:
             return False
         display.fill(BLACK)
@@ -89,10 +88,10 @@ class MainMenuLoop(object):
         return True
 
     def load_sprite(s, path):
-            tmp_sprite = pygame.image.load(path)
-            # Transform it to a pygame friendly format (quicker drawing)
-            tmp_sprite.convert()
-            return tmp_sprite
+            sprite = pygame.image.load(path)
+            # Transform it to a pygame friendly format for quicker drawing
+            sprite.convert()
+            return sprite
 
     def handleBG(s, display):
         display.blit(s.sprites['space'], (s.BGPos, 0))

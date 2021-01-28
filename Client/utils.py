@@ -2,6 +2,12 @@ import time
 import random
 import re
 
+
+def get_random_nickname():
+    words = open("/usr/share/dict/words").read().splitlines()
+    return f'{random.choice(words).capitalize()} {random.choice(words).capitalize()}'
+
+
 def is_valid_ipv4_address(host):
     regex = '''^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
                 25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
