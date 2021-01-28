@@ -37,7 +37,7 @@ class MainMenuLoop(object):
         s.m.add_text_input('', default='Player 1')
         s.m.add_vertical_margin(40)
         s.m.add_label("Server:", font_color=GREEN)
-        s.m.add_text_input('', default='127.0.0.1:1337', maxchar=16)
+        s.m.add_text_input('', default='127.0.0.1:8080', maxchar=21)
         s.m.add_label("Connection Failed!", font_color=TRANSPARENT)
         s.m.add_label("Invalid IPv4 adress", font_color=TRANSPARENT)
         s.m.add_vertical_margin(10)
