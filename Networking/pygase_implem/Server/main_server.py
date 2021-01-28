@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-import math
+import random
 from pygase import GameState, Backend
+import logging
+logging.basicConfig()
+logging.root.setLevel(logging.INFO)
 
 
 class Clippy_Game(object):
@@ -14,7 +17,11 @@ class Clippy_Game(object):
             protection=None,  # wether protection from the chaser is active
             countdown=0.0,  # countdown until protection is lifted
         )
-        self.backend = Backend(self.initial_game_state, self.time_step, event_handlers={"MOVE": self.on_move, "JOIN", self.on_join})
+        self.backend = Backend(
+            self.initial_game_state,
+            self.time_step,
+            event_handlers={"MOVE": self.on_move, "JOIN": self.on_join}
+        )
 
     def time_step(self, game_state, dt):
         # Before a player joins, updating the game state is unnecessary.
@@ -48,7 +55,7 @@ class Clippy_Game(object):
         print(f"{player_name} joined.")
         player_id = len(game_state.players)
         # Notify client that the player successfully joined the game.
-        backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
+        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
         return {
             # Add a new entry to the players dict
             "players": {player_id: {"name": player_name, "position": (random.random() * 640, random.random() * 420)}},
