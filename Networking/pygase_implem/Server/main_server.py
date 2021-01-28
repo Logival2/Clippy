@@ -48,8 +48,9 @@ class Clippy_Game(object):
     def run(self):
         self.backend.run("127.0.0.1", 8080)
 
-    def on_move(self, player_id, new_position, **kwargs):
-        return {"players": {player_id: {"position": new_position}}}
+    def on_move(self, player_id, inputs, **kwargs):
+        print(f"received inputs from client id n°{player_id}: {inputs!r}")
+        return {}
 
     def on_join(self, player_name, game_state, client_address, **kwargs):
         print(f"{player_name} joined.")
