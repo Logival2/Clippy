@@ -48,11 +48,13 @@ class GameLoop(object):
         # s.draw_grid()  # Useful for debugging
 
         # SEND INPUTS
-        s.client.dispatch_event(
-            event_type="MOVE",
-            player_id=s.client.player_id,
-            inputs=s.get_inputs(),
-        )
+        inputs = s.get_inputs()
+        if inputs:
+            client.dispatch_event(
+                event_type="MOVE",
+                player_id=s.client.player_id,
+                inputs=inputs,
+            )
         pygame.display.update()
 
 
