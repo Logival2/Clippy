@@ -6,10 +6,10 @@ import pygame
 from pygame.locals import *
 
 from utils import Pos, exit_error
-from Displayer.config import *
+from config import *
 
 
-class PyGameDisplay(object):
+class GameLoop(object):
     def __init__(s, config):
         ### Pygame related ###
         pygame.init()
@@ -38,18 +38,18 @@ class PyGameDisplay(object):
         s.frame_start = time.time()
         ### ASSETS ###
         # s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
-        s.font = pygame.font.Font('Displayer/fonts/Everson_Mono.ttf', 24)
+        s.font = pygame.font.Font('assets/fonts/Everson_Mono.ttf', 24)
         s.sprites = {}
         s.load_available_sprites(16)
 
-    def draw(s, map_handler, info_list):
+    def update(s, map_handler, info_list):
         s.display.fill(BLACK)
         s.draw_borders()
         s.draw_hud(info_list)
-        s.draw_map(map_handler)
+        # s.draw_map(map_handler)
         # s.draw_grid()  # Useful for debugging
         pygame.display.update()
-        s.handle_sleep()
+        # s.handle_sleep()
 
     def draw_map(s, map_handler):
         """ Draw the map sent by the server, keeping the player at the center of the screen """
@@ -94,11 +94,11 @@ class PyGameDisplay(object):
         s.display.blit(text_surface, (hud_text_x_start, s.tile_size * 2))
         # Draw informations
         y_idx = 5
-        for key, value in info_list.items():
-            final_str = f"{key}: {value}" if value != None else f"{key}"
-            text_surface = s.font.render(final_str, False, WHITE)
-            s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
-            y_idx += 2
+        # for key, value in info_list.items():
+        #     final_str = f"{key}: {value}" if value != None else f"{key}"
+        #     text_surface = s.font.render(final_str, False, WHITE)
+        #     s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
+        #     y_idx += 2
 
     def draw_borders(s):
         # Top border
@@ -165,8 +165,8 @@ class PyGameDisplay(object):
         return res
 
     def load_available_sprites(s, sprite_size):
-        no_rot_path = 'Displayer/sprites/no_rot_sprites'
-        rot_path = 'Displayer/sprites'
+        no_rot_path = 'assets/sprites/no_rot_sprites'
+        rot_path = 'assets/sprites'
         # Load sprites with no rotation
         no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
         rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]
