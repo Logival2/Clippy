@@ -36,7 +36,7 @@ class App(object):
         s.clock = pygame.time.Clock()
 
     def __del__(s):
-        if s.client.connectionn is not None:
+        if s.client.connection is not None:
             s.client.disconnect()
 
     def run(s):
