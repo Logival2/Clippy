@@ -1,5 +1,16 @@
 import time
 import random
+import re
+
+def is_valid_ipv4_address(host):
+    regex = '''^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
+                25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
+                25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(
+                25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'''
+    if re.search(regex, host):
+        print(host)
+        dots_idx = host.rfind(':')
+        return (host[:dots_idx], int(host[dots_idx + 1:]))
 
 
 class Pos(object):

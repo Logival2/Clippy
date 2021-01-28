@@ -6,10 +6,10 @@ import pygame
 from pygame.locals import *
 
 from utils import Pos, exit_error
-from Displayer.config import *
+from config import *
 
 
-class PyGameDisplay(object):
+class GameLoop(object):
     def __init__(s, config):
         ### Pygame related ###
         pygame.init()
@@ -33,23 +33,20 @@ class PyGameDisplay(object):
         # Launch display
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
         pygame.display.set_caption('Clippy')
-        ### FPS related ###
-        s.delta = 1 / config['fps']
-        s.frame_start = time.time()
         ### ASSETS ###
         # s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
-        s.font = pygame.font.Font('Displayer/fonts/Everson_Mono.ttf', 24)
+        s.font = pygame.font.Font('assets/fonts/Everson_Mono.ttf', 24)
         s.sprites = {}
         s.load_available_sprites(16)
 
-    def draw(s, map_handler, info_list):
+    def update(s, map_handler, info_list):
         s.display.fill(BLACK)
         s.draw_borders()
-        s.draw_hud(info_list)
-        s.draw_map(map_handler)
+        # s.draw_hud(info_list)
+        # s.draw_map(map_handler)
         # s.draw_grid()  # Useful for debugging
         pygame.display.update()
-        s.handle_sleep()
+        # s.handle_sleep()
 
     def draw_map(s, map_handler):
         """ Draw the map sent by the server, keeping the player at the center of the screen """
@@ -165,8 +162,8 @@ class PyGameDisplay(object):
         return res
 
     def load_available_sprites(s, sprite_size):
-        no_rot_path = 'Displayer/sprites/no_rot_sprites'
-        rot_path = 'Displayer/sprites'
+        no_rot_path = 'assets/sprites/no_rot_sprites'
+        rot_path = 'assets/sprites'
         # Load sprites with no rotation
         no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
         rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]
@@ -188,12 +185,3 @@ class PyGameDisplay(object):
             tmp_sprite.convert()
             # Scale it to the tile size
             return pygame.transform.scale(tmp_sprite, (s.config['tile_size'], s.config['tile_size']))
-
-    def handle_sleep(s):
-        """ Maintains the framerate """
-        to_sleep = s.delta - (time.time() - s.frame_start)
-        if to_sleep > 0:
-            pygame.time.wait(int(to_sleep * 1000))
-        else:
-            print(f"Lagging {-to_sleep:.2f} seconds behind")
-        s.frame_start = time.time()
