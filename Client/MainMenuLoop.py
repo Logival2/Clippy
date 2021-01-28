@@ -14,8 +14,9 @@ class MainMenuLoop(object):
         s.is_active = True
         s.win_size = win_size
         s.custom_theme = pygame_menu.themes.Theme(
-            background_color=BLACK,
+            background_color=TRANSPARENT,
             title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
+            title_offset=(12, 6),
 
             title_font_size=60,
             widget_font_size=40,
@@ -29,26 +30,30 @@ class MainMenuLoop(object):
         )
         s.m = pygame_menu.Menu(
             *win_size.get_xy()[::-1],
-            'Clippy',
+            'Clippy -',
             theme=s.custom_theme
         )
-        s.m.add_label("Player name:")
-        s.m._widgets[-1]._font_color = GREEN
+        s.m.add_label("Player name:", font_color=GREEN)
         s.m.add_text_input('', default='Player 1')
         s.m.add_vertical_margin(40)
-        s.m.add_label("Server:")
-        s.m._widgets[-1]._font_color = GREEN
+        s.m.add_label("Server:", font_color=GREEN)
         s.m.add_text_input('', default='127.0.0.1:1337', maxchar=16)
-        s.m.add_label("Connection Failed!")
-        s.m._widgets[-1]._font_color = BLACK
-        s.m.add_label("Invalid IPv4 adress")
-        s.m._widgets[-1]._font_color = BLACK
+        s.m.add_label("Connection Failed!", font_color=TRANSPARENT)
+        s.m.add_label("Invalid IPv4 adress", font_color=TRANSPARENT)
         s.m.add_vertical_margin(10)
         s.m.add_button('JOIN', s.join)
         s.m.add_button('QUIT', pygame_menu.events.EXIT)
 
+        s.BGPos = 0
+        s.BGStarsPos = 0
+        s.sprites = {
+            'space': s.load_sprite('./assets/menu/space.png'),
+            'stars': s.load_sprite('./assets/menu/stars.png'),
+        }
+
+
     def join(s):
-        s.m._widgets[-4]._font_color = BLACK
+        s.m._widgets[-4]._font_color = TRANSPARENT
         # Attempt connection here
         host = is_valid_ipv4_address(s.m._widgets[4]._get_input_string())
         if not host:
@@ -72,11 +77,31 @@ class MainMenuLoop(object):
         print("playerid:", s.client.player_id)
         return s.client.player_id is not None
 
-    def update(s, events, surface):
+    def update(s, events, display):
+        # print(s.m.menubar)
         if not s.is_active:
             return False
+        display.fill(BLACK)
+        s.handleBG(display)
         if s.m.is_enabled():
             s.m.update(events)
-            s.m.draw(surface)
-            pygame.draw.line(surface, WHITE, (0, 70), (s.win_size.x, 70), 1)
+            s.m.draw(display)
+            pygame.draw.line(display, WHITE, (0, 70), (s.win_size.x, 70), 1)
         return True
+
+    def load_sprite(s, path):
+            tmp_sprite = pygame.image.load(path)
+            # Transform it to a pygame friendly format (quicker drawing)
+            tmp_sprite.convert()
+            return tmp_sprite
+
+    def handleBG(s, display):
+        display.blit(s.sprites['space'], (s.BGPos, 0))
+        s.BGPos -= 1
+        if (s.BGPos <= -s.win_size.x):
+            s.BGPos = 0
+
+        display.blit(s.sprites['stars'], (s.BGStarsPos, 0))
+        s.BGStarsPos -= 0.5
+        if (s.BGStarsPos <= -800):
+            s.BGStarsPos = 0

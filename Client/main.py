@@ -44,7 +44,6 @@ class App(object):
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
-                    s.client.disconnect()
                     exit()
             if not s.active_loop.update(events, s.game_loop.display):
                 s.active_loop = s.game_loop
