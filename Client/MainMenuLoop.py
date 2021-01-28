@@ -51,7 +51,6 @@ class MainMenuLoop(object):
             'stars': s.load_sprite('./assets/menu/stars.png'),
         }
 
-
     def join(s):
         s.m._widgets[-4]._font_color = TRANSPARENT
         # Attempt connection here
