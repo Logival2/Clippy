@@ -14,19 +14,19 @@ class MainMenuLoop(object):
         s.is_active = True
         s.win_size = win_size
         s.custom_theme = pygame_menu.themes.Theme(
-                            background_color=BLACK,
-                            title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
+            background_color=BLACK,
+            title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
 
-                            title_font_size=60,
-                            widget_font_size=40,
+            title_font_size=60,
+            widget_font_size=40,
 
-                            title_font_color= WHITE,
-                            widget_font_color= WHITE,
-                            cursor_color= WHITE,
-                            selection_color= WHITE,
-                            widget_font=pygame_menu.font.FONT_MUNRO,
-                            title_font=pygame_menu.font.FONT_MUNRO,
-                        )
+            title_font_color= WHITE,
+            widget_font_color= WHITE,
+            cursor_color= WHITE,
+            selection_color= WHITE,
+            widget_font=pygame_menu.font.FONT_MUNRO,
+            title_font=pygame_menu.font.FONT_MUNRO,
+        )
         s.m = pygame_menu.Menu(
             *win_size.get_xy()[::-1],
             'Clippy',
@@ -67,6 +67,8 @@ class MainMenuLoop(object):
         start_time = time.time()
         while time.time() - start_time < 5 and s.client.player_id is None:
             time.sleep(0.1)
+        if s.client.player_id is None:
+            s.client.disconnect()
         return s.client.player_id is not None
 
     def update(s, events, surface):

@@ -172,7 +172,7 @@ class GameLoop(object):
         for sprite_name in rot_sprites:
             s.sprites[sprite_name] = [s.load_sprite(rot_path, sprite_name)]
         print(f'[+] {len(s.sprites)} sprites loaded')
-        print(s.sprites.keys())
+        # print(s.sprites.keys())
         # Now create the rotated version of the sprites which need it
         for sprite_name in rot_sprites:
             for angle in [90, 180, 270]:
