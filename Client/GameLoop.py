@@ -50,7 +50,7 @@ class GameLoop(object):
         # SEND INPUTS
         inputs = s.get_inputs()
         if inputs:
-            client.dispatch_event(
+            s.client.dispatch_event(
                 event_type="MOVE",
                 player_id=s.client.player_id,
                 inputs=inputs,
