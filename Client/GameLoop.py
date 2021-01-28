@@ -33,9 +33,6 @@ class GameLoop(object):
         # Launch display
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
         pygame.display.set_caption('Clippy')
-        ### FPS related ###
-        s.delta = 1 / config['fps']
-        s.frame_start = time.time()
         ### ASSETS ###
         # s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
         s.font = pygame.font.Font('assets/fonts/Everson_Mono.ttf', 24)
@@ -188,12 +185,3 @@ class GameLoop(object):
             tmp_sprite.convert()
             # Scale it to the tile size
             return pygame.transform.scale(tmp_sprite, (s.config['tile_size'], s.config['tile_size']))
-
-    def handle_sleep(s):
-        """ Maintains the framerate """
-        to_sleep = s.delta - (time.time() - s.frame_start)
-        if to_sleep > 0:
-            pygame.time.wait(int(to_sleep * 1000))
-        else:
-            print(f"Lagging {-to_sleep:.2f} seconds behind")
-        s.frame_start = time.time()

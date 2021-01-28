@@ -8,7 +8,8 @@ from utils import is_valid_ipv4_address
 
 
 class MainMenuLoop(object):
-    def __init__(s, win_size):
+    def __init__(s, win_size, client):
+        s.client = client
         s.is_active = True
         s.win_size = win_size
         s.custom_theme = pygame_menu.themes.Theme(
@@ -44,21 +45,27 @@ class MainMenuLoop(object):
         s.m.add_vertical_margin(10)
         s.m.add_button('JOIN', s.join)
         s.m.add_button('QUIT', pygame_menu.events.EXIT)
-        # pprint(dir(s.m._widgets[4]))
 
     def join(s):
         s.m._widgets[-4]._font_color = BLACK
         # Attempt connection here
-        ip = s.m._widgets[4]._get_input_string()
-        if not is_valid_ipv4_address(ip):
+        host = is_valid_ipv4_address(s.m._widgets[4]._get_input_string())
+        if not host:
             s.m._widgets[-4]._font_color = RED
             s.m._widgets[-5]._font_color = RED
             return
-        print("Connecting to", ip)
-        if not 42:  # If connection is successful
+        if s.connect(*host, s.m._widgets[1]._get_input_string()):
             s.is_active = False
-        else:
+        else:  # Connection failed
             s.m._widgets[-5]._font_color = RED
+
+    def connect(s, ip, port, player_name):
+        print(f'Connecting to {ip}:{port}...')
+        s.client.connect_in_thread(hostname=ip, port=port)
+        s.client.dispatch_event("JOIN", player_name)
+        return True
+        # while s.client.player_id is None:
+        #     pass
 
     def update(s, events, surface):
         if not s.is_active:

@@ -13,9 +13,10 @@ LIGHT_BLUE = (52, 152, 219)
 MEDIUM_BLUE = (41, 128, 185)
 
 DISPLAY_CONFIG = {
-    'fps': 4,
     'target_resolution': Pos(x=1600, y=600),
     'hud_width_px': 200,
     'tile_size': 32,
     'borders_width': 2,
 }
+
+# BORDERS_WIDTH = 2
