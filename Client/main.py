@@ -35,6 +35,9 @@ class App(object):
         s.active_loop = s.main_menu_loop
         s.clock = pygame.time.Clock()
 
+    def __del__(s):
+        s.client.disconnect()
+
     def run(s):
         while True:
             events = pygame.event.get()

@@ -69,7 +69,7 @@ class MainMenuLoop(object):
             time.sleep(0.1)
         if s.client.player_id is None:
             s.client.disconnect()
-        print(s.client.player_id)
+        print("playerid:", s.client.player_id)
         return s.client.player_id is not None
 
     def update(s, events, surface):
