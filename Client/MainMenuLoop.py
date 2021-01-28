@@ -1,4 +1,5 @@
 from pprint import pprint
+import time
 
 import pygame
 import pygame_menu
@@ -63,9 +64,10 @@ class MainMenuLoop(object):
         print(f'Connecting to {ip}:{port}...')
         s.client.connect_in_thread(hostname=ip, port=port)
         s.client.dispatch_event("JOIN", player_name)
-        return True
-        # while s.client.player_id is None:
-        #     pass
+        start_time = time.time()
+        while time.time() - start_time < 5 and s.client.player_id is None:
+            time.sleep(0.1)
+        return s.client.player_id is not None
 
     def update(s, events, surface):
         if not s.is_active:
