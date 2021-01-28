@@ -28,7 +28,7 @@ class ChaseClient(Client):
 class App(object):
     def __init__(s):
         s.client = ChaseClient()
-        s.game_loop = GameLoop(DISPLAY_CONFIG)
+        s.game_loop = GameLoop(DISPLAY_CONFIG, s.client)
         # Final window size is needed as the window size
         # will shrink to adapt to the tile size specified in config.py
         s.main_menu_loop = MainMenuLoop(s.game_loop.screen_size, s.client)

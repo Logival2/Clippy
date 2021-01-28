@@ -10,7 +10,8 @@ from config import *
 
 
 class GameLoop(object):
-    def __init__(s, config):
+    def __init__(s, config, client):
+        s.client = client
         ### Pygame related ###
         pygame.init()
         s.config = config
@@ -34,19 +35,26 @@ class GameLoop(object):
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
-        # s.font = pygame.font.Font('Displayer/fonts/CozetteVector.ttf', 24)
         s.font = pygame.font.Font('assets/fonts/Everson_Mono.ttf', 24)
         s.sprites = {}
         s.load_available_sprites(16)
 
-    def update(s, map_handler, info_list):
+    def update(s, events, _):
+        # RECEIVE NETWORK
         s.display.fill(BLACK)
         s.draw_borders()
         # s.draw_hud(info_list)
         # s.draw_map(map_handler)
         # s.draw_grid()  # Useful for debugging
+
+        # SEND INPUTS
+        s.client.dispatch_event(
+            event_type="MOVE",
+            player_id=s.client.player_id,
+            inputs=s.get_inputs(),
+        )
         pygame.display.update()
-        # s.handle_sleep()
+
 
     def draw_map(s, map_handler):
         """ Draw the map sent by the server, keeping the player at the center of the screen """
@@ -145,15 +153,7 @@ class GameLoop(object):
 
     def get_inputs(s):
         """ Convert PyGame inputs into the formatted ones """
-        # TODO: IF A KEY IF MAINTAINED (GO UP) AND THE PLAYER PRESSES A NEW DIRECTION, THE NEW
-        # DIRECTION SHOULD BE USED
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                return ['EXIT']
         keys = pygame.key.get_pressed()
-        if keys[K_ESCAPE]:
-            return ['EXIT']
-        # Actual inputs
         res = []
         if keys[K_LEFT] or keys[K_q]: res.append('LEFT')
         if keys[K_RIGHT] or keys[K_d]: res.append('RIGHT')
