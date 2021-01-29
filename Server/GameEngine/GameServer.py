@@ -1,6 +1,8 @@
-from pprint import pprint
+import zlib
 import random
 import umsgpack
+import hashlib
+from pprint import pprint
 
 from pygase import GameState, Backend
 
@@ -93,8 +95,9 @@ class ClippyGame(object):
         print(f"player at adress {client_address} asked for the map")
         packed = umsgpack.packb(self.map)
         print(f"packed map length is : {len(packed)}")
-        print(f"bytestring hash is {hash(packed)}")
-        splitted = list(chunk_map(packed, 32))
+        compressed_data = zlib.compress(packed)
+        print(f"bytestring hash is {hashlib.md5(compressed_data).hexdigest()}")
+        splitted = list(chunk_map(compressed_data, 256))
         nchunks = len(splitted)
         for i, bs in enumerate(splitted):
             finished = True if i == nchunks - 1 else False

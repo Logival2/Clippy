@@ -78,7 +78,6 @@ class MainMenuLoop(object):
             time.sleep(0.1)
         if self.client.player_id is None:
             self.client.disconnect()
-        print("playerid:", self.client.player_id)
         return self.client.player_id is not None
 
     def update(self, events, display):
@@ -111,6 +110,6 @@ class MainMenuLoop(object):
 
         # Now draw random text at random positions to get a blinking star effect
         display.blit(self.rand_text, (20, self.win_size.y // 5))
-        display.blit(self.rand_text, (30, self.win_size.y // 2))
-        display.blit(self.rand_text, (self.win_size.x // 1.5 + 60, self.win_size.y // 5))
-        display.blit(self.rand_text, (self.win_size.x // 1.5 + 60, self.win_size.y // 2))
+        display.blit(self.rand_text, (40, self.win_size.y // 2))
+        display.blit(self.rand_text, (self.win_size.x // 1.5 + 40, self.win_size.y // 5.3))
+        display.blit(self.rand_text, (self.win_size.x // 1.5 + 60, self.win_size.y // 1.9))

@@ -56,6 +56,7 @@ class GameLoop(object):
                 inputs=inputs,
             )
         pygame.display.update()
+        return True
 
 
     def draw_map(s, map_handler):
