@@ -16,7 +16,6 @@ class ClippyGame(object):
         self.components = {}
         self.map_generator = MapGenerator(MAP_CONFIG)
         self.map = self.map_generator.generate_terrain_chunk()
-        pprint(self.map)
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
         )
