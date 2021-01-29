@@ -1,11 +1,17 @@
 from pprint import pprint
 import random
+import umsgpack
 
 from pygase import GameState, Backend
 
 from utils import Pos
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.map_config import MAP_CONFIG
+
+
+def chunk_map(bs, n):
+    for i in range(0, len(bs), n):
+        yield bs[i:i+n]
 
 
 class ClippyGame(object):
@@ -23,7 +29,11 @@ class ClippyGame(object):
         self.backend = Backend(
             self.initial_game_state,
             self.time_step,
-            event_handlers={'MOVE': self.on_move, 'JOIN': self.on_join}
+            event_handlers={
+                'MOVE': self.on_move,
+                'JOIN': self.on_join,
+                'MAP_REQUEST': self.on_map_request
+                }
         )
         self.add_system(self.movement_system)
 
@@ -79,3 +89,15 @@ class ClippyGame(object):
             # Add a new entry to the players dict
             "players": {player_id: {"name": player_name}}
         }
+
+    def on_map_request(self, client_address, **kwargs):
+        print(f"player at adress {client_address} asked for the map")
+        packed = umsgpack.packb(self.map)
+        print(f"packed map length is : {len(packed)}")
+        print(f"bytestring hash is {hash(packed)}")
+        splitted = list(chunk_map(packed, 1024))
+        nchunks = len(splitted)
+        for i, bs in enumerate(splitted):
+            finished = True if i == nchunks - 1 else False
+            self.backend.server.dispatch_event("MAP_RESPONSE", finished, i, bs, target_client=client_address)
+        return {}
