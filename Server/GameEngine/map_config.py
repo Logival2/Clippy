@@ -2,8 +2,8 @@ from Entities import *
 
 MAP_CONFIG = {
     'regions_nbr': 5,
-    'map_size': 512,
-    'chunk_size': 512,
+    'map_size': 64,
+    'chunk_size': 64,
     'seed': 0,
     'noise_scale': 15,  # Bigger = Zoom in
     'regions': {
