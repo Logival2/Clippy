@@ -5,7 +5,7 @@ import pygame
 import pygame_menu
 
 from config import *
-from utils import is_valid_ipv4_address, get_random_nickname
+from utils import is_valid_ipv4_address, get_random_words
 
 
 class MainMenuLoop(object):
@@ -15,6 +15,9 @@ class MainMenuLoop(object):
         s.win_size = win_size
         s.custom_theme = pygame_menu.themes.Theme(
             background_color=TRANSPARENT,
+
+            widget_background_color=BLACK,
+
             title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
             title_offset=(12, 6),
 
@@ -31,10 +34,10 @@ class MainMenuLoop(object):
         s.m = pygame_menu.Menu(
             *win_size.get_xy()[::-1],
             'Clippy -',
-            theme=s.custom_theme
+            theme=s.custom_theme,
         )
         s.m.add_label("Player name:", font_color=GREEN)
-        s.m.add_text_input('', default=get_random_nickname())
+        s.m.add_text_input('', default=get_random_words(2))
         s.m.add_vertical_margin(40)
         s.m.add_label("Server:", font_color=GREEN)
         s.m.add_text_input('', default='127.0.0.1:8080', maxchar=21)
@@ -50,6 +53,8 @@ class MainMenuLoop(object):
             'space': s.load_sprite('./assets/menu/space.png'),
             'stars': s.load_sprite('./assets/menu/stars.png'),
         }
+        s.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 110)
+        s.rand_text = s.font.render(get_random_words(1), False, BLACK)
 
     def join(s):
         s.m._widgets[-4]._font_color = TRANSPARENT
@@ -95,11 +100,17 @@ class MainMenuLoop(object):
 
     def handleBG(s, display):
         display.blit(s.sprites['space'], (s.BGPos, 0))
-        s.BGPos -= 1
+        s.BGPos -= 2
         if (s.BGPos <= -s.win_size.x):
             s.BGPos = 0
 
         display.blit(s.sprites['stars'], (s.BGStarsPos, 0))
-        s.BGStarsPos -= 0.5
+        s.BGStarsPos -= 1
         if (s.BGStarsPos <= -800):
             s.BGStarsPos = 0
+
+        # Now draw random text at random positions to get a blinking star effect
+        display.blit(s.rand_text, (20, s.win_size.y // 5))
+        display.blit(s.rand_text, (30, s.win_size.y // 2))
+        display.blit(s.rand_text, (s.win_size.x // 1.5 + 60, s.win_size.y // 5))
+        display.blit(s.rand_text, (s.win_size.x // 1.5 + 60, s.win_size.y // 2))

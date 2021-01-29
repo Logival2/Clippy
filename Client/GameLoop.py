@@ -35,7 +35,7 @@ class GameLoop(object):
         s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
-        s.font = pygame.font.Font('assets/fonts/Everson_Mono.ttf', 24)
+        s.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
         s.sprites = {}
         s.load_available_sprites(16)
 
