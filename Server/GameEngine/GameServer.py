@@ -94,7 +94,7 @@ class ClippyGame(object):
         packed = umsgpack.packb(self.map)
         print(f"packed map length is : {len(packed)}")
         print(f"bytestring hash is {hash(packed)}")
-        splitted = list(chunk_map(packed, 1024))
+        splitted = list(chunk_map(packed, 32))
         nchunks = len(splitted)
         for i, bs in enumerate(splitted):
             finished = True if i == nchunks - 1 else False
