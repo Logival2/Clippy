@@ -73,8 +73,8 @@ class ClippyGame(object):
         print(f"{player_name} joined.")
         player_id = len(game_state.players)
         # Notify client that the player successfully joined the game.
-        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
+        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, self.map, target_client=client_address)
         return {
             # Add a new entry to the players dict
-            "players": {player_id: {"name": player_name, "position": (random.random() * 640, random.random() * 420)}}
+            "players": {player_id: {"name": player_name}}
         }
