@@ -67,12 +67,15 @@ class ClippyGame(object):
         return self.entity
 
     def get_component(self, component, entity=None):
-        if type(component()).__name__ not in self.components:
-            print("No component " + type(component()).__name__ + " stored.")
+        if component.__name__ not in self.components:
+            print("No component " + component.__name__ + " stored.")
             return []
         if entity is None:
-            return self.components[type(component()).__name__]
-        return self.components[type(component()).__name__][entity]
+            return self.components[component.__name__]
+        if entity not in self.components[component.__name__]:
+            print("No component " + component.__name__ + " for id " + entity + " stored.")
+            return None
+        return self.components[component.__name__][entity]
 
     def add_component(self, entity, component):
         if type(component).__name__ not in self.components:
