@@ -1,32 +1,9 @@
-import time
 import random
 from pygase import GameState, Backend
-from GameEngine.Components.Tile import Tile
-from GameEngine.MapHandler import MapHandler
-from config import MAP_PARAMETERS
-
-
-class Chunk(object):
-    def __init__(s):
-        s.tiles = [[]]
-        for x in range(MAP_PARAMETERS["size"]):
-            s.tiles.append([])
-            for y in range(MAP_PARAMETERS["size"]):
-                s.tiles[x].append({})
-
-
-class Map(object):
-    def __init__(s, _ecs):
-        s._ecs = _ecs
-        s.chunks = {}
-        pass
-
-    def get_tile(s, x, y):
-        if x not in s.chunks:
-            s.chunks[x] = {}
-        if y not in s.chunks[x]:
-            s.chunks[x][y] = Tile(0)
-        return s.chunks[x][y]
+from GameEngine.MapGenerator import MapGenerator
+from GameEngine.map_config import MAP_CONFIG
+from utils import Pos
+random.seed(MAP_CONFIG["seed"])
 
 
 class ClippyGame(object):
@@ -37,11 +14,11 @@ class ClippyGame(object):
         self.entity = 0
         self.systems = []
         self.components = {}
+        self.map_generator = MapGenerator(MAP_CONFIG)
+        self.map = self.map_generator.generate_chunk(Pos(0, 0))
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
         )
-        self.map_handler = MapHandler()
-        self.map = Map(self)
         self.backend = Backend(
             self.initial_game_state,
             self.time_step,
