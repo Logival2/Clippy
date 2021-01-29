@@ -72,12 +72,12 @@ class ClippyGame(object):
             return []
         if entity is None:
             return self.components[type(component()).__name__]
-        return next(item for item in self.components[type(component()).__name__] if item["entity"] == entity)['component']
+        return self.components[type(component()).__name__][entity]
 
     def add_component(self, entity, component):
         if type(component).__name__ not in self.components:
-            self.components[type(component).__name__] = []
-        self.components[type(component).__name__].append({"entity": entity, "component": component})
+            self.components[type(component).__name__] = {}
+        self.components[type(component).__name__][entity] = component
 
     def add_system(self, function):
         self.systems.append(function)

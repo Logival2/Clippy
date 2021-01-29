@@ -27,7 +27,7 @@ class Map(object):
             s.chunks[x][y] = Tile(0)
         return s.chunks[x][y]
 
-
+# TODO add filter
 class Ecs(object):
     def __init__(s):
         s.components = {}
@@ -48,12 +48,12 @@ class Ecs(object):
             return []
         if entity is None:
             return s.components[type(component()).__name__]
-        return next(item for item in s.components[type(component()).__name__] if item["entity"] == entity)['component']
+        return s.components[type(component()).__name__][entity]
 
     def add_component(s, entity, component):
         if type(component).__name__ not in s.components:
-            s.components[type(component).__name__] = []
-        s.components[type(component).__name__].append({"entity": entity, "component": component})
+            s.components[type(component).__name__] = {}
+        s.components[type(component).__name__][entity] = component
 
     def add_update(s, function):
         s.updates.append(function)
