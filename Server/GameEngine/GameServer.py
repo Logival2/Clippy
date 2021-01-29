@@ -1,6 +1,6 @@
 import random
 from pygase import GameState, Backend
-from GameEngine.MapGenerator import MapGenerator
+from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.map_config import MAP_CONFIG
 from utils import Pos
 random.seed(MAP_CONFIG["seed"])
