@@ -1,28 +1,29 @@
+from pprint import pprint
 import random
+
 from pygase import GameState, Backend
+
+from utils import Pos
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.map_config import MAP_CONFIG
-from utils import Pos
-random.seed(MAP_CONFIG["seed"])
 
 
 class ClippyGame(object):
-    """docstring for Clippy_Game."""
-
     def __init__(self):
-        super(ClippyGame, self).__init__()
+        random.seed(MAP_CONFIG['seed'])
         self.entity = 0
         self.systems = []
         self.components = {}
         self.map_generator = MapGenerator(MAP_CONFIG)
-        self.map = self.map_generator.generate_chunk(Pos(0, 0))
+        self.map = self.map_generator.generate_terrain_chunk()
+        pprint(self.map)
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
         )
         self.backend = Backend(
             self.initial_game_state,
             self.time_step,
-            event_handlers={"MOVE": self.on_move, "JOIN": self.on_join}
+            event_handlers={'MOVE': self.on_move, 'JOIN': self.on_join}
         )
         self.add_system(self.movement_system)
 
