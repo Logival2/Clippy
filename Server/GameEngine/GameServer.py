@@ -18,6 +18,7 @@ class ClippyGame(object):
         self.map = self.map_generator.generate_terrain_chunk()
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
+            map=self.map
         )
         self.backend = Backend(
             self.initial_game_state,
@@ -73,7 +74,7 @@ class ClippyGame(object):
         print(f"{player_name} joined.")
         player_id = len(game_state.players)
         # Notify client that the player successfully joined the game.
-        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, self.map, target_client=client_address)
+        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
         return {
             # Add a new entry to the players dict
             "players": {player_id: {"name": player_name}}
