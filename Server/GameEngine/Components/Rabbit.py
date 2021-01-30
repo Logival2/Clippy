@@ -1,6 +1,7 @@
 import random
 
-from Server.GameEngine.Ecs import ecs
+from GameEngine.Components.Position import Position
+from GameEngine.GameServer import ecs
 
 
 class Rabbit:
@@ -19,11 +20,16 @@ class Rabbit:
 def rabbit_update():
     """ Rabbits will make different actions depending on their status """
     rabbits = ecs.get_component(Rabbit)
-    for rabbit in rabbits:
-        select_dialog = random.randint(0, 2)
-        if select_dialog == 0:
-            print("SKYA")
-        if select_dialog == 1:
-            print("Skuuu")
-        if select_dialog == 2:
-            print("YEET")
+    positions = ecs.get_component(Position)
+    ids = ecs.filter(Rabbit, Position)
+    for id in ids:
+        select_direction = random.randint(0, 3)
+        if select_direction == 0:
+            positions[id].x += 1
+        if select_direction == 1:
+            positions[id].x -= 1
+        if select_direction == 2:
+            positions[id].y += 1
+        if select_direction == 3:
+            positions[id].y -= 1
+    return positions

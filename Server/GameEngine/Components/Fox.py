@@ -1,6 +1,6 @@
 import random
 
-from Server.GameEngine.Ecs import ecs
+from GameEngine.GameServer import ecs
 
 
 class Fox:
@@ -24,3 +24,4 @@ def fox_update():
         print("Ring-ding-ding-ding-dingeringeding!\n" +
               "Gering-ding-ding-ding-dingeringeding!\n" +
               "Gering-ding-ding-ding-dingeringeding!")
+    return {}

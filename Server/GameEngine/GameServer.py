@@ -3,13 +3,11 @@ import random
 import umsgpack
 import hashlib
 import time
+from inspect import signature
 # from pprint import pprint
 from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
-
-from GameEngine.Components.Fox import fox_update
-from GameEngine.Components.Rabbit import rabbit_update
 
 
 def chunk_map(bs, n):
@@ -40,8 +38,6 @@ class ClippyGame(object):
         )
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
-        self.add_system(rabbit_update)
-        self.add_system(fox_update)
 
     def movement_system(self, game_state, dt):
         position_update = {}
@@ -81,7 +77,10 @@ class ClippyGame(object):
             return {}
         updates = {}
         for function in self.systems:
-            system_updates = function(game_state, dt)
+            if str(signature(function)) != "()":
+                system_updates = function(game_state, dt)
+            else:
+                system_updates = function()
             updates.update(system_updates)
         return updates
 
@@ -105,6 +104,18 @@ class ClippyGame(object):
         if type(component).__name__ not in self.components:
             self.components[type(component).__name__] = {}
         self.components[type(component).__name__][entity] = component
+
+    def filter(self, type0, *types):
+        if type0.__name__ not in self.components:
+            return []
+        list_ids = list(self.components[type0.__name__].keys())
+        for typ in types:
+            if type0.__name__ in self.components:
+                ids = list(self.components[typ.__name__].keys())
+                for id in ids:
+                    if id not in ids:
+                        list_ids.remove(id)
+        return list_ids
 
     def add_system(self, function):
         self.systems.append(function)
@@ -158,3 +169,6 @@ class ClippyGame(object):
             finished = True if i == nchunks - 1 else False
             self.backend.server.dispatch_event("MAP_RESPONSE", finished, i, bs, target_client=client_address)
         return {}
+
+
+ecs = ClippyGame()
