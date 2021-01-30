@@ -5,16 +5,19 @@ import pygame
 import pygame_menu
 
 from config import *
-from utils import is_valid_ipv4_address, get_random_nickname
+from utils import is_valid_ipv4_address, get_random_words
 
 
 class MainMenuLoop(object):
-    def __init__(s, win_size, client):
-        s.client = client
-        s.is_active = True
-        s.win_size = win_size
-        s.custom_theme = pygame_menu.themes.Theme(
+    def __init__(self, win_size, client):
+        self.client = client
+        self.is_active = True
+        self.win_size = win_size
+        self.custom_theme = pygame_menu.themes.Theme(
             background_color=TRANSPARENT,
+
+            widget_background_color=BLACK,
+
             title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE,
             title_offset=(12, 6),
 
@@ -28,78 +31,85 @@ class MainMenuLoop(object):
             widget_font=pygame_menu.font.FONT_MUNRO,
             title_font=pygame_menu.font.FONT_MUNRO,
         )
-        s.m = pygame_menu.Menu(
+        self.m = pygame_menu.Menu(
             *win_size.get_xy()[::-1],
             'Clippy -',
-            theme=s.custom_theme
+            theme=self.custom_theme,
         )
-        s.m.add_label("Player name:", font_color=GREEN)
-        s.m.add_text_input('', default=get_random_nickname())
-        s.m.add_vertical_margin(40)
-        s.m.add_label("Server:", font_color=GREEN)
-        s.m.add_text_input('', default='127.0.0.1:8080', maxchar=21)
-        s.m.add_label("Connection Failed!", font_color=TRANSPARENT)
-        s.m.add_label("Invalid IPv4 adress", font_color=TRANSPARENT)
-        s.m.add_vertical_margin(10)
-        s.m.add_button('JOIN', s.join)
-        s.m.add_button('QUIT', pygame_menu.events.EXIT)
+        self.m.add_label("Player name:", font_color=GREEN)
+        self.m.add_text_input('', default=get_random_words(2))
+        self.m.add_vertical_margin(40)
+        self.m.add_label("Server:", font_color=GREEN)
+        self.m.add_text_input('', default='127.0.0.1:8080', maxchar=21)
+        self.m.add_label("Connection Failed!", font_color=TRANSPARENT)
+        self.m.add_label("Invalid IPv4 adress", font_color=TRANSPARENT)
+        self.m.add_vertical_margin(10)
+        self.m.add_button('JOIN', self.join)
+        self.m.add_button('QUIT', pygame_menu.events.EXIT)
 
-        s.BGPos = 0
-        s.BGStarsPos = 0
-        s.sprites = {
-            'space': s.load_sprite('./assets/menu/space.png'),
-            'stars': s.load_sprite('./assets/menu/stars.png'),
+        self.BGPos = 0
+        self.BGStarsPos = 0
+        self.sprites = {
+            'space': self.load_sprite('./assets/menu/space.png'),
+            'stars': self.load_sprite('./assets/menu/stars.png'),
         }
+        self.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 110)
+        self.rand_text = self.font.render(get_random_words(1), False, BLACK)
 
-    def join(s):
-        s.m._widgets[-4]._font_color = TRANSPARENT
+    def join(self):
+        self.m._widgets[-4]._font_color = TRANSPARENT
         # Attempt connection here
-        host = is_valid_ipv4_address(s.m._widgets[4]._get_input_string())
+        host = is_valid_ipv4_address(self.m._widgets[4]._get_input_string())
         if not host:
-            s.m._widgets[-4]._font_color = RED
-            s.m._widgets[-5]._font_color = RED
+            self.m._widgets[-4]._font_color = RED
+            self.m._widgets[-5]._font_color = RED
             return
-        if s.connect(*host, s.m._widgets[1]._get_input_string()):
-            s.is_active = False
+        if self.connect(*host, self.m._widgets[1]._get_input_string()):
+            self.is_active = False
         else:  # Connection failed
-            s.m._widgets[-5]._font_color = RED
+            self.m._widgets[-5]._font_color = RED
 
-    def connect(s, ip, port, player_name):
+    def connect(self, ip, port, player_name):
         print(f'Connecting to {ip}:{port}...')
-        s.client.connect_in_thread(hostname=ip, port=port)
-        s.client.dispatch_event("JOIN", player_name)
+        self.client.connect_in_thread(hostname=ip, port=port)
+        self.client.dispatch_event("JOIN", player_name)
         start_time = time.time()
-        while time.time() - start_time < 5 and s.client.player_id is None:
+        while time.time() - start_time < 5 and self.client.player_id is None:
             time.sleep(0.1)
-        if s.client.player_id is None:
-            s.client.disconnect()
-        print("playerid:", s.client.player_id)
-        return s.client.player_id is not None
+        if self.client.player_id is None:
+            self.client.disconnect()
+        return self.client.player_id is not None
 
-    def update(s, events, display):
-        if not s.is_active:
+    def update(self, events, display):
+        if not self.is_active:
             return False
         display.fill(BLACK)
-        s.handleBG(display)
-        if s.m.is_enabled():
-            s.m.update(events)
-            s.m.draw(display)
-            pygame.draw.line(display, WHITE, (0, 70), (s.win_size.x, 70), 1)
+        self.handleBG(display)
+        if self.m.is_enabled():
+            self.m.update(events)
+            self.m.draw(display)
+            pygame.draw.line(display, WHITE, (0, 70), (self.win_size.x, 70), 1)
         return True
 
-    def load_sprite(s, path):
+    def load_sprite(self, path):
             sprite = pygame.image.load(path)
             # Transform it to a pygame friendly format for quicker drawing
             sprite.convert()
             return sprite
 
-    def handleBG(s, display):
-        display.blit(s.sprites['space'], (s.BGPos, 0))
-        s.BGPos -= 1
-        if (s.BGPos <= -s.win_size.x):
-            s.BGPos = 0
+    def handleBG(self, display):
+        display.blit(self.sprites['space'], (self.BGPos, 0))
+        self.BGPos -= 2
+        if (self.BGPos <= -self.win_size.x):
+            self.BGPos = 0
 
-        display.blit(s.sprites['stars'], (s.BGStarsPos, 0))
-        s.BGStarsPos -= 0.5
-        if (s.BGStarsPos <= -800):
-            s.BGStarsPos = 0
+        display.blit(self.sprites['stars'], (self.BGStarsPos, 0))
+        self.BGStarsPos -= 1
+        if (self.BGStarsPos <= -800):
+            self.BGStarsPos = 0
+
+        # Now draw random text at random positions to get a blinking star effect
+        display.blit(self.rand_text, (20, self.win_size.y // 5))
+        display.blit(self.rand_text, (40, self.win_size.y // 2))
+        display.blit(self.rand_text, (self.win_size.x // 1.5 + 40, self.win_size.y // 5.3))
+        display.blit(self.rand_text, (self.win_size.x // 1.5 + 60, self.win_size.y // 1.9))

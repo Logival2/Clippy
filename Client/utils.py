@@ -3,9 +3,12 @@ import random
 import re
 
 
-def get_random_nickname():
+def get_random_words(words_count):
     words = open("/usr/share/dict/words").read().splitlines()
-    return f'{random.choice(words).capitalize()} {random.choice(words).capitalize()}'
+    str = ""
+    for i in range(0, words_count):
+        str += f'{random.choice(words).strip().capitalize()} '
+    return str.strip()
 
 
 def is_valid_ipv4_address(host):
