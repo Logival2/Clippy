@@ -60,7 +60,6 @@ class GameLoop(object):
         return True
 
     def tmp_draw_map(self):
-        return
         for y_idx in range(self.map_tiles_nbr.y):
             for x_idx in range(self.map_tiles_nbr.x):
                 tile_data = self.client.map[y_idx][x_idx]
@@ -96,14 +95,14 @@ class GameLoop(object):
     def display_entity(self, bloc_type, region, noise_value, pos):
         """ From the entity type, position and noise value assigned to this position
         (computed server side) draw a sprite"""
-        pprint(self.sprites)
+        # pprint(self.sprites)
         sprite_name = f'{region}_{bloc_type}'
         if sprite_name not in self.sprites.keys():
             sprite_name = bloc_type
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
         sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
-        self.display.blit(self.sprites[bloc_type.type][sprite_idx], (pos * self.tile_size).get_xy())
+        self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Pos(1, 1)) * self.tile_size).get_xy())
 
     def draw_hud(self, info_list):
         hud_text_x_start = (3 + self.map_tiles_nbr.x) * self.tile_size
