@@ -28,7 +28,7 @@ class Position(object):
         return f"({self.y}, {self.x})"
 
     def __repr__(self):
-        return f"Position(y={self.y}, x={self.x}"
+        return f"Position(y={self.y}, x={self.x})"
 
     def __eq__(self, other):
         if isinstance(other, Position):

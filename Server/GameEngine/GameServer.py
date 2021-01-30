@@ -83,8 +83,9 @@ class ClippyGame(object):
         return updates
 
     def new_entity(self):
+        new_entity = self.entity
         self.entity += 1
-        return self.entity
+        return new_entity
 
     def get_component(self, component, entity=None):
         if component.__name__ not in self.components:
