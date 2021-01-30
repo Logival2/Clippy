@@ -60,10 +60,18 @@ class GameLoop(object):
         return True
 
     def tmp_draw_map(self):
-        for y_idx in range(self.map_tiles_nbr.y):
-            for x_idx in range(self.map_tiles_nbr.x):
+        x_idx = 0
+        y_idx = 0
+        while y_idx < self.map_tiles_nbr.y and y_idx < len(self.client.map):
+            while x_idx < self.map_tiles_nbr.x and x_idx < len(self.client.map[0]):
+                pos = Pos(y=y_idx, x=x_idx)
+                # print(pos)
                 tile_data = self.client.map[y_idx][x_idx]
-                self.display_entity(*tile_data, Pos(y=y_idx, x=x_idx))
+                self.display_entity(*tile_data, pos)
+                x_idx += 1
+            x_idx = 0
+            y_idx += 1
+            # print(f'Y {y_idx} < {self.map_tiles_nbr.y} {len(self.client.map)}')
 
     # def draw_map(self, map_handler):
     #     """ Draw the map sent by the server, keeping the player at the center of the screen """
@@ -184,7 +192,7 @@ class GameLoop(object):
         for sprite_name in rot_sprites:
             self.sprites[sprite_name] = [self.load_sprite(rot_path, sprite_name)]
         print(f'[+] {len(self.sprites)} sprites loaded')
-        # print(self.sprites.keys())
+        print(self.sprites.keys())
         # Now create the rotated version of the sprites which need it
         for sprite_name in rot_sprites:
             for angle in [90, 180, 270]:

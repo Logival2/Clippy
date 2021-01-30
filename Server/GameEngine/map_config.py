@@ -2,13 +2,14 @@ from Entities import *
 
 MAP_CONFIG = {
     'regions_nbr': 5,
-    'map_size': 64,
-    'chunk_size': 64,
+    'map_size': 32,
+    'chunk_size': 32,
     'seed': 0,
     'noise_scale': 15,  # Bigger = Zoom in
     'regions': {
         'desert': {
-            'sand': 1,
+            'sand': 0.3,
+            'dehiuehdeuid': 1,
         },
         'mountain': {
             'stone': 1,
