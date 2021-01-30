@@ -5,11 +5,13 @@ from opensimplex import OpenSimplex
 
 from utils import Pos
 from Entities import *
+from GameEngine.MapGenerator.map_config import MAP_CONFIG
 
 
 class MapGenerator(object):
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
+        self.config = MAP_CONFIG
+        random.seed(self.config['seed'])
         self.simplex = OpenSimplex(self.config['seed'])
         # Create a bit more capitals, to give a more interesting region layout
         # as some regions will be splitted into multiple parts of the map

@@ -7,7 +7,6 @@ import time
 from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
-from GameEngine.map_config import MAP_CONFIG
 
 
 def chunk_map(bs, n):
@@ -17,12 +16,11 @@ def chunk_map(bs, n):
 
 class ClippyGame(object):
     def __init__(self):
-        random.seed(MAP_CONFIG['seed'])
         self.entity = 0
         self.systems = []
         self.components = {}
         self.debug_timer = None
-        self.map_generator = MapGenerator(MAP_CONFIG)
+        self.map_generator = MapGenerator()
         self.map = self.map_generator.generate_terrain_chunk()
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
