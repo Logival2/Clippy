@@ -1,6 +1,7 @@
 import time
 from os import listdir
 from os.path import isfile, join
+from pprint import pprint
 
 import pygame
 from pygame.locals import *
@@ -10,13 +11,13 @@ from config import *
 
 
 class GameLoop(object):
-    def __init__(s, config, client):
-        s.client = client
+    def __init__(self, config, client):
+        self.client = client
         ### Pygame related ###
         pygame.init()
-        s.config = config
-        s.tile_size = config['tile_size']
-        s.borders_width = config['borders_width']
+        self.config = config
+        self.tile_size = config['tile_size']
+        self.borders_width = config['borders_width']
         # Based on the tile size (px), ensure that the final resolution makes for an even
         # number of tiles
         if config['target_resolution']:
@@ -24,137 +25,146 @@ class GameLoop(object):
         else:
             tmp_screen_size = pygame.display.Info()
             tmp_screen_size = Pos(x=tmp_screen_size.current_w, y=tmp_screen_size.current_h)
-        s.tiles_nbr =  tmp_screen_size // s.tile_size
-        if s.tiles_nbr.x % 2: s.tiles_nbr.x -=1
-        if s.tiles_nbr.y % 2: s.tiles_nbr.y -=1
+        self.tiles_nbr =  tmp_screen_size // self.tile_size
+        if self.tiles_nbr.x % 2: self.tiles_nbr.x -=1
+        if self.tiles_nbr.y % 2: self.tiles_nbr.y -=1
         # Set variables
-        s.screen_size = s.tiles_nbr * s.tile_size
-        s.hud_tiles_nbr = (config['hud_width_px'] // s.tile_size) + 1
-        s.map_tiles_nbr = Pos(x=s.tiles_nbr.x - 3 - s.hud_tiles_nbr, y=s.tiles_nbr.y - 2)
+        self.screen_size = self.tiles_nbr * self.tile_size
+        self.hud_tiles_nbr = (config['hud_width_px'] // self.tile_size) + 1
+        self.map_tiles_nbr = Pos(x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr, y=self.tiles_nbr.y - 2)
         # Launch display
-        s.display = pygame.display.set_mode((s.screen_size.x , s.screen_size.y))
+        self.display = pygame.display.set_mode((self.screen_size.x , self.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
-        s.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
-        s.sprites = {}
-        s.load_available_sprites(16)
+        self.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
+        self.sprites = {}
+        self.load_available_sprites(16)
 
-    def update(s, events, _):
+    def update(self, events, _):
         # RECEIVE NETWORK
-        s.display.fill(BLACK)
-        s.draw_borders()
-        # s.draw_hud(info_list)
-        # s.draw_map(map_handler)
-        # s.draw_grid()  # Useful for debugging
+        self.display.fill(BLACK)
+        self.draw_borders()
+        # self.draw_hud(info_list)
+        self.tmp_draw_map()
+        # self.draw_grid()  # Useful for debugging
 
         # SEND INPUTS
-        inputs = s.get_inputs()
+        inputs = self.get_inputs()
         if inputs:
-            s.client.dispatch_event(
+            self.client.dispatch_event(
                 event_type="MOVE",
-                player_id=s.client.player_id,
+                player_id=self.client.player_id,
                 inputs=inputs,
             )
         pygame.display.update()
         return True
 
+    def tmp_draw_map(self):
+        return
+        for y_idx in range(self.map_tiles_nbr.y):
+            for x_idx in range(self.map_tiles_nbr.x):
+                tile_data = self.client.map[y_idx][x_idx]
+                self.display_entity(*tile_data, Pos(y=y_idx, x=x_idx))
 
-    def draw_map(s, map_handler):
-        """ Draw the map sent by the server, keeping the player at the center of the screen """
-        needed_lines_top = s.map_tiles_nbr.y // 2 + 2
-        to_add_top = needed_lines_top - map_handler.player_pos.y
-        term_y_idx = 0 if to_add_top <= 0 else to_add_top
-        map_y_idx = 0 if to_add_top >= 0 else -to_add_top
+    # def draw_map(self, map_handler):
+    #     """ Draw the map sent by the server, keeping the player at the center of the screen """
+    #     needed_lines_top = self.map_tiles_nbr.y // 2 + 2
+    #     to_add_top = needed_lines_top - map_handler.player_pos.y
+    #     term_y_idx = 0 if to_add_top <= 0 else to_add_top
+    #     map_y_idx = 0 if to_add_top >= 0 else -to_add_top
+    #
+    #     tiles_to_add_left = self.map_tiles_nbr.x // 2 - map_handler.player_pos.x
+    #     shift_x = 0 if tiles_to_add_left <= 0 else tiles_to_add_left
+    #     shift_x += 1
+    #     map_x_start = 0 if tiles_to_add_left >= 0 else -tiles_to_add_left
+    #     avail_tiles_right = self.map_tiles_nbr.x // 2
+    #     map_x_end = map_handler.player_pos.x + avail_tiles_right
+    #
+    #     while term_y_idx < self.map_tiles_nbr.y and map_y_idx < len(map_handler.map):
+    #         term_y_idx += 1
+    #         tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
+    #         for x_idx, tile in enumerate(tmp_line):
+    #             if tile:
+    #                 types = tile.get_types()
+    #                 pos = Pos(x=shift_x + x_idx, y=term_y_idx)
+    #                 # Lower entity
+    #                 if types[1]: self.display_entity(tile.low_ent, tile.noise_value, pos)
+    #                 # Top entity
+    #                 if types[0]: self.display_entity(tile.top_ent, tile.noise_value, pos)
+    #         map_y_idx += 1
 
-        tiles_to_add_left = s.map_tiles_nbr.x // 2 - map_handler.player_pos.x
-        shift_x = 0 if tiles_to_add_left <= 0 else tiles_to_add_left
-        shift_x += 1
-        map_x_start = 0 if tiles_to_add_left >= 0 else -tiles_to_add_left
-        avail_tiles_right = s.map_tiles_nbr.x // 2
-        map_x_end = map_handler.player_pos.x + avail_tiles_right
+    def display_entity(self, bloc_type, region, noise_value, pos):
+        """ From the entity type, position and noise value assigned to this position
+        (computed server side) draw a sprite"""
+        pprint(self.sprites)
+        sprite_name = f'{region}_{bloc_type}'
+        if sprite_name not in self.sprites.keys():
+            sprite_name = bloc_type
+            if sprite_name not in self.sprites.keys():
+                sprite_name = 'default'
+        sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
+        self.display.blit(self.sprites[bloc_type.type][sprite_idx], (pos * self.tile_size).get_xy())
 
-        while term_y_idx < s.map_tiles_nbr.y and map_y_idx < len(map_handler.map):
-            term_y_idx += 1
-            tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
-            for x_idx, tile in enumerate(tmp_line):
-                if tile:
-                    types = tile.get_types()
-                    pos = Pos(x=shift_x + x_idx, y=term_y_idx)
-                    # Lower entity
-                    if types[1]: s.display_entity(tile.low_ent, tile.noise_value, pos)
-                    # Top entity
-                    if types[0]: s.display_entity(tile.top_ent, tile.noise_value, pos)
-            map_y_idx += 1
-
-    def display_entity(s, ent, noise_value, pos):
-        """ Get an entity type, position and the noise value assigned to this position
-        (computed server side) and draws it"""
-        if not ent: return
-        if ent.type not in s.sprites.keys():
-            exit_error(f'[-] Texture not found: {ent.type}')
-        sprite_idx = int(noise_value * len(s.sprites[ent.type]))
-        s.display.blit(s.sprites[ent.type][sprite_idx], (pos * s.tile_size).get_xy())
-
-    def draw_hud(s, info_list):
-        hud_text_x_start = (3 + s.map_tiles_nbr.x) * s.tile_size
+    def draw_hud(self, info_list):
+        hud_text_x_start = (3 + self.map_tiles_nbr.x) * self.tile_size
         # Draw title
-        text_surface = s.font.render('CLIPPY', False, WHITE)
-        s.display.blit(text_surface, (hud_text_x_start, s.tile_size * 2))
+        text_surface = self.font.render('CLIPPY', False, WHITE)
+        self.display.blit(text_surface, (hud_text_x_start, self.tile_size * 2))
         # Draw informations
         y_idx = 5
         for key, value in info_list.items():
             final_str = f"{key}: {value}" if value != None else f"{key}"
-            text_surface = s.font.render(final_str, False, WHITE)
-            s.display.blit(text_surface, (hud_text_x_start, s.tile_size * y_idx))
+            text_surface = self.font.render(final_str, False, WHITE)
+            self.display.blit(text_surface, (hud_text_x_start, self.tile_size * y_idx))
             y_idx += 2
 
-    def draw_borders(s):
+    def draw_borders(self):
         # Top border
-        for y in range(s.tile_size - s.borders_width, s.tile_size):
-            pygame.draw.line(s.display, WHITE,
-                                (s.tile_size - s.borders_width, y),
-                                (s.screen_size.x - s.tile_size + s.borders_width - 1, y))
+        for y in range(self.tile_size - self.borders_width, self.tile_size):
+            pygame.draw.line(self.display, WHITE,
+                                (self.tile_size - self.borders_width, y),
+                                (self.screen_size.x - self.tile_size + self.borders_width - 1, y))
         # Bottom border
-        for y in range(s.screen_size.y - s.tile_size, s.screen_size.y - s.tile_size + s.borders_width):
-            pygame.draw.line(s.display, WHITE,
-                                (s.tile_size - s.borders_width, y),
-                                (s.screen_size.x - s.tile_size + s.borders_width - 1, y))
+        for y in range(self.screen_size.y - self.tile_size, self.screen_size.y - self.tile_size + self.borders_width):
+            pygame.draw.line(self.display, WHITE,
+                                (self.tile_size - self.borders_width, y),
+                                (self.screen_size.x - self.tile_size + self.borders_width - 1, y))
         # Left border
-        for x in range(s.tile_size - s.borders_width, s.tile_size):
-            pygame.draw.line(s.display, WHITE,
-                                (x, s.tile_size),
-                                (x, s.screen_size.y - s.tile_size))
+        for x in range(self.tile_size - self.borders_width, self.tile_size):
+            pygame.draw.line(self.display, WHITE,
+                                (x, self.tile_size),
+                                (x, self.screen_size.y - self.tile_size))
         # Right border
-        for x in range(s.screen_size.x - s.tile_size, s.screen_size.x - s.tile_size + s.borders_width):
-            pygame.draw.line(s.display, WHITE,
-                                (x, s.tile_size),
-                                (x, s.screen_size.y - s.tile_size))
-        hud_x_start = (1 + s.map_tiles_nbr.x) * s.tile_size
+        for x in range(self.screen_size.x - self.tile_size, self.screen_size.x - self.tile_size + self.borders_width):
+            pygame.draw.line(self.display, WHITE,
+                                (x, self.tile_size),
+                                (x, self.screen_size.y - self.tile_size))
+        hud_x_start = (1 + self.map_tiles_nbr.x) * self.tile_size
         # Right Map border
-        for x in range(hud_x_start, hud_x_start + s.borders_width):
-            pygame.draw.line(s.display, WHITE,
-                                (x, s.tile_size),
-                                (x, s.screen_size.y - s.tile_size))
+        for x in range(hud_x_start, hud_x_start + self.borders_width):
+            pygame.draw.line(self.display, WHITE,
+                                (x, self.tile_size),
+                                (x, self.screen_size.y - self.tile_size))
         # Left HUD border
-        for x in range(hud_x_start + s.tile_size - s.borders_width, hud_x_start + s.tile_size):
-            pygame.draw.line(s.display, WHITE,
-                                (x, s.tile_size),
-                                (x, s.screen_size.y - s.tile_size))
+        for x in range(hud_x_start + self.tile_size - self.borders_width, hud_x_start + self.tile_size):
+            pygame.draw.line(self.display, WHITE,
+                                (x, self.tile_size),
+                                (x, self.screen_size.y - self.tile_size))
         # Top HUD border
-        hud_line_y_start = s.tile_size * 4 + s.tile_size // 2
-        for y in range(hud_line_y_start, hud_line_y_start + s.borders_width):
-            pygame.draw.line(s.display, WHITE,
-                                (hud_x_start + s.tile_size, y),
-                                (s.screen_size.x - s.tile_size + s.borders_width - 1, y))
+        hud_line_y_start = self.tile_size * 4 + self.tile_size // 2
+        for y in range(hud_line_y_start, hud_line_y_start + self.borders_width):
+            pygame.draw.line(self.display, WHITE,
+                                (hud_x_start + self.tile_size, y),
+                                (self.screen_size.x - self.tile_size + self.borders_width - 1, y))
 
-    def draw_grid(s):
+    def draw_grid(self):
         """ Draws a grid on the whole screen, for debugging purposes """
-        for y in range(0, s.screen_size.y, s.tile_size):
-            pygame.draw.line(s.display, WHITE, (0, y), (s.screen_size.x, y), 1)
-        for x in range(0, s.screen_size.x, s.tile_size):
-            pygame.draw.line(s.display, WHITE, (x, 0), (x, s.screen_size.y), 1)
+        for y in range(0, self.screen_size.y, self.tile_size):
+            pygame.draw.line(self.display, WHITE, (0, y), (self.screen_size.x, y), 1)
+        for x in range(0, self.screen_size.x, self.tile_size):
+            pygame.draw.line(self.display, WHITE, (x, 0), (x, self.screen_size.y), 1)
 
-    def get_inputs(s):
+    def get_inputs(self):
         """ Convert PyGame inputs into the formatted ones """
         keys = pygame.key.get_pressed()
         res = []
@@ -164,27 +174,27 @@ class GameLoop(object):
         if keys[K_DOWN] or keys[K_s]: res.append('DOWN')
         return res
 
-    def load_available_sprites(s, sprite_size):
+    def load_available_sprites(self, sprite_size):
         no_rot_path = 'assets/sprites/no_rot_sprites'
         rot_path = 'assets/sprites'
         # Load sprites with no rotation
         no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
         rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]
         for sprite_name in no_rot_sprites:
-            s.sprites[sprite_name] = [s.load_sprite(no_rot_path, sprite_name)]
+            self.sprites[sprite_name] = [self.load_sprite(no_rot_path, sprite_name)]
         for sprite_name in rot_sprites:
-            s.sprites[sprite_name] = [s.load_sprite(rot_path, sprite_name)]
-        print(f'[+] {len(s.sprites)} sprites loaded')
-        # print(s.sprites.keys())
+            self.sprites[sprite_name] = [self.load_sprite(rot_path, sprite_name)]
+        print(f'[+] {len(self.sprites)} sprites loaded')
+        # print(self.sprites.keys())
         # Now create the rotated version of the sprites which need it
         for sprite_name in rot_sprites:
             for angle in [90, 180, 270]:
-                s.sprites[sprite_name].append(pygame.transform.rotate(s.sprites[sprite_name][0], angle))
-        print(f'[+] {sum([len(a) for a in s.sprites.values()])} total sprites after rotations')
+                self.sprites[sprite_name].append(pygame.transform.rotate(self.sprites[sprite_name][0], angle))
+        print(f'[+] {sum([len(a) for a in self.sprites.values()])} total sprites after rotations')
 
-    def load_sprite(s, path, name):
+    def load_sprite(self, path, name):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')
             # Transform it to a pygame friendly format (quicker drawing)
             tmp_sprite.convert()
             # Scale it to the tile size
-            return pygame.transform.scale(tmp_sprite, (s.config['tile_size'], s.config['tile_size']))
+            return pygame.transform.scale(tmp_sprite, (self.config['tile_size'], self.config['tile_size']))

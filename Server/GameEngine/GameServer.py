@@ -73,7 +73,7 @@ class ClippyGame(object):
         self.systems.append(function)
 
     def run(self):
-        self.backend.run("127.0.0.1", 8080)
+        self.backend.run("0.0.0.0", 8080)
 
     def on_move(self, player_id, inputs, **kwargs):
         print(f"received inputs from client id n°{player_id}: {inputs!r}")
