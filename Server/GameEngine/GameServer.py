@@ -2,6 +2,7 @@ import zlib
 import random
 import umsgpack
 import hashlib
+import time
 # from pprint import pprint
 from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
@@ -20,10 +21,12 @@ class ClippyGame(object):
         self.entity = 0
         self.systems = []
         self.components = {}
+        self.debug_timer = None
         self.map_generator = MapGenerator(MAP_CONFIG)
         self.map = self.map_generator.generate_terrain_chunk()
         self.initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
+            components={"Position": {}}
         )
         self.backend = Backend(
             self.initial_game_state,
@@ -35,8 +38,38 @@ class ClippyGame(object):
                 }
         )
         self.add_system(self.movement_system)
+        self.add_system(self.debug_system)
 
-    def movement_system(self, gamestate, dt):
+    def movement_system(self, game_state, dt):
+        position_update = {}
+        inputs_update = {}
+        for id, player in game_state.players.items():
+            player_entity = player["entity"]
+            player_inputs = game_state.components["Inputs"][player_entity]
+            if len(player_inputs) == 0:
+                continue
+            x = y = 0
+            for input in player_inputs:
+                if input == "UP":
+                    y += 1
+                elif input == "DOWN":
+                    y -= 1
+                elif input == "RIGHT":
+                    x += 1
+                elif input == "LEFT":
+                    x -= 1
+            inputs_update[player_entity] = []
+            position_update[player_entity] = game_state.components["Position"][player_entity] + Position(y, x)
+        return {"components": {"Position": position_update, "Inputs": inputs_update}}
+
+    def debug_system(self, game_state, dt):
+        if self.debug_timer is None:
+            self.debug_timer = time.time()
+            return {}
+        now = time.time()
+        if now - self.debug_timer > 5:
+            print("Position: ", game_state.components["Position"])
+            self.debug_timer = now
         return {}
 
     def time_step(self, game_state, dt):
@@ -75,19 +108,38 @@ class ClippyGame(object):
     def run(self):
         self.backend.run("0.0.0.0", 8080)
 
-    def on_move(self, player_id, inputs, **kwargs):
+    def on_move(self, player_id, inputs, game_state, **kwargs):
         print(f"received inputs from client id n°{player_id}: {inputs!r}")
-        return {}
+        if player_id not in game_state.players:
+            return {}
+        player_entity = game_state.players[player_id]["entity"]
+        return {
+            "components": {
+                    "Inputs": {player_entity: inputs}
+            }
+        }
 
     def on_join(self, player_name, game_state, client_address, **kwargs):
         print(f"{player_name} joined.")
         player_id = len(game_state.players)
         # Notify client that the player successfully joined the game.
         self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
+        player_entity = self.new_entity()
         return {
-            # Add a new entry to the players dict
-            "components": {"Position": {player_id: (0, 0)}},
-            "players": {player_id: {"name": player_name}}
+            "components": {
+                "Position": {
+                    player_entity: Position(0, 0),
+                },
+                "Inputs": {
+                    player_entity: []
+                }
+            },
+            "players": {
+                player_id: {
+                    "name": player_name,
+                    "entity": player_entity
+                }
+            }
         }
 
     def on_map_request(self, client_address, **kwargs):

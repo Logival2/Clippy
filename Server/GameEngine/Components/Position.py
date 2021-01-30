@@ -31,7 +31,9 @@ class Position(object):
         return f"Position(y={self.y}, x={self.x}"
 
     def __eq__(self, other):
-        return self.y == other.y and self.x == other.x
+        if isinstance(other, Position):
+            return self.y == other.y and self.x == other.x
+        return (self.y, self.x) == other
 
     def __gt__(self, other):
         return self.y > other.y or self.x > other.x
