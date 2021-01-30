@@ -8,6 +8,7 @@ from pygame.locals import *
 
 from utils import Pos, exit_error
 from config import *
+from Components import Position
 
 
 class GameLoop(object):
@@ -39,6 +40,7 @@ class GameLoop(object):
         self.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
         self.sprites = {}
         self.load_available_sprites(self.tile_size)
+        self.last_print_time = time.time()
 
     def update(self, events, _):
         self.display.fill(BLACK)
@@ -64,9 +66,15 @@ class GameLoop(object):
         ''' Draw the dynamic entities, which are in the game state
         '''
         with self.client.access_game_state() as game_state:
-            print('COMP', game_state.components)
-            print()
-            print('PLAYER', game_state.players)
+            if time.time() - self.last_print_time > 2:
+                self.last_print_time = time.time()
+                try:
+                    print('COMP', game_state.components['Position'])
+                    # print('COMP', game_state.components['Position'][self.client.entity_id])
+                except:
+                    print('No player with id found', self.client.entity_id)
+            # print()
+            # print('PLAYER', game_state.players)
 
     def draw_map(self):
         ''' Display the static map, received at the start of the connection
@@ -118,7 +126,7 @@ class GameLoop(object):
             sprite_name = bloc_type
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
-        sprite_idx = int(1 - noise_value * len(self.sprites[sprite_name]))
+        sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
         self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Pos(1, 1)) * self.tile_size).get_xy())
 
     def draw_hud(self, info_list):

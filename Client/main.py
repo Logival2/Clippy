@@ -42,7 +42,7 @@ class App(object):
                 self.end_main_menu()
 
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(20)
 
     def end_main_menu(self):
         print('Quitting menu')
@@ -70,10 +70,12 @@ class NetworkClient(Client):
         self.register_event_handler("PLAYER_CREATED", self.on_player_created)
         self.register_event_handler("MAP_RESPONSE", self.on_map_response)
 
-    def on_player_created(self, player_id):
+    def on_player_created(self, player_id, entity_id):
         '''"PLAYER_CREATED" event handler'''
-        # Remember the id the backend assigned the player.
+        # Remember the id the network backend assigned the player.
         self.player_id = player_id
+        # Remember the id the ECS assigned to the player entity.
+        self.entity_id = entity_id
 
     def on_map_response(self, dl_is_complete, chunk_num, map_datagram):
         self.map.append((chunk_num, map_datagram))
