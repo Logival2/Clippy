@@ -8,8 +8,9 @@ MAP_CONFIG = {
     'noise_scale': 15,  # Bigger = Zoom in
     'regions': {
         'desert': {
-            'sand': 0.3,
-            'dehiuehdeuid': 1,
+            'grass': 0.3,
+            'sand': 0.8,
+            'stone': 1,
         },
         'mountain': {
             'stone': 1,

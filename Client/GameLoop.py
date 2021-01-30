@@ -61,12 +61,16 @@ class GameLoop(object):
         return True
 
     def draw_entities(self):
+        ''' Draw the dynamic entities, which are in the game state
+        '''
         with self.client.access_game_state() as game_state:
             print('COMP', game_state.components)
             print()
             print('PLAYER', game_state.players)
 
     def draw_map(self):
+        ''' Display the static map, received at the start of the connection
+        '''
         x_idx = 0
         y_idx = 0
         while y_idx < self.map_tiles_nbr.y and y_idx < len(self.client.map):
@@ -78,7 +82,6 @@ class GameLoop(object):
                 x_idx += 1
             x_idx = 0
             y_idx += 1
-            # print(f'Y {y_idx} < {self.map_tiles_nbr.y} {len(self.client.map)}')
 
     # def tmp_draw_map(self, map_handler):
     #     """ Draw the map sent by the server, keeping the player at the center of the screen """
@@ -110,13 +113,12 @@ class GameLoop(object):
     def display_entity(self, bloc_type, region, noise_value, pos):
         """ From the entity type, position and noise value assigned to this position
         (computed server side) draw a sprite"""
-        # pprint(self.sprites)
         sprite_name = f'{region}_{bloc_type}'
         if sprite_name not in self.sprites.keys():
             sprite_name = bloc_type
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
-        sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
+        sprite_idx = int(1 - noise_value * len(self.sprites[sprite_name]))
         self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Pos(1, 1)) * self.tile_size).get_xy())
 
     def draw_hud(self, info_list):
@@ -197,14 +199,18 @@ class GameLoop(object):
         for sprite_name in no_rot_sprites:
             self.sprites[sprite_name] = [self.load_sprite(no_rot_path, sprite_name)]
         for sprite_name in rot_sprites:
-            self.sprites[sprite_name] = [self.load_sprite(rot_path, sprite_name)]
+            final_sprite_name = sprite_name[:-2]
+            if final_sprite_name in self.sprites:
+                self.sprites[final_sprite_name].append(self.load_sprite(rot_path, sprite_name))
+            else:
+                self.sprites[final_sprite_name] = [self.load_sprite(rot_path, sprite_name)]
         print(f'[+] {len(self.sprites)} sprites loaded')
-        print(self.sprites.keys())
         # Now create the rotated version of the sprites which need it
         for sprite_name in rot_sprites:
             for angle in [90, 180, 270]:
-                self.sprites[sprite_name].append(pygame.transform.rotate(self.sprites[sprite_name][0], angle))
+                self.sprites[sprite_name[:-2]].append(pygame.transform.rotate(self.sprites[sprite_name[:-2]][0], angle))
         print(f'[+] {sum([len(a) for a in self.sprites.values()])} total sprites after rotations')
+        pprint(self.sprites)
 
     def load_sprite(self, path, name):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')
