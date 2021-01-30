@@ -38,15 +38,15 @@ class GameLoop(object):
         ### ASSETS ###
         self.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
         self.sprites = {}
-        self.load_available_sprites(16)
+        self.load_available_sprites(self.tile_size)
 
     def update(self, events, _):
-        # RECEIVE NETWORK
         self.display.fill(BLACK)
+
         self.draw_borders()
         # self.draw_hud(info_list)
-        self.tmp_draw_map()
-        # self.draw_grid()  # Useful for debugging
+        self.draw_map()
+        self.draw_entities()
 
         # SEND INPUTS
         inputs = self.get_inputs()
@@ -56,10 +56,17 @@ class GameLoop(object):
                 player_id=self.client.player_id,
                 inputs=inputs,
             )
+
         pygame.display.update()
         return True
 
-    def tmp_draw_map(self):
+    def draw_entities(self):
+        with self.client.access_game_state() as game_state:
+            print('COMP', game_state.components)
+            print()
+            print('PLAYER', game_state.players)
+
+    def draw_map(self):
         x_idx = 0
         y_idx = 0
         while y_idx < self.map_tiles_nbr.y and y_idx < len(self.client.map):
@@ -73,7 +80,7 @@ class GameLoop(object):
             y_idx += 1
             # print(f'Y {y_idx} < {self.map_tiles_nbr.y} {len(self.client.map)}')
 
-    # def draw_map(self, map_handler):
+    # def tmp_draw_map(self, map_handler):
     #     """ Draw the map sent by the server, keeping the player at the center of the screen """
     #     needed_lines_top = self.map_tiles_nbr.y // 2 + 2
     #     to_add_top = needed_lines_top - map_handler.player_pos.y
