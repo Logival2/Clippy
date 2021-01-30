@@ -8,6 +8,9 @@ from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 
+from GameEngine.Components.Fox import fox_update
+from GameEngine.Components.Rabbit import rabbit_update
+
 
 def chunk_map(bs, n):
     for i in range(0, len(bs), n):
@@ -37,6 +40,8 @@ class ClippyGame(object):
         )
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
+        self.add_system(rabbit_update)
+        self.add_system(fox_update)
 
     def movement_system(self, game_state, dt):
         position_update = {}
