@@ -123,9 +123,9 @@ class ClippyGame(object):
     def on_join(self, player_name, game_state, client_address, **kwargs):
         print(f"{player_name} joined.")
         player_id = len(game_state.players)
-        # Notify client that the player successfully joined the game.
-        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
         player_entity = self.new_entity()
+        # Notify client that the player successfully joined the game.
+        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, player_entity, target_client=client_address)
         return {
             "components": {
                 "Position": {
