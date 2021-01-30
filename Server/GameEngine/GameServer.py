@@ -4,7 +4,7 @@ import umsgpack
 import hashlib
 # from pprint import pprint
 from pygase import GameState, Backend
-from Components.Position import Position
+from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.map_config import MAP_CONFIG
 
@@ -86,7 +86,7 @@ class ClippyGame(object):
         self.backend.server.dispatch_event("PLAYER_CREATED", player_id, target_client=client_address)
         return {
             # Add a new entry to the players dict
-            "components": {"Position": {player_id: Position(0, 0)}},
+            "components": {"Position": {player_id: (0, 0)}},
             "players": {player_id: {"name": player_name}}
         }
 
