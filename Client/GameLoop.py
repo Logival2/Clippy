@@ -66,13 +66,13 @@ class GameLoop(object):
         ''' Draw the dynamic entities, which are in the game state
         '''
         with self.client.access_game_state() as game_state:
-            if time.time() - self.last_print_time > 2:
+            if time.time() - self.last_print_time > 0.5:
                 self.last_print_time = time.time()
-                try:
-                    print('COMP', game_state.components['Position'])
-                    # print('COMP', game_state.components['Position'][self.client.entity_id])
-                except:
-                    print('No player with id found', self.client.entity_id)
+            try:
+                print('COMP', game_state.components['Position'])
+                # print('COMP', game_state.components['Position'][self.client.entity_id])
+            except:
+                print('No player with id found', self.client.entity_id)
             # print()
             # print('PLAYER', game_state.players)
 
@@ -218,7 +218,6 @@ class GameLoop(object):
             for angle in [90, 180, 270]:
                 self.sprites[sprite_name[:-2]].append(pygame.transform.rotate(self.sprites[sprite_name[:-2]][0], angle))
         print(f'[+] {sum([len(a) for a in self.sprites.values()])} total sprites after rotations')
-        pprint(self.sprites)
 
     def load_sprite(self, path, name):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')

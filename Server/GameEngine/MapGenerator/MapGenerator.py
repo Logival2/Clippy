@@ -18,10 +18,28 @@ class MapGenerator(object):
         self.capitals_positions = []
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
+    # def generate_entities_chunk(self, anchor_pos=Pos(0, 0)):
+    #     ''' returns a double array of tuples: (entity_type, region)
+    #     noise value is needed by clients to vary the display of similar bloc types'''
+    #     chunk = []
+    #     for y in range(self.config['chunk_size']):
+    #         tmp_line = []
+    #         for x in range(self.config['chunk_size']):
+    #             tile_pos = Pos(x=anchor_pos.x + x, y=anchor_pos.y + y)
+    #             noise_value = self.get_simplex_value(tile_pos)
+    #             region = self.get_pos_region(tile_pos)
+    #             bloc_type = self.get_bloc_type(noise_value, region)
+    #             tmp_line.append((bloc_type, region))
+    #         chunk.append(tmp_line)
+    #     return chunk
+
     def generate_terrain_chunk(self, anchor_pos=Pos(0, 0)):
         ''' returns a double array of tuples: (bloc_type, region, noise_value)
         noise value is needed by clients to vary the display of similar bloc types'''
         chunk = []
+        regions_blocs_positions = {}
+        for region in self.config['regions']:
+            regions_blocs_positions[region] = []
         for y in range(self.config['chunk_size']):
             tmp_line = []
             for x in range(self.config['chunk_size']):
@@ -30,14 +48,30 @@ class MapGenerator(object):
                 region = self.get_pos_region(tile_pos)
                 bloc_type = self.get_bloc_type(noise_value, region)
                 tmp_line.append((bloc_type, region, noise_value))
+                regions_blocs_positions[region].append((y, x))
             chunk.append(tmp_line)
+        # Now randomly swap blocs
+        swaps_nbr = 0
+        for region in self.config['regions']:
+            bloc_nbr_to_swap = len(regions_blocs_positions[region]) * self.config['regions'][region]['random_bloc_swaps_frequency'] // 100
+            print(f"Swapping {bloc_nbr_to_swap} blocs in {region}")
+            while swaps_nbr < bloc_nbr_to_swap:
+                # choose two blocs
+                bloc_1_pos = random.choice(regions_blocs_positions[region])
+                bloc_2_pos = random.choice(regions_blocs_positions[region])
+                if bloc_1_pos == bloc_2_pos:
+                    continue
+                swaps_nbr += 2
+                tmp = chunk[bloc_1_pos[0]][bloc_1_pos[1]]
+                chunk[bloc_1_pos[0]][bloc_1_pos[1]] = chunk[bloc_2_pos[0]][bloc_2_pos[1]]
+                chunk[bloc_2_pos[0]][bloc_2_pos[1]] = tmp
         return chunk
 
     def get_bloc_type(self, noise_value, region):
         ''' Use the region, noise value and config values (config.py) to
         determine which terrain block will be chosen'''
         block_name = ''
-        for tmp_block_name, value in self.config['regions'][region].items():
+        for tmp_block_name, value in self.config['regions'][region]['repartition'].items():
             block_name = tmp_block_name
             if noise_value < value:
                 break
