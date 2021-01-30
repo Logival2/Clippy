@@ -1,0 +1,26 @@
+import random
+
+from Server.GameEngine.Ecs import ecs
+
+
+class Fox:
+    def __init__(self):
+        """ When relevant, 1 is the width of a chunk """
+        """ Properties will change during AI tweaks """
+        self.reproduction_rate = random.uniform(0, 1)
+        self.social_rate = random.uniform(0, 1)
+        self.food_search_rate = random.uniform(0, 1)
+        self.view_radius = random.uniform(0, 0.5)
+
+        self.hunger = 0
+        self.urge_to_reproduce = 0
+        """ Add a 'pheromone' map and add a curiosity factor """
+
+
+def fox_update():
+    """ What does the fow says ? """
+    foxs = ecs.get_component(Fox)
+    for fox in foxs:
+        print("Ring-ding-ding-ding-dingeringeding!\n" +
+              "Gering-ding-ding-ding-dingeringeding!\n" +
+              "Gering-ding-ding-ding-dingeringeding!")
