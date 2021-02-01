@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 import socket
 
-from CONFIG import SERVER_ADDRESS
+from CONFIG import *
 
 
 class Client(object):
@@ -25,8 +26,8 @@ class Client(object):
         self.s.sendall(self.data.encode())
         print("{} - Bytes Sent: {}".format(self.id, self.data))
         if receive:
-            received = self.s.recv(1024)
-            print("{} - Bytes Received: {}".format(self.id, received.decode()))
+            received = self.s.recv(BUFFER_SIZE)
+            print("{} - Bytes Received: {}".format(self.id, received))
 
 
 if __name__ == '__main__':

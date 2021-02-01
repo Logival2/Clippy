@@ -1,5 +1,6 @@
-SERVER_ADDRESS = ('localhost', 1337)
+SERVER_ADDRESS = ('localhost', 1338)
 BUFFER_SIZE = 1024
+MAX_TCP_PACKET_SIZE = 1024
 
 CREATE_LOG = False
 LOGS_PATH = "./logs/"

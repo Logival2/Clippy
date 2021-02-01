@@ -53,7 +53,7 @@ class NetworkManager(object):
                     print("New connection from {}".format(client_address))
             else:
                 try:
-                    msg = s.recv(BUFFER_SIZE).decode('utf-8')
+                    msg = s.recv(BUFFER_SIZE)
                 except ConnectionResetError:
                     print("Unexpected client disconnection (happens when clients disconnect too fast after connection)")
                     self.delete_client(s)
@@ -86,7 +86,9 @@ class NetworkManager(object):
             response = client.result
             if response:
                 print('sending "{}" to {}'.format(response, s.getpeername()))
-                s.send(response.serialize().encode())
+                packets = response.serialize()
+                for packet in packets:
+                    s.send(packet)
                 self.clients[s].result = None
             else:  # No messages waiting so stop checking for writability.
                 self.outputs.remove(s)
