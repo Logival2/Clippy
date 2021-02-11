@@ -92,7 +92,8 @@ class ClippyGame(object):
                 system_updates = function()
             updates.update(system_updates)
         # tmp
-        self.game_loop.update(self.map, self.initial_game_state)
+        self.initial_game_state = self.game_loop.update(self.map, self.initial_game_state)
+        print(self.initial_game_state)
         return updates
 
     def new_entity(self):

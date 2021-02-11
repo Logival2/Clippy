@@ -63,7 +63,7 @@ class GameLoop(object):
         #     )
 
         pygame.display.update()
-        return True
+        return initial_game_state
 
     def draw_entities(self,map, initial_game_state):
         ''' Draw the dynamic entities, which are in the game state '''
