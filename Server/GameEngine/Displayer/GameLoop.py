@@ -81,8 +81,8 @@ class GameLoop(object):
         '''
         x_idx = 0
         y_idx = 0
-        while y_idx < self.map_tiles_nbr.y and y_idx < len(self.client.map):
-            while x_idx < self.map_tiles_nbr.x and x_idx < len(self.client.map[0]):
+        while y_idx < self.map_tiles_nbr.y and y_idx < len(map):
+            while x_idx < self.map_tiles_nbr.x and x_idx < len(map[0]):
                 pos = Pos(y=y_idx, x=x_idx)
                 # print(pos)
                 # tile_data = self.client.map[y_idx][x_idx]

@@ -41,6 +41,8 @@ class ClippyGame(object):
         )
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
+        self.on_join("rickyrick", self.initial_game_state, "128.1.1.2")
+
 
     def movement_system(self, game_state, dt):
         position_update = {}
@@ -75,9 +77,10 @@ class ClippyGame(object):
         return {}
 
     def time_step(self, game_state, dt):
+        print("1")
         # Before a player joins, updating the game state is unnecessary.
-        if len(game_state.players) == 0:
-            return {}
+        # if len(game_state.players) == 0:
+        #     return {}
         updates = {}
         for function in self.systems:
             if str(signature(function)) != "()":
@@ -86,7 +89,7 @@ class ClippyGame(object):
                 system_updates = function()
             updates.update(system_updates)
         # tmp
-        print("hfdiuhfsuiocfheu")
+        print("2")
         self.game_loop.update(self.map, self.initial_game_state)
         return updates
 
@@ -145,7 +148,7 @@ class ClippyGame(object):
         player_id = len(game_state.players)
         player_entity = self.new_entity()
         # Notify client that the player successfully joined the game.
-        self.backend.server.dispatch_event("PLAYER_CREATED", player_id, player_entity, target_client=client_address)
+        # self.backend.server.dispatch_event("PLAYER_CREATED", player_id, player_entity, target_client=client_address)
         return {
             "components": {
                 "Position": {
