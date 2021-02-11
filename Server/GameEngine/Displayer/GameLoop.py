@@ -7,13 +7,11 @@ import pygame
 from pygame.locals import *
 
 from utils import Pos, exit_error
-from config import *
-from Components import Position
+from GameEngine.Displayer.config import *
 
 
 class GameLoop(object):
-    def __init__(self, config, client):
-        self.client = client
+    def __init__(self, config):
         ### Pygame related ###
         pygame.init()
         self.config = config
@@ -37,46 +35,48 @@ class GameLoop(object):
         self.display = pygame.display.set_mode((self.screen_size.x , self.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
-        self.font = pygame.font.Font('./assets/fonts/Everson_Mono.ttf', 24)
+        self.font = pygame.font.Font('./GameEngine/Displayer/assets/fonts/Everson_Mono.ttf', 24)
         self.sprites = {}
         self.load_available_sprites(self.tile_size)
         self.last_print_time = time.time()
 
-    def update(self, events, _):
+    def update(self, map, initial_game_state):
         self.display.fill(BLACK)
 
         self.draw_borders()
         # self.draw_hud(info_list)
-        self.draw_map()
-        self.draw_entities()
+        self.draw_map(map, initial_game_state)
+        self.draw_entities(map, initial_game_state)
 
         # SEND INPUTS
-        inputs = self.get_inputs()
-        if inputs:
-            self.client.dispatch_event(
-                event_type="MOVE",
-                player_id=self.client.player_id,
-                inputs=inputs,
-            )
+        # inputs = self.get_inputs()
+        # if inputs:
+        #     self.client.dispatch_event(
+        #         event_type="MOVE",
+        #         player_id=self.client.player_id,
+        #         inputs=inputs,
+        #     )
 
         pygame.display.update()
         return True
 
-    def draw_entities(self):
+    def draw_entities(self,map, initial_game_state):
         ''' Draw the dynamic entities, which are in the game state
         '''
-        with self.client.access_game_state() as game_state:
-            if time.time() - self.last_print_time > 0.5:
-                self.last_print_time = time.time()
-            try:
-                print('COMP', game_state.components['Position'])
-                # print('COMP', game_state.components['Position'][self.client.entity_id])
-            except:
-                print('No player with id found', self.client.entity_id)
-            # print()
-            # print('PLAYER', game_state.players)
+        pass
+        # with self.client.access_game_state() as game_state:
+        #     if time.time() - self.last_print_time > 0.5:
+        #         self.last_print_time = time.time()
+        #     try:
+        #         print('COMP', game_state.components['Position'])
+        #         # print('COMP', game_state.components['Position'][self.client.entity_id])
+        #     except:
+        #         print('No player with id found', self.client.entity_id)
+        #     # print()
+        #     # print('PLAYER', game_state.players)
 
-    def draw_map(self):
+    def draw_map(self, map, initial_game_state):
+        print("sebsebseb")
         ''' Display the static map, received at the start of the connection
         '''
         x_idx = 0
@@ -85,7 +85,9 @@ class GameLoop(object):
             while x_idx < self.map_tiles_nbr.x and x_idx < len(self.client.map[0]):
                 pos = Pos(y=y_idx, x=x_idx)
                 # print(pos)
-                tile_data = self.client.map[y_idx][x_idx]
+                # tile_data = self.client.map[y_idx][x_idx]
+                # Take in ECS
+                tile_data = map[y_idx][x_idx]
                 self.display_entity(*tile_data, pos)
                 x_idx += 1
             x_idx = 0
@@ -199,8 +201,8 @@ class GameLoop(object):
         return res
 
     def load_available_sprites(self, sprite_size):
-        no_rot_path = 'assets/sprites/no_rot_sprites'
-        rot_path = 'assets/sprites'
+        no_rot_path = './GameEngine/Displayer/assets/sprites/no_rot_sprites'
+        rot_path = './GameEngine/Displayer/assets/sprites'
         # Load sprites with no rotation
         no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
         rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]

@@ -8,6 +8,8 @@ from inspect import signature
 from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
+from GameEngine.Displayer.GameLoop import GameLoop
+from GameEngine.Displayer.config import *
 
 
 def chunk_map(bs, n):
@@ -17,6 +19,7 @@ def chunk_map(bs, n):
 
 class ClippyGame(object):
     def __init__(self):
+        self.game_loop = GameLoop(DISPLAY_CONFIG)
         self.entity = 0
         self.systems = []
         self.components = {}
@@ -82,6 +85,9 @@ class ClippyGame(object):
             else:
                 system_updates = function()
             updates.update(system_updates)
+        # tmp
+        print("hfdiuhfsuiocfheu")
+        self.game_loop.update(self.map, self.initial_game_state)
         return updates
 
     def new_entity(self):
