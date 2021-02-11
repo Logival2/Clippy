@@ -26,12 +26,16 @@ class ClippyGame(object):
         self.debug_timer = None
         self.map_generator = MapGenerator()
         self.map = self.map_generator.generate_terrain_chunk()
-        self.initial_game_state = GameState(
+        self.initial_game_state = {
+            "players": {"rick": {}},  # dict with `player_id: player_dict` entries
+            "components": {"Position": {}}
+        }
+        self.tmp_initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
             components={"Position": {}}
         )
         self.backend = Backend(
-            self.initial_game_state,
+            self.tmp_initial_game_state,
             self.time_step,
             event_handlers={
                 'MOVE': self.on_move,
@@ -41,7 +45,7 @@ class ClippyGame(object):
         )
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
-        self.on_join("rickyrick", self.initial_game_state, "128.1.1.2")
+        self.on_join("rick", self.tmp_initial_game_state, "128.1.1.2")
 
 
     def movement_system(self, game_state, dt):
@@ -77,7 +81,6 @@ class ClippyGame(object):
         return {}
 
     def time_step(self, game_state, dt):
-        print("1")
         # Before a player joins, updating the game state is unnecessary.
         # if len(game_state.players) == 0:
         #     return {}
@@ -89,7 +92,6 @@ class ClippyGame(object):
                 system_updates = function()
             updates.update(system_updates)
         # tmp
-        print("2")
         self.game_loop.update(self.map, self.initial_game_state)
         return updates
 

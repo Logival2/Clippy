@@ -41,6 +41,10 @@ class GameLoop(object):
         self.last_print_time = time.time()
 
     def update(self, map, initial_game_state):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                exit()
         self.display.fill(BLACK)
 
         self.draw_borders()
@@ -49,7 +53,8 @@ class GameLoop(object):
         self.draw_entities(map, initial_game_state)
 
         # SEND INPUTS
-        # inputs = self.get_inputs()
+        inputs = self.get_inputs()
+        initial_game_state["players"]['rick']["inputs"] = inputs
         # if inputs:
         #     self.client.dispatch_event(
         #         event_type="MOVE",
@@ -61,8 +66,7 @@ class GameLoop(object):
         return True
 
     def draw_entities(self,map, initial_game_state):
-        ''' Draw the dynamic entities, which are in the game state
-        '''
+        ''' Draw the dynamic entities, which are in the game state '''
         pass
         # with self.client.access_game_state() as game_state:
         #     if time.time() - self.last_print_time > 0.5:
@@ -76,9 +80,7 @@ class GameLoop(object):
         #     # print('PLAYER', game_state.players)
 
     def draw_map(self, map, initial_game_state):
-        print("sebsebseb")
-        ''' Display the static map, received at the start of the connection
-        '''
+        ''' Display the static map, received at the start of the connection '''
         x_idx = 0
         y_idx = 0
         while y_idx < self.map_tiles_nbr.y and y_idx < len(map):
