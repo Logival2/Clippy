@@ -68,12 +68,12 @@ class GameLoop(object):
 
     def draw_entities(self, map, game_state):
         ''' Draw the dynamic entities, which are in the game state '''
-        for entity_id, sprite in game_state["Sprite"].items():
+        for entity_id, sprite in game_state["components"]["Sprite"].items():
             self.display_entity(
                 sprite.sprite_type,
                 sprite.region,
                 sprite.noise_value,
-                game_state["Position"][entity_id]
+                game_state["components"]["Position"][entity_id]
             )
         # with self.client.access_game_state() as game_state:
         #     if time.time() - self.last_print_time > 0.5:

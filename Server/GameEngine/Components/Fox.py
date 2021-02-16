@@ -15,13 +15,3 @@ class Fox:
         self.hunger = 0
         self.urge_to_reproduce = 0
         """ Add a 'pheromone' map and add a curiosity factor """
-
-
-def fox_update():
-    """ What does the fow says ? """
-    foxs = ecs.get_component(Fox)
-    for fox in foxs:
-        print("Ring-ding-ding-ding-dingeringeding!\n" +
-              "Gering-ding-ding-ding-dingeringeding!\n" +
-              "Gering-ding-ding-ding-dingeringeding!")
-    return {}

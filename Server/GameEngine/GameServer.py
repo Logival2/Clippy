@@ -26,9 +26,12 @@ class ClippyGame(object):
         self.debug_timer = None
         self.map_generator = MapGenerator()
         self.map = self.map_generator.generate_terrain_chunk()
-        self.initial_game_state = {
+        self.game_state = {
             "players": {"rick": {}},  # dict with `player_id: player_dict` entries
-            "components": {"Position": {}}
+            "components": { #ugly but it works
+                "Position": {},
+                "Sprite": {}
+            }
         }
         self.tmp_initial_game_state = GameState(
             players={},  # dict with `player_id: player_dict` entries
@@ -92,8 +95,8 @@ class ClippyGame(object):
                 system_updates = function()
             updates.update(system_updates)
         # tmp
-        self.initial_game_state = self.game_loop.update(self.map, self.initial_game_state)
-        print(self.initial_game_state)
+        self.game_state = self.game_loop.update(self.map, self.game_state)
+        print(self.game_state)
         return updates
 
     def new_entity(self):
@@ -106,24 +109,24 @@ class ClippyGame(object):
             print("No component " + component.__name__ + " stored.")
             return []
         if entity is None:
-            return self.components[component.__name__]
-        if entity not in self.components[component.__name__]:
+            return self.game_state["component"][component.__name__]
+        if entity not in self.game_state["component"][component.__name__]:
             print("No component " + component.__name__ + " for id " + entity + " stored.")
             return None
-        return self.components[component.__name__][entity]
+        return self.game_state["component"][component.__name__][entity]
 
     def add_component(self, entity, component):
         if type(component).__name__ not in self.components:
-            self.components[type(component).__name__] = {}
-        self.components[type(component).__name__][entity] = component
+            self.game_state["component"][type(component).__name__] = {}
+        self.game_state["component"][type(component).__name__][entity] = component
 
     def filter(self, type0, *types):
         if type0.__name__ not in self.components:
             return []
-        list_ids = list(self.components[type0.__name__].keys())
+        list_ids = list(self.game_state["component"][type0.__name__].keys())
         for typ in types:
             if type0.__name__ in self.components:
-                ids = list(self.components[typ.__name__].keys())
+                ids = list(self.game_state["component"][typ.__name__].keys())
                 for id in ids:
                     if id not in ids:
                         list_ids.remove(id)
