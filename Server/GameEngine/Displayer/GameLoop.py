@@ -40,7 +40,7 @@ class GameLoop(object):
         self.load_available_sprites(self.tile_size)
         self.last_print_time = time.time()
 
-    def update(self, map, initial_game_state):
+    def update(self, map, game_state):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
@@ -49,12 +49,13 @@ class GameLoop(object):
 
         self.draw_borders()
         # self.draw_hud(info_list)
-        self.draw_map(map, initial_game_state)
-        self.draw_entities(map, initial_game_state)
+        self.draw_map(map, game_state)
+        self.draw_entities(map, game_state)
 
         # SEND INPUTS
         inputs = self.get_inputs()
-        initial_game_state["players"]['rick']["inputs"] = inputs
+        # For now just put it in the gamestate
+        game_state["players"]['rick']["inputs"] = inputs
         # if inputs:
         #     self.client.dispatch_event(
         #         event_type="MOVE",
@@ -63,11 +64,17 @@ class GameLoop(object):
         #     )
 
         pygame.display.update()
-        return initial_game_state
+        return game_state
 
-    def draw_entities(self,map, initial_game_state):
+    def draw_entities(self, map, game_state):
         ''' Draw the dynamic entities, which are in the game state '''
-        pass
+        for entity_id, sprite in game_state["Sprite"].items():
+            self.display_entity(
+                sprite.sprite_type,
+                sprite.region,
+                sprite.noise_value,
+                game_state["Position"][entity_id]
+            )
         # with self.client.access_game_state() as game_state:
         #     if time.time() - self.last_print_time > 0.5:
         #         self.last_print_time = time.time()
@@ -79,7 +86,7 @@ class GameLoop(object):
         #     # print()
         #     # print('PLAYER', game_state.players)
 
-    def draw_map(self, map, initial_game_state):
+    def draw_map(self, map, game_state):
         ''' Display the static map, received at the start of the connection '''
         x_idx = 0
         y_idx = 0
@@ -122,12 +129,12 @@ class GameLoop(object):
     #                 if types[0]: self.display_entity(tile.top_ent, tile.noise_value, pos)
     #         map_y_idx += 1
 
-    def display_entity(self, bloc_type, region, noise_value, pos):
+    def display_entity(self, sprite_type, region, noise_value, pos):
         """ From the entity type, position and noise value assigned to this position
         (computed server side) draw a sprite"""
-        sprite_name = f'{region}_{bloc_type}'
+        sprite_name = f'{region}_{sprite_type}'
         if sprite_name not in self.sprites.keys():
-            sprite_name = bloc_type
+            sprite_name = sprite_type
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
         sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
