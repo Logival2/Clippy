@@ -17,28 +17,17 @@ class MapGenerator(object):
         self.capitals_positions = []
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
-    # def generate_entities_chunk(self, anchor_pos=Position(0, 0)):
-    #     ''' returns a double array of tuples: (entity_type, region)
-    #     noise value is needed by clients to vary the display of similar bloc types'''
-    #     chunk = []
-    #     for y in range(self.config['chunk_size']):
-    #         tmp_line = []
-    #         for x in range(self.config['chunk_size']):
-    #             tile_pos = Position(x=anchor_pos.x + x, y=anchor_pos.y + y)
-    #             noise_value = self.get_simplex_value(tile_pos)
-    #             region = self.get_pos_region(tile_pos)
-    #             bloc_type = self.get_bloc_type(noise_value, region)
-    #             tmp_line.append((bloc_type, region))
-    #         chunk.append(tmp_line)
-    #     return chunk
+    def generate_chunk(self, anchor_pos=Position(0, 0)):
+        terrain = self.generate_terrain_chunk(anchor_pos)
+        decorated_terrain = self.decorate_chunk(terrain, anchor_pos)
+        return decorated_terrain
 
-    def generate_terrain_chunk(self, anchor_pos=Position(0, 0)):
-        ''' returns a double array of tuples: (bloc_type, region, noise_value)
-        noise value is needed by clients to vary the display of similar bloc types'''
+    def decorate_chunk(self, terrain, anchor_pos):
+        return terrain
+
+    def layout_basic_ground(self, anchor_pos):
         chunk = {}
-        regions_blocs_positions = {}
-        for region in self.config['regions']:
-            regions_blocs_positions[region] = []
+        regions_blocs_positions = {region:[] for region in self.config['regions']}
         for y in range(self.config['chunk_size']):
             tmp_line = {}
             for x in range(self.config['chunk_size']):
@@ -49,6 +38,9 @@ class MapGenerator(object):
                 tmp_line[x + anchor_pos.x] = (bloc_type, region, noise_value)
                 regions_blocs_positions[region].append((y, x))
             chunk[y + anchor_pos.y] = tmp_line
+        return chunk, regions_blocs_positions
+
+    def randomly_swap_blocs(self, chunk, regions_blocs_positions):
         # Now randomly swap blocs
         swaps_nbr = 0
         for region in self.config['regions']:
@@ -64,6 +56,12 @@ class MapGenerator(object):
                 tmp = chunk[bloc_1_pos[0]][bloc_1_pos[1]]
                 chunk[bloc_1_pos[0]][bloc_1_pos[1]] = chunk[bloc_2_pos[0]][bloc_2_pos[1]]
                 chunk[bloc_2_pos[0]][bloc_2_pos[1]] = tmp
+
+    def generate_terrain_chunk(self, anchor_pos):
+        ''' returns a double array of tuples: (bloc_type, region, noise_value)
+        noise value is needed by clients to vary the display of similar bloc types'''
+        chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
+        self.randomly_swap_blocs(chunk, regions_blocs_positions)
         return chunk
 
     def get_bloc_type(self, noise_value, region):

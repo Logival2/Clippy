@@ -24,7 +24,7 @@ class ClippyGame(object):
         self.systems = []
         self.debug_timer = None
         self.map_generator = MapGenerator()
-        self.map = self.map_generator.generate_terrain_chunk()
+        self.map = self.map_generator.generate_chunk()
         self.game_state = {
             "players": {0: {
                     "name": "rock",
