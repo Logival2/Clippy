@@ -1,7 +1,7 @@
 import sys
 
-from Server.GameEngine.Components.Position import Position
-from Server.GameEngine.GameServer import ecs
+from GameEngine.Components.Position import Position
+from GameEngine.GameServer import ecs
 
 
 class Keyboard(object):

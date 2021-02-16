@@ -22,52 +22,6 @@ def is_valid_ipv4_address(host):
         return (host[:dots_idx], int(host[dots_idx + 1:]))
 
 
-class Pos(object):
-    def __init__(s, y, x):
-        s.y = y
-        s.x = x
-
-    def __add__(s, other):
-        if isinstance(other, Pos):
-            return Pos(s.y + other.y, s.x + other.x)
-        return Pos(s.y + other, s.x + other)
-
-    def __sub__(s, other):
-        if isinstance(other, Pos):
-            return Pos(s.y - other.y, s.x - other.x)
-        return Pos(s.y + other, s.x + other)
-
-    def __floordiv__(s, factor):
-        return Pos(s.y // factor, s.x // factor)
-
-    def __truediv__(s, factor):
-        return Pos(s.y / factor, s.x / factor)
-
-    def __repr__(s):
-        return f"Pos y={s.y}/x={s.x}"
-
-    def __eq__(s, other):
-        return s.y == other.y and s.x == other.x
-
-    def __gt__(s, other):
-        return s.y > other.y or s.x > other.x
-
-    def __lt__(s, other):
-        return s.y < other.y or s.x < other.x
-
-    def __mul__(s, other):
-        if isinstance(other, Pos):
-            return Pos(s.y * other.y, s.x * other.x)
-        return Pos(s.y * other, s.x * other)
-
-    def get_xy(s):
-        return (s.x, s.y)
-
-    def __hash__(s):
-        ### WARNING, THE HASH SHOULD NEVER CHANGE DURING LIFETIME ###
-        return hash(f'{s.y}|{s.x}')
-
-
 def exit_error(msg):
     print(msg)
     exit()

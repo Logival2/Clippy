@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import logging
 from GameEngine.GameServer import ecs
-from Server.GameEngine.Components.Keyboard import Keyboard, keyboard_update, move_up
-from Server.GameEngine.Components.Position import Position
-from Server.GameEngine.Components.Sprite import Sprite
-from Server.GameEngine.Systems.Ecosystem import rabbit_update, fox_update
+from GameEngine.Components.Keyboard import Keyboard, keyboard_update, move_up
+from GameEngine.Components.Position import Position
+from GameEngine.Components.Sprite import Sprite
+from GameEngine.Systems.Ecosystem import rabbit_update, fox_update
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)

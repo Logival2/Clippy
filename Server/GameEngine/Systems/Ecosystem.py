@@ -1,11 +1,11 @@
 import random
 
-from Server.GameEngine.Components.Position import Position
-from Server.GameEngine.Components.Sprite import Sprite
-from Server.GameEngine.Components.Vegeteable import Vegetable
-from Server.GameEngine.GameServer import ecs
-from Server.GameEngine.Components.Fox import Fox
-from Server.GameEngine.Components.Rabbit import Rabbit
+from GameEngine.Components.Position import Position
+from GameEngine.Components.Sprite import Sprite
+from GameEngine.Components.Vegeteable import Vegetable
+from GameEngine.GameServer import ecs
+from GameEngine.Components.Fox import Fox
+from GameEngine.Components.Rabbit import Rabbit
 
 """ Multi process the AI """
 

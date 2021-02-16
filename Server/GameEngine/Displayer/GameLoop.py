@@ -6,9 +6,9 @@ from pprint import pprint
 import pygame
 from pygame.locals import *
 
-from utils import exit_error
-from Server.GameEngine.Displayer.config import *
-from Server.GameEngine.Components.Position import Position as Pos
+from GameEngine.Displayer.utils import exit_error
+from GameEngine.Displayer.config import *
+from GameEngine.Components.Position import Position
 
 class GameLoop(object):
     def __init__(self, config):
@@ -23,14 +23,14 @@ class GameLoop(object):
             tmp_screen_size = config['target_resolution']
         else:
             tmp_screen_size = pygame.display.Info()
-            tmp_screen_size = Pos(x=tmp_screen_size.current_w, y=tmp_screen_size.current_h)
+            tmp_screen_size = Position(x=tmp_screen_size.current_w, y=tmp_screen_size.current_h)
         self.tiles_nbr =  tmp_screen_size // self.tile_size
         if self.tiles_nbr.x % 2: self.tiles_nbr.x -=1
         if self.tiles_nbr.y % 2: self.tiles_nbr.y -=1
         # Set variables
         self.screen_size = self.tiles_nbr * self.tile_size
         self.hud_tiles_nbr = (config['hud_width_px'] // self.tile_size) + 1
-        self.map_tiles_nbr = Pos(x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr, y=self.tiles_nbr.y - 2)
+        self.map_tiles_nbr = Position(x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr, y=self.tiles_nbr.y - 2)
         # Launch display
         self.display = pygame.display.set_mode((self.screen_size.x , self.screen_size.y))
         pygame.display.set_caption('Clippy')
@@ -92,7 +92,7 @@ class GameLoop(object):
         y_idx = 0
         while y_idx < self.map_tiles_nbr.y and y_idx < len(map):
             while x_idx < self.map_tiles_nbr.x and x_idx < len(map[0]):
-                pos = Pos(y=y_idx, x=x_idx)
+                pos = Position(y=y_idx, x=x_idx)
                 # print(pos)
                 # tile_data = self.client.map[y_idx][x_idx]
                 # Take in ECS
@@ -122,7 +122,7 @@ class GameLoop(object):
     #         for x_idx, tile in enumerate(tmp_line):
     #             if tile:
     #                 types = tile.get_types()
-    #                 pos = Pos(x=shift_x + x_idx, y=term_y_idx)
+    #                 pos = Position(x=shift_x + x_idx, y=term_y_idx)
     #                 # Lower entity
     #                 if types[1]: self.display_entity(tile.low_ent, tile.noise_value, pos)
     #                 # Top entity
@@ -138,7 +138,7 @@ class GameLoop(object):
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
         sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
-        self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Pos(1, 1)) * self.tile_size).get_xy())
+        self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Position(1, 1)) * self.tile_size).get_xy())
 
     def draw_hud(self, info_list):
         hud_text_x_start = (3 + self.map_tiles_nbr.x) * self.tile_size

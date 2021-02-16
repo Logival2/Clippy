@@ -1,5 +1,3 @@
-from Entities import *
-
 MAP_CONFIG = {
     'seed': 1,
     'regions_nbr': 5,
