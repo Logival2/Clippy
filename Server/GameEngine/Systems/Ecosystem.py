@@ -36,7 +36,9 @@ def rabbit_update():
         repr_direction = [0,0]
 
         for food in food_ids:
-            pass
+            if positions[id] == positions[food]:
+                rabbit[id].hunger = min(0, rabbit[id].hunger - vegetable[food].nutritionnal_score)
+
         select_direction = random.randint(0, 3)
         if select_direction == 0:
             positions[id].x += 1

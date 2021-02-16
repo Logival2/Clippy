@@ -6,9 +6,9 @@ from pprint import pprint
 import pygame
 from pygame.locals import *
 
-from utils import Pos, exit_error
-from GameEngine.Displayer.config import *
-
+from utils import exit_error
+from Server.GameEngine.Displayer.config import *
+from Server.GameEngine.Components.Position import Position as Pos
 
 class GameLoop(object):
     def __init__(self, config):
@@ -55,7 +55,7 @@ class GameLoop(object):
         # SEND INPUTS
         inputs = self.get_inputs()
         # For now just put it in the gamestate
-        game_state["players"]['rick']["inputs"] = inputs
+        game_state["players"][0]["inputs"] = inputs
         # if inputs:
         #     self.client.dispatch_event(
         #         event_type="MOVE",

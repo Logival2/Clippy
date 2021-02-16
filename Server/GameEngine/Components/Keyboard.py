@@ -1,7 +1,7 @@
 import sys
 
-from GameEngine.Components.Position import Position
-from GameEngine.Ecs import ecs
+from Server.GameEngine.Components.Position import Position
+from Server.GameEngine.GameServer import ecs
 
 
 class Keyboard(object):
@@ -15,16 +15,14 @@ up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 down = "abcdefghijklmnopqrstuvwxyz"
 def keyboard_update():
     keyboards = ecs.get_component(Keyboard)
-
-    letter = input()
-    key = 'KEY_' + up[down.find(letter)]
-    if letter not in down:
-        key = ""
-    for keyboard in keyboards:
-        for k, v in keyboard['component'].keys.items():
-            v["status"] = k == key
-            if v["function"]:
-                v["function"](v["status"])
+    # jej = ecs.game_state["players"][0]["inputs"]
+    # if len(ecs.game_state["players"][0]["inputs"]) == 0:
+    #     return
+    # for keyboard in keyboards:
+    #     for k, v in keyboard['component'].keys.items():
+    #         v["status"] = k == ecs.game_state["players"][0]["inputs"][0]
+    #         if v["function"]:
+    #             v["function"](v["status"])
 
 
 def move_up(status, entity):

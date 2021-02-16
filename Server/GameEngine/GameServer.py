@@ -20,14 +20,17 @@ def chunk_map(bs, n):
 class ClippyGame(object):
     def __init__(self):
         self.game_loop = GameLoop(DISPLAY_CONFIG)
-        self.entity = 0
+        self.entity = 10
         self.systems = []
         self.components = {}
         self.debug_timer = None
         self.map_generator = MapGenerator()
         self.map = self.map_generator.generate_terrain_chunk()
         self.game_state = {
-            "players": {"rick": {}},  # dict with `player_id: player_dict` entries
+            "players": {0: {
+                    "name": "rock",
+                    "entity": 1
+                }},  # dict with `player_id: player_dict` entries
             "components": { #ugly but it works
                 "Position": {},
                 "Sprite": {}
@@ -48,7 +51,7 @@ class ClippyGame(object):
         )
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
-        self.on_join("rick", self.tmp_initial_game_state, "128.1.1.2")
+        self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
 
 
     def movement_system(self, game_state, dt):
@@ -104,6 +107,10 @@ class ClippyGame(object):
         self.entity += 1
         return new_entity
 
+    def delete_id(self, id):
+        """delete every component of id"""
+        pass
+
     def get_component(self, component, entity=None):
         if component.__name__ not in self.components:
             print("No component " + component.__name__ + " stored.")
@@ -117,8 +124,8 @@ class ClippyGame(object):
 
     def add_component(self, entity, component):
         if type(component).__name__ not in self.components:
-            self.game_state["component"][type(component).__name__] = {}
-        self.game_state["component"][type(component).__name__][entity] = component
+            self.game_state["components"][type(component).__name__] = {}
+        self.game_state["components"][type(component).__name__][entity] = component
 
     def filter(self, type0, *types):
         if type0.__name__ not in self.components:

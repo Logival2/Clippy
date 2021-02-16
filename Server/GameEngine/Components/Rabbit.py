@@ -9,6 +9,6 @@ class Rabbit:
         self.food_search_rate = random.uniform(0, 1)
         self.view_radius = random.uniform(0, 0.25)
 
-        self.hunger = 0
+        self.hunger = 0 # dies if it reach 100
         self.urge_to_reproduce = 0
         """ Add a 'pheromone' map and add a curiosity factor """

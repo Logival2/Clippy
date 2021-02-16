@@ -2,7 +2,7 @@ import umsgpack
 import struct
 
 
-@umsgpack.ext_serializable(0x1)
+# @umsgpack.ext_serializable(0x1)
 class Position(object):
     def __init__(self, y, x):
         self.y = y
