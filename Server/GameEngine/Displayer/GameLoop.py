@@ -39,6 +39,8 @@ class GameLoop(object):
         self.sprites = {}
         self.load_available_sprites(self.tile_size)
         self.last_print_time = time.time()
+        self.clock = pygame.time.Clock()
+
 
     def update(self, map, game_state):
         events = pygame.event.get()
@@ -64,6 +66,7 @@ class GameLoop(object):
         #     )
 
         pygame.display.update()
+        self.clock.tick(10)
         return game_state
 
     def draw_entities(self, map, game_state):

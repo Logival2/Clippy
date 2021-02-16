@@ -5,24 +5,22 @@ from GameEngine.GameServer import ecs
 
 
 class Keyboard(object):
-    def __init__(s, keys=None):
-        if keys is None:
-            keys = {}
+    def __init__(s, keys={}):
         s.keys = keys
 
 
-up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-down = "abcdefghijklmnopqrstuvwxyz"
 def keyboard_update():
     keyboards = ecs.get_component(Keyboard)
-    # jej = ecs.game_state["players"][0]["inputs"]
-    # if len(ecs.game_state["players"][0]["inputs"]) == 0:
-    #     return
-    # for keyboard in keyboards:
-    #     for k, v in keyboard['component'].keys.items():
-    #         v["status"] = k == ecs.game_state["players"][0]["inputs"][0]
-    #         if v["function"]:
-    #             v["function"](v["status"])
+    for k, v in ecs.game_state["players"].items():
+        if "inputs" in v and "entity" in v:
+            for key in v["inputs"]:
+                print(keyboards[v["entity"]])
+                for kb, vb in keyboards[v["entity"]].keys.items():
+                    print(kb, vb)
+                    vb["status"] = kb == key
+                    if vb["function"]:
+                        vb["function"](vb["status"], v["entity"])
+    return {}
 
 
 def move_up(status, entity):

@@ -22,7 +22,6 @@ class ClippyGame(object):
         self.game_loop = GameLoop(DISPLAY_CONFIG)
         self.entity = 10
         self.systems = []
-        self.components = {}
         self.debug_timer = None
         self.map_generator = MapGenerator()
         self.map = self.map_generator.generate_terrain_chunk()
@@ -100,7 +99,7 @@ class ClippyGame(object):
         # tmp
         self.game_state = self.game_loop.update(self.map, self.game_state)
         print(self.game_state)
-        return updates
+        return {"updates":"jej"}
 
     def new_entity(self):
         new_entity = self.entity
@@ -112,29 +111,29 @@ class ClippyGame(object):
         pass
 
     def get_component(self, component, entity=None):
-        if component.__name__ not in self.components:
+        if component.__name__ not in self.game_state["components"]:
             print("No component " + component.__name__ + " stored.")
             return []
         if entity is None:
-            return self.game_state["component"][component.__name__]
-        if entity not in self.game_state["component"][component.__name__]:
+            return self.game_state["components"][component.__name__]
+        if entity not in self.game_state["components"][component.__name__]:
             print("No component " + component.__name__ + " for id " + entity + " stored.")
             return None
-        return self.game_state["component"][component.__name__][entity]
+        return self.game_state["components"][component.__name__][entity]
 
     def add_component(self, entity, component):
-        if type(component).__name__ not in self.components:
+        if type(component).__name__ not in self.game_state["components"]:
             self.game_state["components"][type(component).__name__] = {}
         self.game_state["components"][type(component).__name__][entity] = component
 
     def filter(self, type0, *types):
-        if type0.__name__ not in self.components:
+        if type0.__name__ not in self.game_state["components"]:
             return []
-        list_ids = list(self.game_state["component"][type0.__name__].keys())
+        list_ids = list(self.game_state["components"][type0.__name__].keys())
         for typ in types:
-            if type0.__name__ in self.components:
-                ids = list(self.game_state["component"][typ.__name__].keys())
-                for id in ids:
+            if type0.__name__ in self.game_state["components"]:
+                ids = list(self.game_state["components"][typ.__name__].keys())
+                for id in list_ids:
                     if id not in ids:
                         list_ids.remove(id)
         return list_ids
