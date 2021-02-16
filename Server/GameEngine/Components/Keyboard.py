@@ -15,7 +15,6 @@ def keyboard_update():
         if "inputs" in v and "entity" in v:
             for key in v["inputs"]:
                 for kb, vb in keyboards[v["entity"]].keys.items():
-                    print(kb, vb)
                     vb["status"] = kb == key
                     if vb["function"]:
                         vb["function"](vb["status"], v["entity"])

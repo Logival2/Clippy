@@ -111,12 +111,12 @@ class ClippyGame(object):
 
     def get_component(self, component, entity=None):
         if component.__name__ not in self.game_state["components"]:
-            print("No component " + component.__name__ + " stored.")
+            # print("No component " + component.__name__ + " stored.")
             return []
         if entity is None:
             return self.game_state["components"][component.__name__]
         if entity not in self.game_state["components"][component.__name__]:
-            print("No component " + component.__name__ + " for id " + entity + " stored.")
+            # print("No component " + component.__name__ + " for id " + entity + " stored.")
             return None
         return self.game_state["components"][component.__name__][entity]
 
