@@ -14,7 +14,6 @@ def keyboard_update():
     for k, v in ecs.game_state["players"].items():
         if "inputs" in v and "entity" in v:
             for key in v["inputs"]:
-                print(keyboards[v["entity"]])
                 for kb, vb in keyboards[v["entity"]].keys.items():
                     print(kb, vb)
                     vb["status"] = kb == key
@@ -25,19 +24,27 @@ def keyboard_update():
 
 def move_up(status, entity):
     if status:
-        ecs.get_component(Position, entity).y -= 1
+        pos = ecs.get_component(Position, entity)
+        if ecs.map[pos.y - 1][pos.x][0] not in ["water", "lava"]:
+            pos.y -= 1
 
 
 def move_left(status, entity):
     if status:
-        ecs.get_component(Position, entity).x -= 1
+        pos = ecs.get_component(Position, entity)
+        if ecs.map[pos.y][pos.x - 1][0] not in ["water", "lava"]:
+            pos.x -= 1
 
 
 def move_down(status, entity):
     if status:
-        ecs.get_component(Position, entity).y += 1
+        pos = ecs.get_component(Position, entity)
+        if ecs.map[pos.y + 1][pos.x][0] not in ["water", "lava"]:
+            pos.y += 1
 
 
 def move_right(status, entity):
     if status:
-        ecs.get_component(Position, entity).x += 1
+        pos = ecs.get_component(Position, entity)
+        if ecs.map[pos.y][pos.x + 1][0] not in ["water", "lava"]:
+            pos.x += 1
