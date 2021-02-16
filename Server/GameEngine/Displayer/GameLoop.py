@@ -66,7 +66,7 @@ class GameLoop(object):
         #     )
 
         pygame.display.update()
-        self.clock.tick(10)
+        self.clock.tick(5)
         return game_state
 
     def draw_entities(self, map, game_state):
