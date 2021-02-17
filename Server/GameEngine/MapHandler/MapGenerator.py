@@ -25,7 +25,7 @@ class MapGenerator(object):
         # Only create the ground blocs
         chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
         # Now randomly swap some of them
-        # self.randomly_swap_blocs(chunk, regions_blocs_positions)
+        # self.randomly_swap_blocs(chunk, anchor_pos)
         # Add Trees, rocks etc
         self.decorate_chunk(chunk, regions_blocs_positions, anchor_pos)
         # Create some AIs in this chunk
@@ -96,6 +96,19 @@ class MapGenerator(object):
                     self.get_simplex_value(ent_pos),
                 )
             )
+        # Add pebbles
+        for i in range(self.config['chunk_size']):
+            ent_pos = self.get_random_position(anchor_pos)
+            entity = self.ecs.new_entity()
+            self.ecs.add_component(entity, ent_pos)
+            self.ecs.add_component(
+                entity,
+                Sprite.Sprite(
+                    'pebble',
+                    self.get_pos_region(ent_pos),
+                    self.get_simplex_value(ent_pos),
+                )
+            )
 
     def layout_basic_ground(self, anchor_pos):
         chunk = {}
@@ -149,22 +162,28 @@ class MapGenerator(object):
             low_noise_value = bloc_type_max_noise_value
         return low_noise_value, max_noise_value
 
-    def randomly_swap_blocs(self, chunk, regions_blocs_positions):
+    def randomly_swap_blocs(self, chunk, anchor_pos):
         # Now randomly swap blocs
         swaps_nbr = 0
-        for region in self.config['regions']:
-            bloc_nbr_to_swap = len(regions_blocs_positions[region]) * self.config['regions'][region]['random_bloc_swaps_frequency'] // 100
-            print(f"Swapping {bloc_nbr_to_swap} blocs in {region}")
-            while swaps_nbr < bloc_nbr_to_swap:
-                # choose two blocs
-                bloc_1_pos = random.choice(regions_blocs_positions[region])
-                bloc_2_pos = random.choice(regions_blocs_positions[region])
-                if bloc_1_pos == bloc_2_pos:
-                    continue
-                swaps_nbr += 2
-                tmp = chunk[bloc_1_pos[0]][bloc_1_pos[1]]
-                chunk[bloc_1_pos[0]][bloc_1_pos[1]] = chunk[bloc_2_pos[0]][bloc_2_pos[1]]
-                chunk[bloc_2_pos[0]][bloc_2_pos[1]] = tmp
+        # for region in self.config['regions']:
+        bloc_nbr_to_swap = self.config['chunk_size'] * self.config['chunk_size'] * self.config['random_bloc_swaps_frequency']
+            # print(f"Swapping {bloc_nbr_to_swap} blocs in {region}")
+        while swaps_nbr < bloc_nbr_to_swap:
+            # choose two blocs
+            bloc_1_pos = Position.Position(
+                x=random.randint(anchor_pos.x, anchor_pos.x + self.config['chunk_size'] - 1),
+                y=random.randint(anchor_pos.y, anchor_pos.y + self.config['chunk_size'] - 1),
+            )
+            bloc_2_pos = Position.Position(
+                x=random.randint(anchor_pos.x, anchor_pos.x + self.config['chunk_size'] - 1),
+                y=random.randint(anchor_pos.y, anchor_pos.y + self.config['chunk_size'] - 1),
+            )
+            if bloc_1_pos == bloc_2_pos:
+                continue
+            swaps_nbr += 2
+            tmp = chunk[bloc_1_pos.y][bloc_1_pos.x]
+            chunk[bloc_1_pos.y][bloc_1_pos.x] = chunk[bloc_2_pos.y][bloc_2_pos.x]
+            chunk[bloc_2_pos.y][bloc_2_pos.x] = tmp
 
     def get_bloc_type(self, noise_value, region):
         ''' Use the region, noise value and config values (config.py) to

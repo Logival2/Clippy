@@ -18,5 +18,3 @@ DISPLAY_CONFIG = {
     'tile_size': 32,
     'borders_width': 2,
 }
-
-# BORDERS_WIDTH = 2
