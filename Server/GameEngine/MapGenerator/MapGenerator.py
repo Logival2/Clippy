@@ -3,14 +3,16 @@ import random
 
 from opensimplex import OpenSimplex
 
-from GameEngine.Components.Position import Position
+# from GameEngine.Components.Position.Position import Position.Position
+from GameEngine.Components import *
 from GameEngine.MapGenerator.map_config import MAP_CONFIG
 # from GameEngine.GameServer import ecs
 
 
 
 class MapGenerator(object):
-    def __init__(self):
+    def __init__(self, ecs):
+        self.ecs = ecs
         self.config = MAP_CONFIG
         random.seed(self.config['seed'])
         self.simplex = OpenSimplex(self.config['seed'])
@@ -19,7 +21,7 @@ class MapGenerator(object):
         self.capitals_positions = []
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
-    def generate_chunk(self, anchor_pos=Position(0, 0)):
+    def generate_chunk(self, anchor_pos=Position.Position(0, 0)):
         terrain = self.generate_terrain_chunk(anchor_pos)
         decorated_terrain = self.decorate_chunk(terrain, anchor_pos)
         return decorated_terrain
@@ -32,6 +34,14 @@ class MapGenerator(object):
         return chunk
 
     def decorate_chunk(self, terrain, anchor_pos):
+        entity = self.ecs.new_entity()
+        self.ecs.add_component(entity, Position.Position(9, 9))
+        self.ecs.add_component(entity, Rabbit.Rabbit())
+        self.ecs.add_component(entity, Sprite.Sprite('udheudhe', 'desert', 0.5))
+        # entity = self.ecs.new_entity()
+        # self.ecs.add_component(entity, Position.Position(9, 9))
+        # self.ecs.add_component(entity, StaticObject.StaticObject())
+        # self.ecs.add_component(entity, Sprite.Sprite('udheudhe', 'mountain', 0.5))
         return terrain
 
     def layout_basic_ground(self, anchor_pos):
@@ -40,7 +50,7 @@ class MapGenerator(object):
         for y in range(self.config['chunk_size']):
             tmp_line = {}
             for x in range(self.config['chunk_size']):
-                tile_pos = Position(x=anchor_pos.x + x, y=anchor_pos.y + y)
+                tile_pos = Position.Position(x=anchor_pos.x + x, y=anchor_pos.y + y)
                 noise_value = self.get_simplex_value(tile_pos)
                 region = self.get_pos_region(tile_pos)
                 bloc_type = self.get_bloc_type(noise_value, region)
@@ -98,10 +108,10 @@ class MapGenerator(object):
             point_y = random.randint(0, self.config['map_size'])
             while point_y < 0 or point_y >= self.config['map_size']:
                 point_y = random.randint(0, self.config['map_size'])
-            self.capitals_positions.append(Position(x=point_x, y=point_y))
+            self.capitals_positions.append(Position.Position(x=point_x, y=point_y))
 
     def get_simplex_value(self, tile_pos):
-        ''' Returns the noise value of a Position
+        ''' Returns the noise value of a Position.Position
         '''
         noise_value = self.simplex.noise2d(*(tile_pos / self.config['noise_scale']).get_xy())
         return (noise_value + 1) / 2  # To get a value between 0 and 1

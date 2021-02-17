@@ -25,8 +25,6 @@ class ClippyGame(object):
         self.entity = 10
         self.systems = []
         self.debug_timer = None
-        self.map_generator = MapGenerator()
-        self.map = self.map_generator.generate_chunk()
         self.game_state = {
             "players": {0: {
                     "name": "rock",
@@ -50,14 +48,12 @@ class ClippyGame(object):
                 'MAP_REQUEST': self.on_map_request
                 }
         )
+        # Put the map_gen here as it needs most of this class variables to work
+        self.map_generator = MapGenerator(self)
+        self.map = self.map_generator.generate_chunk()
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
         self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
-
-        entity = self.new_entity()
-        self.add_component(entity, Position(9, 9))
-        self.add_component(entity, Rabbit())
-        self.add_component(entity, Sprite('udheudhe', 'desert', 0.5))
 
     def movement_system(self, game_state, dt):
         position_update = {}
