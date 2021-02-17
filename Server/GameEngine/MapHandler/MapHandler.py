@@ -1,5 +1,5 @@
-from GameEngine.utils import *
 from GameEngine.MapHandler.MapGenerator import MapGenerator
+from GameEngine.Components import *
 
 
 class MapHandler(object):
@@ -17,7 +17,6 @@ class MapHandler(object):
         if serialized:
             pass  # load it from the file
         else:  # create it
-            print("creating chunk", chunk_to_be_loaded_anchor)
             new_chunk = self.map_generator.generate_chunk(chunk_to_be_loaded_anchor)
             # Now add the newly created chunk to the map object
             for y_idx, y_line_data in new_chunk.items():
@@ -49,7 +48,7 @@ class MapHandler(object):
             player_pos = self.ecs.game_state["components"]["Position"][player_entity_id]
             chunk_size = self.map_generator.config['chunk_size']
             player_chunk_anchor = (player_pos // chunk_size) * chunk_size
-            to_be_loaded_chunk_anchors = get_neighbours_chunk_anchors(
+            to_be_loaded_chunk_anchors = self.get_neighbours_chunk_anchors(
                 player_chunk_anchor, chunk_size
             )
         for chunk_to_be_loaded_anchor in to_be_loaded_chunk_anchors:
@@ -60,3 +59,44 @@ class MapHandler(object):
         for loaded_chunk_anchor in self.loaded_chunks_anchors:
             if loaded_chunk_anchor not in to_be_loaded_chunk_anchors:
                 self.remove_chunk_from_map(loaded_chunk_anchor)
+
+    def get_neighbours_chunk_anchors(self, anchor, chunk_size):
+        tmp_pos = Position.Position(chunk_size, chunk_size)
+        return [
+            # Current chunk
+            anchor,
+            # Top
+            Position.Position(
+                x=anchor.x,
+                y=anchor.y - chunk_size,
+            ),
+            # Bottom
+            Position.Position(
+                x=anchor.x,
+                y=anchor.y + chunk_size,
+            ),
+            # Left
+            Position.Position(
+                x=anchor.x - chunk_size,
+                y=anchor.y,
+            ),
+            # Right
+            Position.Position(
+                x=anchor.x + chunk_size,
+                y=anchor.y,
+            ),
+            # Top left
+            anchor - tmp_pos,
+            # Bottom Right
+            anchor + tmp_pos,
+            # Top right
+            Position.Position(
+                x=anchor.x + chunk_size,
+                y=anchor.y - chunk_size,
+            ),
+            # Bottom Left
+            Position.Position(
+                x=anchor.x - chunk_size,
+                y=anchor.y + chunk_size,
+            ),
+        ]
