@@ -109,7 +109,6 @@ class MapGenerator(object):
                 # along with some random
                 noise_value = self.get_simplex_value(tile_pos)
                 # Also use a bit of another noise, a smaller one (more details)
-                small_noise_value = self.get_simplex_value(tile_pos, "2")
                 bloc_type_noise_value = (
                     + 6 * noise_value
                     + 1 *random.uniform(0, 1)
@@ -201,11 +200,11 @@ class MapGenerator(object):
                 point_y = random.randint(0, self.config['map_size'])
             self.capitals_positions.append(Position.Position(x=point_x, y=point_y))
 
-    def get_simplex_value(self, tile_pos, noise_idx=""):
+    def get_simplex_value(self, tile_pos):
         ''' Returns the noise value of a Position.Position
         '''
         noise_value = self.simplex.noise2d(
-            *(tile_pos / self.config['noise_scale' + noise_idx]).get_xy()
+            *(tile_pos / self.config['noise_scale']).get_xy()
         )
         return (noise_value + 1) / 2  # To get a value between 0 and 1
 

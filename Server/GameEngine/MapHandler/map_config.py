@@ -7,7 +7,6 @@ MAP_CONFIG = {
     'map_size': 64,
     'chunk_size': 64,
     'noise_scale': 15,  # Bigger = Zoom in
-    'noise_scale2': 25,  # Bigger = Zoom in
     'regions': {
         'desert': {
             'repartition': [
@@ -20,7 +19,8 @@ MAP_CONFIG = {
         },
         'mountain': {
             'repartition': [
-                ('gravel', 0.2),
+                ('sand', 0.15),
+                ('gravel', 0.3),
                 ('stone', 1),
             ],
             'random_bloc_swaps_frequency': 10,
