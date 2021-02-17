@@ -15,7 +15,7 @@ MEDIUM_BLUE = (41, 128, 185)
 DISPLAY_CONFIG = {
     'target_resolution': Position(x=1600, y=700),
     'hud_width_px': 200,
-    'tile_size': 8,
+    'tile_size': 32,
     'borders_width': 2,
 }
 
