@@ -15,7 +15,7 @@ class MapHandler(object):
         serialized = False
         # TODO: check if this chunk has been serialized
         if serialized:
-            pass
+            pass  # load it from the file
         else:  # create it
             print("creating chunk", chunk_to_be_loaded_anchor)
             new_chunk = self.map_generator.generate_chunk(chunk_to_be_loaded_anchor)
@@ -25,12 +25,21 @@ class MapHandler(object):
                     self.map[y_idx] = y_line_data
                 else:
                     self.map[y_idx].update(y_line_data)
-            self.loaded_chunks_anchors.append(chunk_to_be_loaded_anchor)
+        self.loaded_chunks_anchors.append(chunk_to_be_loaded_anchor)
 
     def remove_chunk_from_map(self, chunk_to_be_deleted_anchor):
-        # self.loaded_chunks_anchors.remove(chunk_to_be_deleted_anchor)
-        # Now remove from self.map as well
-        pass
+        if chunk_to_be_deleted_anchor not in self.loaded_chunks_anchors:
+            return  # Not loaded
+        # Remove it from self.map AND KEEP IT (for serialization)
+        tmp_chunk = {}
+        chunk_end = chunk_to_be_deleted_anchor + self.map_generator.config['chunk_size']
+        for y_idx in range(chunk_to_be_deleted_anchor.y, chunk_end.y):
+            tmp_chunk[y_idx] = {}
+            for x_idx in range(chunk_to_be_deleted_anchor.x, chunk_end.x):
+                tmp_chunk[y_idx][x_idx] = self.map[y_idx].pop(x_idx)
+        # Remove it from the list of loaded chunks anchors
+        self.loaded_chunks_anchors.remove(chunk_to_be_deleted_anchor)
+        # Now write it to file
 
     def handle_chunks(self):
         to_be_loaded_chunk_anchors = []
