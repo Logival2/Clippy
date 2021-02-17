@@ -238,14 +238,12 @@ class GameLoop(object):
             final_sprite_list.append(self.load_sprite(folder_path, sprite_name))
 
             if rotate:
-                print("rotating", sprite_name)
                 for angle in [90, 180, 270]:
                     final_sprite_list.append(pygame.transform.rotate(final_sprite_list[0], angle))
             # Now create the flipped version of all the sprites (also those created by the rotation)
             if flip:
                 new_images = []
                 for sprite in final_sprite_list:
-                    print("flipping", sprite)
                     new_images.append(pygame.transform.flip(sprite, True, False))
                 final_sprite_list += new_images
             self.sprites[final_sprite_name] = final_sprite_list
