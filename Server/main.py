@@ -15,17 +15,20 @@ logging.root.setLevel(logging.INFO)
 
 if __name__ == '__main__':
     entity = 1
-    ecs.add_component(entity, Position(1, 1))
+    ecs.add_component(entity, Position(x=10, y=10))
     ecs.add_component(entity, Sprite("player", "desert", 0.5))
-    ecs.add_component(entity, Keyboard({'UP': {"status": False, "function": move_up}, 'LEFT': {"status": False, "function": move_left}, 'DOWN': {"status": False, "function": move_down}, 'RIGHT': {"status": False, "function": move_right}}))
-    ecs.add_component(entity, Hitbox(1, 1))
+    ecs.add_component(entity, Keyboard({'UP': {"status": False, "function": move_up},
+                                        'LEFT': {"status": False, "function": move_left},
+                                        'DOWN': {"status": False, "function": move_down},
+                                        'RIGHT': {"status": False, "function": move_right}}))
+    ecs.add_component(entity, Hitbox(x=10, y=10))
     ecs.game_state["players"][0] = {
         "name": "rick",
         "entity_id": entity
     }
+
     ecs.add_system(rabbit_update)
     ecs.add_system(fox_update)
     ecs.add_system(keyboard_update)
     ecs.add_system(hitbox_update)
-    ecs.delete_id(2)
     ecs.run()

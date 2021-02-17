@@ -110,8 +110,9 @@ class ClippyGame(object):
 
     def delete_id(self, id):
         """delete every component of id"""
-        # for k, v in self.game_state["components"].keys():
-        #     print(k)
+        for _, v in self.game_state["components"].items():
+            if id in v:
+                del v[id]
         pass
 
     def get_component(self, component, entity=None):

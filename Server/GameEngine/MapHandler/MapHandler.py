@@ -41,6 +41,19 @@ class MapHandler(object):
         self.loaded_chunks_anchors.remove(chunk_to_be_deleted_anchor)
         # Now write it to file
 
+        # Write ids and components to file
+        # Remove ID from ecs
+        to_delete = []
+        chunk_size = self.map_generator.config['chunk_size']
+        for k, v in self.ecs.game_state["components"]["Position"].items():
+            player_pos = v
+            player_chunk_anchor = (player_pos // chunk_size) * chunk_size
+            if player_chunk_anchor == chunk_to_be_deleted_anchor:
+                to_delete.append(k)
+        for id in to_delete:
+            self.ecs.delete_id(id)
+
+
     def handle_chunks(self):
         to_be_loaded_chunk_anchors = []
         # Handle chunk loading
