@@ -72,8 +72,9 @@ class GameLoop(object):
 
         # SEND INPUTS
         inputs = self.get_inputs()
-        # For now just put it in the game_state
-        game_state["players"][0]["inputs"] = inputs
+        # For now just put it in the game_state, check if player exists
+        if 0 in game_state["players"]:
+            game_state["players"][0]["inputs"] = inputs
         # if inputs:
         #     self.client.dispatch_event(
         #         event_type="MOVE",

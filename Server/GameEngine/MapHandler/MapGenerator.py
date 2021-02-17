@@ -6,7 +6,7 @@ from opensimplex import OpenSimplex
 from GameEngine.Components import *
 # WTF is this? Fox is not imported by * ????
 from GameEngine.Components import Fox
-from GameEngine.MapGenerator.map_config import MAP_CONFIG
+from GameEngine.MapHandler.map_config import MAP_CONFIG
 
 
 class MapGenerator(object):
@@ -20,16 +20,16 @@ class MapGenerator(object):
         self.capitals_positions = []
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
-    def generate_chunk(self, anchor_pos=Position.Position(0, 0)):
+    def generate_chunk(self, anchor_pos):
         # Only create the ground blocs
         chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
         # Now randomly swap some of them
-        self.randomly_swap_blocs(chunk, regions_blocs_positions)
+        # self.randomly_swap_blocs(chunk, regions_blocs_positions)
         # Add Trees, rocks etc
-        decorated_terrain = self.decorate_chunk(chunk, regions_blocs_positions, anchor_pos)
+        self.decorate_chunk(chunk, regions_blocs_positions, anchor_pos)
         # Create some AIs in this chunk
         self.populate_chunk(chunk, anchor_pos)
-        return decorated_terrain
+        return chunk
 
     def get_random_position(self, anchor_pos):
         return anchor_pos + Position.Position(
@@ -94,7 +94,6 @@ class MapGenerator(object):
                     self.get_simplex_value(ent_pos),
                 )
             )
-        return terrain
 
     def layout_basic_ground(self, anchor_pos):
         chunk = {}

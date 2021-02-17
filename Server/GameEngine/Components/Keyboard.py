@@ -24,30 +24,30 @@ def keyboard_update():
 def move_up(status, entity):
     if status:
         pos = ecs.get_component(Position, entity)
-        if pos.y - 1 in ecs.map and pos.x in ecs.map[pos.y - 1]:
-            if ecs.map[pos.y - 1][pos.x][0] not in ["water", "lava"]:
+        if pos.y - 1 in ecs.map_handler.map and pos.x in ecs.map_handler.map[pos.y - 1]:
+            if ecs.map_handler.map[pos.y - 1][pos.x][0] not in ["water", "lava"]:
                 pos.y -= 1
 
 
 def move_left(status, entity):
     if status:
         pos = ecs.get_component(Position, entity)
-        if pos.y in ecs.map and pos.x - 1 in ecs.map[pos.y]:
-            if ecs.map[pos.y][pos.x - 1][0] not in ["water", "lava"]:
+        if pos.y in ecs.map_handler.map and pos.x - 1 in ecs.map_handler.map[pos.y]:
+            if ecs.map_handler.map[pos.y][pos.x - 1][0] not in ["water", "lava"]:
                 pos.x -= 1
 
 
 def move_down(status, entity):
     if status:
         pos = ecs.get_component(Position, entity)
-        if pos.y + 1 in ecs.map and pos.x in ecs.map[pos.y + 1]:
-            if ecs.map[pos.y + 1][pos.x][0] not in ["water", "lava"]:
+        if pos.y + 1 in ecs.map_handler.map and pos.x in ecs.map_handler.map[pos.y + 1]:
+            if ecs.map_handler.map[pos.y + 1][pos.x][0] not in ["water", "lava"]:
                 pos.y += 1
 
 
 def move_right(status, entity):
     if status:
         pos = ecs.get_component(Position, entity)
-        if pos.y in ecs.map and pos.x + 1 in ecs.map[pos.y]:
-            if ecs.map[pos.y][pos.x + 1][0] not in ["water", "lava"]:
+        if pos.y in ecs.map_handler.map and pos.x + 1 in ecs.map_handler.map[pos.y]:
+            if ecs.map_handler.map[pos.y][pos.x + 1][0] not in ["water", "lava"]:
                 pos.x += 1

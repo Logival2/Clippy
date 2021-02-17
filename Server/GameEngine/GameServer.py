@@ -9,7 +9,7 @@ from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.Components.Rabbit import Rabbit
 from GameEngine.Components.Sprite import Sprite
-from GameEngine.MapGenerator.MapGenerator import MapGenerator
+from GameEngine.MapHandler.MapHandler import MapHandler
 from GameEngine.Displayer.GameLoop import GameLoop
 from GameEngine.Displayer.config import *
 
@@ -26,10 +26,11 @@ class ClippyGame(object):
         self.systems = []
         self.debug_timer = None
         self.game_state = {
-            "players": {0: {
-                    "name": "rock",
-                    "entity_id": 1
-                }},  # dict with `player_id: player_dict` entries
+            "players": {},
+            # {0: {
+            #         "name": "rock",
+            #         "entity_id": 1
+            #     }},  # dict with `player_id: player_dict` entries
             "components": { #ugly but it works
                 "Position": {},
                 "Sprite": {}
@@ -49,8 +50,7 @@ class ClippyGame(object):
                 }
         )
         # Put the map_gen here as it needs most of this class variables to work
-        self.map_generator = MapGenerator(self)
-        self.map = self.map_generator.generate_chunk()
+        self.map_handler = MapHandler(self)
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
         self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
@@ -98,8 +98,9 @@ class ClippyGame(object):
             else:
                 system_updates = function()
             updates.update(system_updates)
-        # tmp
-        self.game_state = self.game_loop.update(self.map, self.game_state)
+        self.map_handler.handle_chunks()
+        # tmp drawing from here
+        self.game_state = self.game_loop.update(self.map_handler.map, self.game_state)
         return {"updates":"jej"}
 
     def new_entity(self):
