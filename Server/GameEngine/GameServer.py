@@ -9,6 +9,7 @@ from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
 from GameEngine.Components.Rabbit import Rabbit
 from GameEngine.Components.Sprite import Sprite
+from GameEngine.Components.StaticObject import StaticObject
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.Displayer.GameLoop import GameLoop
 from GameEngine.Displayer.config import *

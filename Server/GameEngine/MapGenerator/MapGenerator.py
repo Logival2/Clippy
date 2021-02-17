@@ -37,11 +37,11 @@ class MapGenerator(object):
         entity = self.ecs.new_entity()
         self.ecs.add_component(entity, Position.Position(9, 9))
         self.ecs.add_component(entity, Rabbit.Rabbit())
-        self.ecs.add_component(entity, Sprite.Sprite('udheudhe', 'desert', 0.5))
-        # entity = self.ecs.new_entity()
-        # self.ecs.add_component(entity, Position.Position(9, 9))
-        # self.ecs.add_component(entity, StaticObject.StaticObject())
-        # self.ecs.add_component(entity, Sprite.Sprite('udheudhe', 'mountain', 0.5))
+        self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
+        entity = self.ecs.new_entity()
+        self.ecs.add_component(entity, Position.Position(9, 9))
+        self.ecs.add_component(entity, StaticObject.StaticObject())
+        self.ecs.add_component(entity, Sprite.Sprite('tree', 'mountain', 0.5))
         return terrain
 
     def layout_basic_ground(self, anchor_pos):
