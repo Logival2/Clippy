@@ -1,7 +1,5 @@
 import random
 
-from GameEngine.GameServer import ecs
-
 
 class Fox:
     def __init__(self):

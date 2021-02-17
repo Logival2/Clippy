@@ -1,6 +1,7 @@
 import time
 from os import listdir
 from os.path import isfile, join
+from pprint import pprint
 
 import pygame
 from pygame.locals import *
@@ -212,25 +213,31 @@ class GameLoop(object):
         return res
 
     def load_available_sprites(self, sprite_size):
-        no_rot_path = './GameEngine/Displayer/assets/sprites/no_rot_sprites'
-        rot_path = './GameEngine/Displayer/assets/sprites'
-        # Load sprites with no rotation
-        no_rot_sprites = [f[:f.find('.')] for f in listdir(no_rot_path) if isfile(join(no_rot_path, f))]
-        rot_sprites = [f[:f.find('.')] for f in listdir(rot_path) if isfile(join(rot_path, f))]
-        for sprite_name in no_rot_sprites:
-            self.sprites[sprite_name] = [self.load_sprite(no_rot_path, sprite_name)]
-        for sprite_name in rot_sprites:
+        self.load_sprite_folder(
+            "./GameEngine/Displayer/assets/sprites/no_rot_sprites",
+            sprite_size, rotate=False,
+        )
+        self.load_sprite_folder(
+            "./GameEngine/Displayer/assets/sprites",
+            sprite_size, rotate=True,
+        )
+        print(f'[+] {len(self.sprites)} sprites loaded:')
+        pprint(self.sprites)
+
+    def load_sprite_folder(self, folder_path, sprite_size, rotate):
+        sprites_names = [f[:f.find('.')] for f in listdir(folder_path) if isfile(join(folder_path, f))]
+        for sprite_name in sprites_names:
             final_sprite_name = sprite_name[:-2]
             if final_sprite_name in self.sprites:
-                self.sprites[final_sprite_name].append(self.load_sprite(rot_path, sprite_name))
+                self.sprites[final_sprite_name].append(self.load_sprite(folder_path, sprite_name))
             else:
-                self.sprites[final_sprite_name] = [self.load_sprite(rot_path, sprite_name)]
-        print(f'[+] {len(self.sprites)} sprites loaded')
-        # Now create the rotated version of the sprites which need it
-        for sprite_name in rot_sprites:
-            for angle in [90, 180, 270]:
-                self.sprites[sprite_name[:-2]].append(pygame.transform.rotate(self.sprites[sprite_name[:-2]][0], angle))
-        print(f'[+] {sum([len(a) for a in self.sprites.values()])} total sprites after rotations')
+                self.sprites[final_sprite_name] = [self.load_sprite(folder_path, sprite_name)]
+        if rotate:
+            # Now create the rotated version of the sprites which need it
+            for sprite_name in sprites_names:
+                for angle in [90, 180, 270]:
+                    self.sprites[sprite_name[:-2]].append(pygame.transform.rotate(self.sprites[sprite_name[:-2]][0], angle))
+            # print(f'[+] {sum([len(a) for a in self.sprites.values()])} total sprites after rotations')
 
     def load_sprite(self, path, name):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')

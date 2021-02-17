@@ -14,9 +14,7 @@ def fox_update():
     """ What does the fow says ? """
     foxs = ecs.get_component(Fox)
     for fox in foxs:
-        print("Ring-ding-ding-ding-dingeringeding!\n" +
-              "Gering-ding-ding-ding-dingeringeding!\n" +
-              "Gering-ding-ding-ding-dingeringeding!")
+        print("Seb pourriseur de console!")
     return {}
 
 
