@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 
 MAP_CONFIG = {
-    'seed': 1,
+    'seed': 3,
     'regions_nbr': 5,
     'map_size': 64,
     'chunk_size': 64,
@@ -17,7 +17,9 @@ MAP_CONFIG = {
                 ('sand', 0.85),
                 ('stone', 1),
             ],
-            'random_bloc_swaps_frequency': 70,
+            'lichen_probability': 0.4,
+            'trees_probability': 0.2,
+            'rocks_probability': 0.5,
         },
         'mountain': {
             'repartition': [
@@ -25,7 +27,9 @@ MAP_CONFIG = {
                 ('gravel', 0.3),
                 ('stone', 1),
             ],
-            'random_bloc_swaps_frequency': 10,
+            'lichen_probability': 0.1,
+            'trees_probability': 0.5,
+            'rocks_probability': 1,
         },
         'temperate': {
             'repartition': [
@@ -34,13 +38,17 @@ MAP_CONFIG = {
                 ('grass', .7),
                 ('stone', .8),
             ],
-            'random_bloc_swaps_frequency': 20,
+            'lichen_probability': 0.1,
+            'trees_probability': 1,
+            'rocks_probability': 0.5,
         },
         'hell': {
             'repartition': [
                 ('lava', .3),
             ],
-            'random_bloc_swaps_frequency': 90,
+            'lichen_probability': 0,
+            'trees_probability': 0,
+            'rocks_probability': 0.5,
         },
         'ocean': {
             'repartition': [
@@ -48,7 +56,9 @@ MAP_CONFIG = {
                 ('sand', 0.9),
                 ('grass', 1),
             ],
-            'random_bloc_swaps_frequency': 2,
+            'lichen_probability': 0,
+            'trees_probability': 0,
+            'rocks_probability': 0.1,
         },
     }
 }

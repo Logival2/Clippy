@@ -32,12 +32,6 @@ class MapGenerator(object):
         self.populate_chunk(chunk, anchor_pos)
         return chunk
 
-    def get_random_position(self, anchor_pos):
-        return anchor_pos + Position.Position(
-            random.randint(0, self.config['chunk_size']),
-            random.randint(0, self.config['chunk_size']),
-        )
-
     def populate_chunk(self, chunk, anchor_pos):
         entity = self.ecs.new_entity()
         ent_pos = self.get_random_position(anchor_pos)
@@ -53,62 +47,47 @@ class MapGenerator(object):
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
 
+    def create_entity(self, ent_pos, sprite_name, is_collider=False):
+        entity = self.ecs.new_entity()
+        self.ecs.add_component(entity, ent_pos)
+        self.ecs.add_component(
+            entity,
+            Sprite.Sprite(
+                sprite_name,
+                self.get_pos_region(ent_pos),
+                self.get_simplex_value(ent_pos),
+            )
+        )
+        if is_collider:
+            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+        return entity
+
     def decorate_chunk(self, terrain, regions_blocs_positions, anchor_pos):
-        # Add lichen
-        for i in range(20):
-            ent_pos = self.get_random_position(anchor_pos)
-            entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, ent_pos)
-            self.ecs.add_component(
-                entity,
-                Sprite.Sprite(
-                    'lichen',
-                    self.get_pos_region(ent_pos),
-                    self.get_simplex_value(ent_pos),
-                )
-            )
-            self.ecs.add_component(entity, Vegetable.Vegetable())
-        # Add trees
-        for i in range(20):
-            ent_pos = self.get_random_position(anchor_pos)
-            entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
-            self.ecs.add_component(entity, ent_pos)
-            self.ecs.add_component(
-                entity,
-                Sprite.Sprite(
-                    'tree',
-                    self.get_pos_region(ent_pos),
-                    self.get_simplex_value(ent_pos),
-                )
-            )
-        # Add rocks
-        for i in range(20):
-            ent_pos = self.get_random_position(anchor_pos)
-            entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
-            self.ecs.add_component(entity, ent_pos)
-            self.ecs.add_component(
-                entity,
-                Sprite.Sprite(
-                    'rock',
-                    self.get_pos_region(ent_pos),
-                    self.get_simplex_value(ent_pos),
-                )
-            )
-        # Add pebbles
-        for i in range(self.config['chunk_size']):
-            ent_pos = self.get_random_position(anchor_pos)
-            entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, ent_pos)
-            self.ecs.add_component(
-                entity,
-                Sprite.Sprite(
-                    'pebble',
-                    self.get_pos_region(ent_pos),
-                    self.get_simplex_value(ent_pos),
-                )
-            )
+        entities_density = 60  # Bigger = less entities
+        for region, region_bloc_positions in regions_blocs_positions.items():
+            lichen_probability = self.config["regions"][region]["lichen_probability"]
+            # Add lichen
+            for i in range(int(len(region_bloc_positions) * lichen_probability / entities_density)):
+                ent_pos = random.choice(regions_blocs_positions[region])
+                regions_blocs_positions[region].remove(ent_pos)
+                entity = self.create_entity(ent_pos + anchor_pos, "lichen", False)
+                self.ecs.add_component(entity, Vegetable.Vegetable())
+            # Add trees
+            trees_probability = self.config["regions"][region]["trees_probability"]
+            for i in range(int(len(region_bloc_positions) * trees_probability / entities_density)):
+                ent_pos = random.choice(regions_blocs_positions[region])
+                regions_blocs_positions[region].remove(ent_pos)
+                entity = self.create_entity(ent_pos + anchor_pos, "tree", True)
+            # Add rocks
+            rocks_probability = self.config["regions"][region]["rocks_probability"]
+            for i in range(int(len(region_bloc_positions) * rocks_probability / entities_density)):
+                ent_pos = random.choice(regions_blocs_positions[region])
+                regions_blocs_positions[region].remove(ent_pos)
+                entity = self.create_entity(ent_pos + anchor_pos, "rock", True)
+                # Add pebbles
+                ent_pos = random.choice(regions_blocs_positions[region])
+                regions_blocs_positions[region].remove(ent_pos)
+                entity = self.create_entity(ent_pos + anchor_pos, "pebble", False)
 
     def layout_basic_ground(self, anchor_pos):
         chunk = {}
@@ -126,8 +105,6 @@ class MapGenerator(object):
                     + 6 * noise_value
                     + 1 *random.uniform(0, 1)
                 ) / 7
-                if bloc_type_noise_value < 0 or bloc_type_noise_value > 1:
-                    print("1111")
                 bloc_type = self.get_bloc_type(bloc_type_noise_value, region)
                 ### Now create the noise which will be used for sprite drawing
                 # Use the "normal scale" noise value and normalize it
@@ -143,12 +120,8 @@ class MapGenerator(object):
                     + 2 * stretched_noise_value
                     + 1 *random.uniform(0, 1)
                 ) / 3
-
-                tmp_line[x + anchor_pos.x] = (
-                    bloc_type, region,
-                    sent_noise_value
-                )
-                regions_blocs_positions[region].append((y, x))
+                tmp_line[x + anchor_pos.x] = (bloc_type, region,  sent_noise_value)
+                regions_blocs_positions[region].append(Position.Position(y=y, x=x))
             chunk[y + anchor_pos.y] = tmp_line
         return chunk, regions_blocs_positions
 
@@ -209,7 +182,7 @@ class MapGenerator(object):
 
     def generate_capitals_positions(self, capitals_nbr):
         ''' Choose {capitals_nbr} coordinates to place the capitals
-        Regions will be determined based on those coordinates'''
+        Regions will be determined based on those coordinates '''
         for c in range(capitals_nbr):
             point_x = random.randint(0, self.config['map_size'])
             while point_x < 0 or point_x >= self.config['map_size']:
@@ -220,16 +193,14 @@ class MapGenerator(object):
             self.capitals_positions.append(Position.Position(x=point_x, y=point_y))
 
     def get_simplex_value(self, tile_pos):
-        ''' Returns the noise value of a Position.Position
-        '''
+        ''' Returns the noise value of a Position.Position '''
         noise_value = self.simplex.noise2d(
             *(tile_pos / self.config['noise_scale']).get_xy()
         )
         return (noise_value + 1) / 2  # To get a value between 0 and 1
 
-    def get_map(self):
-        ''' Useless for now, as we don't use chunks
-        '''
-        str = [''.join(l) for l in self.map]
-        str = '\n'.join(str)
-        return str
+    def get_random_position(self, anchor_pos):
+        return anchor_pos + Position.Position(
+            random.randint(0, self.config['chunk_size']),
+            random.randint(0, self.config['chunk_size']),
+        )
