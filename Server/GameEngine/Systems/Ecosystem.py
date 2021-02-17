@@ -14,7 +14,7 @@ def fox_update():
     """ What does the fow says ? """
     foxs = ecs.get_component(Fox)
     for fox in foxs:
-        print("Le renard trouve qui JB est pas bo")
+        pass
     return {}
 
 
