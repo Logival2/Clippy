@@ -7,6 +7,8 @@ from inspect import signature
 # from pprint import pprint
 from pygase import GameState, Backend
 from GameEngine.Components.Position import Position
+from GameEngine.Components.Rabbit import Rabbit
+from GameEngine.Components.Sprite import Sprite
 from GameEngine.MapGenerator.MapGenerator import MapGenerator
 from GameEngine.Displayer.GameLoop import GameLoop
 from GameEngine.Displayer.config import *
@@ -52,6 +54,10 @@ class ClippyGame(object):
         self.add_system(self.debug_system)
         self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
 
+        entity = self.new_entity()
+        self.add_component(entity, Position(9, 9))
+        self.add_component(entity, Rabbit())
+        self.add_component(entity, Sprite('udheudhe', 'desert', 0.5))
 
     def movement_system(self, game_state, dt):
         position_update = {}

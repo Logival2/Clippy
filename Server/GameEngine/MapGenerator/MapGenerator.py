@@ -5,6 +5,8 @@ from opensimplex import OpenSimplex
 
 from GameEngine.Components.Position import Position
 from GameEngine.MapGenerator.map_config import MAP_CONFIG
+# from GameEngine.GameServer import ecs
+
 
 
 class MapGenerator(object):
@@ -21,6 +23,13 @@ class MapGenerator(object):
         terrain = self.generate_terrain_chunk(anchor_pos)
         decorated_terrain = self.decorate_chunk(terrain, anchor_pos)
         return decorated_terrain
+
+    def generate_terrain_chunk(self, anchor_pos):
+        ''' returns a double array of tuples: (bloc_type, region, noise_value)
+        noise value is needed by clients to vary the display of similar bloc types'''
+        chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
+        self.randomly_swap_blocs(chunk, regions_blocs_positions)
+        return chunk
 
     def decorate_chunk(self, terrain, anchor_pos):
         return terrain
@@ -56,13 +65,6 @@ class MapGenerator(object):
                 tmp = chunk[bloc_1_pos[0]][bloc_1_pos[1]]
                 chunk[bloc_1_pos[0]][bloc_1_pos[1]] = chunk[bloc_2_pos[0]][bloc_2_pos[1]]
                 chunk[bloc_2_pos[0]][bloc_2_pos[1]] = tmp
-
-    def generate_terrain_chunk(self, anchor_pos):
-        ''' returns a double array of tuples: (bloc_type, region, noise_value)
-        noise value is needed by clients to vary the display of similar bloc types'''
-        chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
-        self.randomly_swap_blocs(chunk, regions_blocs_positions)
-        return chunk
 
     def get_bloc_type(self, noise_value, region):
         ''' Use the region, noise value and config values (config.py) to
