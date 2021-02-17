@@ -112,7 +112,7 @@ class GameLoop(object):
 
     def map_pos_to_screen_pos(self, map_pos):
         screen_pos = map_pos + self.mid_map_position - self.player_pos
-        if screen_pos >> Position(0, 0) and screen_pos << self.map_tiles_nbr:
+        if screen_pos >> Position(0, 0) and screen_pos << self.map_tiles_nbr - Position(1, 1):
             return screen_pos
         # Off screen position, return None
 

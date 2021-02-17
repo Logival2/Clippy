@@ -21,35 +21,71 @@ class MapGenerator(object):
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
     def generate_chunk(self, anchor_pos=Position.Position(0, 0)):
+        # Only create the ground blocs
         chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
+        # Now randomly swap some of them
         self.randomly_swap_blocs(chunk, regions_blocs_positions)
-        decorated_terrain = self.decorate_chunk(chunk, anchor_pos)
+        # Add Trees, rocks etc
+        decorated_terrain = self.decorate_chunk(chunk, regions_blocs_positions)
+        # Create some AIs in this chunk
+        self.populate_chunk(chunk, anchor_pos)
         return decorated_terrain
 
-    def decorate_chunk(self, terrain, anchor_pos):
+    def populate_chunk(self, chunk, anchor_pos):
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
+        self.ecs.add_component(entity, Hitbox.Hitbox(9, 9))
         self.ecs.add_component(entity, Position.Position(9, 9))
         self.ecs.add_component(entity, Rabbit.Rabbit())
         self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
 
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-        self.ecs.add_component(entity, Position.Position(12, 16))
+        self.ecs.add_component(entity, Position.Position(x=15, y=10))
+        self.ecs.add_component(entity, Hitbox.Hitbox(15, 10))
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
+
+    def decorate_chunk(self, terrain, regions_blocs_positions):
+        # Add lichen
+        for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
+            entity = self.ecs.new_entity()
+            self.ecs.add_component(entity, ent_pos)
+            self.ecs.add_component(
+                entity,
+                Sprite.Sprite(
+                    'lichen',
+                    self.get_pos_region(ent_pos),
+                    self.get_simplex_value(ent_pos),
+                )
+            )
         # Add trees
         for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
             entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-            self.ecs.add_component(entity, Position.Position(random.randint(-20, 20), random.randint(-20, 20)))
-            self.ecs.add_component(entity, Sprite.Sprite('tree', 'mountain', 0.5))
+            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+            self.ecs.add_component(entity, ent_pos)
+            self.ecs.add_component(
+                entity,
+                Sprite.Sprite(
+                    'tree',
+                    self.get_pos_region(ent_pos),
+                    self.get_simplex_value(ent_pos),
+                )
+            )
         # Add rocks
         for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
             entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-            self.ecs.add_component(entity, Position.Position(random.randint(-20, 20), random.randint(-20, 20)))
-            self.ecs.add_component(entity, Sprite.Sprite('rock', 'mountain', 0.5))
+            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+            self.ecs.add_component(entity, ent_pos)
+            self.ecs.add_component(
+                entity,
+                Sprite.Sprite(
+                    'rock',
+                    self.get_pos_region(ent_pos),
+                    self.get_simplex_value(ent_pos),
+                )
+            )
         return terrain
 
     def layout_basic_ground(self, anchor_pos):
