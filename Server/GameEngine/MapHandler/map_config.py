@@ -2,7 +2,7 @@ MAP_CONFIG = {
     'seed': 1,
     'regions_nbr': 5,
     'map_size': 1024,
-    'chunk_size': 32,
+    'chunk_size': 64,
     'noise_scale': 15,  # Bigger = Zoom in
     'regions': {
         'desert': {
