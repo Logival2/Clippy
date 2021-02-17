@@ -1,7 +1,6 @@
 import time
 from os import listdir
 from os.path import isfile, join
-from pprint import pprint
 
 import pygame
 from pygame.locals import *
@@ -9,6 +8,7 @@ from pygame.locals import *
 from GameEngine.Displayer.utils import exit_error
 from GameEngine.Displayer.config import *
 from GameEngine.Components.Position import Position
+
 
 class GameLoop(object):
     def __init__(self, config):
@@ -41,7 +41,6 @@ class GameLoop(object):
             x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr,
             y=self.tiles_nbr.y - 2
         )
-        self.needed_lines_top = self.map_tiles_nbr.y // 2 + 2
         self.mid_map_position = Position(
             y=self.map_tiles_nbr.y // 2,
             x=self.map_tiles_nbr.x // 2
