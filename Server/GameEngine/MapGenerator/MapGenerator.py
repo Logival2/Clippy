@@ -28,27 +28,29 @@ class MapGenerator(object):
 
     def decorate_chunk(self, terrain, anchor_pos):
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
+        self.ecs.add_component(entity, Hitbox.Hitbox(9, 9))
         self.ecs.add_component(entity, Position.Position(9, 9))
         self.ecs.add_component(entity, Rabbit.Rabbit())
         self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
 
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-        self.ecs.add_component(entity, Position.Position(12, 16))
+        self.ecs.add_component(entity, Position.Position(x=15, y=10))
+        self.ecs.add_component(entity, Hitbox.Hitbox(15, 10))
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
         # Add trees
         for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
             entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-            self.ecs.add_component(entity, Position.Position(random.randint(-20, 20), random.randint(-20, 20)))
+            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+            self.ecs.add_component(entity, ent_pos)
             self.ecs.add_component(entity, Sprite.Sprite('tree', 'mountain', 0.5))
         # Add rocks
         for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
             entity = self.ecs.new_entity()
-            self.ecs.add_component(entity, Hitbox.Hitbox(0, 0))
-            self.ecs.add_component(entity, Position.Position(random.randint(-20, 20), random.randint(-20, 20)))
+            self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+            self.ecs.add_component(entity, ent_pos)
             self.ecs.add_component(entity, Sprite.Sprite('rock', 'mountain', 0.5))
         return terrain
 
