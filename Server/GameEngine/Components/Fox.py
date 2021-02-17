@@ -1,7 +1,7 @@
 import random
 
 
-class Fox:
+class Fox(object):
     def __init__(self):
         """ When relevant, 1 is the width of a chunk """
         """ Properties will change during AI tweaks """

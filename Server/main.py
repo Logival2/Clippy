@@ -23,4 +23,5 @@ if __name__ == '__main__':
     ecs.add_system(fox_update)
     ecs.add_system(keyboard_update)
     ecs.add_system(hitbox_update)
+    ecs.delete_id(2)
     ecs.run()

@@ -1,7 +1,7 @@
 import random
 
 
-class Rabbit:
+class Rabbit(object):
     def __init__(self):
         """ When relevant, 1 is the width of a chunk """
         self.reproduction_rate = random.uniform(0, 1)

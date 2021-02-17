@@ -28,7 +28,7 @@ class ClippyGame(object):
         self.game_state = {
             "players": {0: {
                     "name": "rock",
-                    "entity": 1
+                    "entity_id": 1
                 }},  # dict with `player_id: player_dict` entries
             "components": { #ugly but it works
                 "Position": {},
@@ -59,7 +59,7 @@ class ClippyGame(object):
         position_update = {}
         inputs_update = {}
         for id, player in game_state.players.items():
-            player_entity = player["entity"]
+            player_entity = player["entity_id"]
             player_inputs = game_state.components["Inputs"][player_entity]
             if len(player_inputs) == 0:
                 continue
@@ -83,7 +83,7 @@ class ClippyGame(object):
             return {}
         now = time.time()
         if now - self.debug_timer > 5:
-            print("Position: ", game_state.components["Position"])
+            # print("Position: ", game_state.components["Position"])
             self.debug_timer = now
         return {}
 
@@ -109,6 +109,8 @@ class ClippyGame(object):
 
     def delete_id(self, id):
         """delete every component of id"""
+        # for k, v in self.game_state["components"].keys():
+        #     print(k)
         pass
 
     def get_component(self, component, entity=None):
@@ -149,7 +151,7 @@ class ClippyGame(object):
         print(f"received inputs from client id n°{player_id}: {inputs!r}")
         if player_id not in game_state.players:
             return {}
-        player_entity = game_state.players[player_id]["entity"]
+        player_entity = game_state.players[player_id]["entity_id"]
         return {
             "components": {
                     "Inputs": {player_entity: inputs}

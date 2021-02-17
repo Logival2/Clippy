@@ -12,12 +12,12 @@ class Keyboard(object):
 def keyboard_update():
     keyboards = ecs.get_component(Keyboard)
     for k, v in ecs.game_state["players"].items():
-        if "inputs" in v and "entity" in v:
+        if "inputs" in v and "entity_id" in v:
             for key in v["inputs"]:
-                for kb, vb in keyboards[v["entity"]].keys.items():
+                for kb, vb in keyboards[v["entity_id"]].keys.items():
                     vb["status"] = kb == key
                     if vb["function"]:
-                        vb["function"](vb["status"], v["entity"])
+                        vb["function"](vb["status"], v["entity_id"])
     return {}
 
 
