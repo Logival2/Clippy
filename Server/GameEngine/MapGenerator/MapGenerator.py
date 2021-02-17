@@ -22,16 +22,10 @@ class MapGenerator(object):
         self.generate_capitals_positions(int(self.config['regions_nbr'] * 1.5))
 
     def generate_chunk(self, anchor_pos=Position.Position(0, 0)):
-        terrain = self.generate_terrain_chunk(anchor_pos)
-        decorated_terrain = self.decorate_chunk(terrain, anchor_pos)
-        return decorated_terrain
-
-    def generate_terrain_chunk(self, anchor_pos):
-        ''' returns a double array of tuples: (bloc_type, region, noise_value)
-        noise value is needed by clients to vary the display of similar bloc types'''
         chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
         self.randomly_swap_blocs(chunk, regions_blocs_positions)
-        return chunk
+        decorated_terrain = self.decorate_chunk(chunk, anchor_pos)
+        return decorated_terrain
 
     def decorate_chunk(self, terrain, anchor_pos):
         entity = self.ecs.new_entity()
@@ -40,7 +34,6 @@ class MapGenerator(object):
         self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
         entity = self.ecs.new_entity()
         self.ecs.add_component(entity, Position.Position(9, 9))
-        self.ecs.add_component(entity, StaticObject.StaticObject())
         self.ecs.add_component(entity, Sprite.Sprite('tree', 'mountain', 0.5))
         return terrain
 
