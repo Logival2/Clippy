@@ -1,3 +1,4 @@
+import random
 import time
 from os import listdir
 from os.path import isfile, join
@@ -82,7 +83,7 @@ class GameLoop(object):
         #         inputs=inputs,
         #     )
         pygame.display.update()
-        self.clock.tick(144)
+        self.clock.tick(25)
         return game_state
 
     def draw_entities(self, map, game_state):
@@ -132,8 +133,17 @@ class GameLoop(object):
 
     def display_entity(self, sprite_type, region, noise_value, screen_pos):
         """ From the entity type, position and noise value assigned to this position
-        (computed server side) draw a sprite"""
-        sprite_name = f'{region}_{sprite_type}'
+        (computed server side) draw a sprite
+
+        TODO: Instead of finding which sprite to draw EVERY TIME we draw the map
+        make a system where each chunk is processed ONCE (when received) and "flattened"
+        into sprites
+
+        This would also allow to randomly select a sprite not based solely on its
+        tile noise value
+        (we can't do that at the moment, the sprite would "blink" otherwise)
+        """
+        sprite_name = f"{region}_{sprite_type}"
         if sprite_name not in self.sprites.keys():
             sprite_name = sprite_type
             if sprite_name not in self.sprites.keys():
@@ -234,9 +244,7 @@ class GameLoop(object):
         for sprite_name in sprites_names:
             final_sprite_name = sprite_name[:-2]
             final_sprite_list = []
-
             final_sprite_list.append(self.load_sprite(folder_path, sprite_name))
-
             if rotate:
                 for angle in [90, 180, 270]:
                     final_sprite_list.append(pygame.transform.rotate(final_sprite_list[0], angle))
@@ -246,7 +254,12 @@ class GameLoop(object):
                 for sprite in final_sprite_list:
                     new_images.append(pygame.transform.flip(sprite, True, False))
                 final_sprite_list += new_images
-            self.sprites[final_sprite_name] = final_sprite_list
+            random.shuffle(final_sprite_list)
+            if final_sprite_name in self.sprites:
+                self.sprites[final_sprite_name] += final_sprite_list
+            else:
+                self.sprites[final_sprite_name] = final_sprite_list
+
 
     def load_sprite(self, path, name):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')

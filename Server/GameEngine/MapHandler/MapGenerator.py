@@ -104,13 +104,51 @@ class MapGenerator(object):
             tmp_line = {}
             for x in range(self.config['chunk_size']):
                 tile_pos = Position.Position(x=anchor_pos.x + x, y=anchor_pos.y + y)
-                noise_value = self.get_simplex_value(tile_pos)
                 region = self.get_pos_region(tile_pos)
-                bloc_type = self.get_bloc_type(noise_value, region)
-                tmp_line[x + anchor_pos.x] = (bloc_type, region, noise_value)
+                ### Define the bloc type now, based on two noises of different scales
+                # along with some random
+                noise_value = self.get_simplex_value(tile_pos)
+                # Also use a bit of another noise, a smaller one (more details)
+                small_noise_value = self.get_simplex_value(tile_pos, "2")
+                bloc_type_noise_value = (
+                    + 6 * noise_value
+                    + 1 *random.uniform(0, 1)
+                ) / 7
+                if bloc_type_noise_value < 0 or bloc_type_noise_value > 1:
+                    print("1111")
+                bloc_type = self.get_bloc_type(bloc_type_noise_value, region)
+                ### Now create the noise which will be used for sprite drawing
+                # Use the "normal scale" noise value and normalize it
+                # so all type of sprites for a specific bloc type can be drawn
+                OldMin, OldMax = self.get_bloc_type_noise_bounds(region, bloc_type)
+                stretched_noise_value = (noise_value - OldMin) / (OldMax - OldMin)
+                # TODO: Check why this returns some values <0 or > 1,
+                # For now, clamp it
+                stretched_noise_value = max(min(stretched_noise_value, 1), 0)
+                # Finally merge those with some bit of random
+                sent_noise_value = (
+                    # + 3 * small_noise_value
+                    + 2 * stretched_noise_value
+                    + 1 *random.uniform(0, 1)
+                ) / 3
+
+                tmp_line[x + anchor_pos.x] = (
+                    bloc_type, region,
+                    sent_noise_value
+                )
                 regions_blocs_positions[region].append((y, x))
             chunk[y + anchor_pos.y] = tmp_line
         return chunk, regions_blocs_positions
+
+    def get_bloc_type_noise_bounds(self, region, bloc_type):
+        low_noise_value = 0
+        max_noise_value = 1
+        for tmp_bloc_type, bloc_type_max_noise_value in self.config['regions'][region]['repartition']:
+            if tmp_bloc_type == bloc_type:
+                max_noise_value = bloc_type_max_noise_value
+                break
+            low_noise_value = bloc_type_max_noise_value
+        return low_noise_value, max_noise_value
 
     def randomly_swap_blocs(self, chunk, regions_blocs_positions):
         # Now randomly swap blocs
@@ -133,7 +171,7 @@ class MapGenerator(object):
         ''' Use the region, noise value and config values (config.py) to
         determine which terrain block will be chosen'''
         block_name = ''
-        for tmp_block_name, value in self.config['regions'][region]['repartition'].items():
+        for tmp_block_name, value in self.config['regions'][region]['repartition']:
             block_name = tmp_block_name
             if noise_value < value:
                 break
@@ -163,10 +201,12 @@ class MapGenerator(object):
                 point_y = random.randint(0, self.config['map_size'])
             self.capitals_positions.append(Position.Position(x=point_x, y=point_y))
 
-    def get_simplex_value(self, tile_pos):
+    def get_simplex_value(self, tile_pos, noise_idx=""):
         ''' Returns the noise value of a Position.Position
         '''
-        noise_value = self.simplex.noise2d(*(tile_pos / self.config['noise_scale']).get_xy())
+        noise_value = self.simplex.noise2d(
+            *(tile_pos / self.config['noise_scale' + noise_idx]).get_xy()
+        )
         return (noise_value + 1) / 2  # To get a value between 0 and 1
 
     def get_map(self):
