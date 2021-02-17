@@ -3,7 +3,7 @@ import random
 
 from GameEngine.Components.Position import Position
 from GameEngine.Components.Sprite import Sprite
-from GameEngine.Components.Vegeteable import Vegetable
+from GameEngine.Components.Vegetable import Vegetable
 from GameEngine.GameServer import ecs
 from GameEngine.Components.Fox import Fox
 from GameEngine.Components.Rabbit import Rabbit

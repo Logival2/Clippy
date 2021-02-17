@@ -6,6 +6,7 @@ from opensimplex import OpenSimplex
 from GameEngine.Components import *
 # WTF is this? Fox is not imported by * ????
 from GameEngine.Components import Fox
+from GameEngine.Components import Vegetable
 from GameEngine.MapHandler.map_config import MAP_CONFIG
 
 
@@ -66,6 +67,7 @@ class MapGenerator(object):
                     self.get_simplex_value(ent_pos),
                 )
             )
+            self.ecs.add_component(entity, Vegetable.Vegetable())
         # Add trees
         for i in range(20):
             ent_pos = self.get_random_position(anchor_pos)
