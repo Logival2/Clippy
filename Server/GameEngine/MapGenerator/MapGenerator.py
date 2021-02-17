@@ -26,7 +26,7 @@ class MapGenerator(object):
         # Now randomly swap some of them
         self.randomly_swap_blocs(chunk, regions_blocs_positions)
         # Add Trees, rocks etc
-        decorated_terrain = self.decorate_chunk(chunk, anchor_pos)
+        decorated_terrain = self.decorate_chunk(chunk, regions_blocs_positions)
         # Create some AIs in this chunk
         self.populate_chunk(chunk, anchor_pos)
         return decorated_terrain
@@ -44,7 +44,20 @@ class MapGenerator(object):
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
 
-    def decorate_chunk(self, terrain, anchor_pos):
+    def decorate_chunk(self, terrain, regions_blocs_positions):
+        # Add lichen
+        for i in range(20):
+            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
+            entity = self.ecs.new_entity()
+            self.ecs.add_component(entity, ent_pos)
+            self.ecs.add_component(
+                entity,
+                Sprite.Sprite(
+                    'lichen',
+                    self.get_pos_region(ent_pos),
+                    self.get_simplex_value(ent_pos),
+                )
+            )
         # Add trees
         for i in range(20):
             ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
