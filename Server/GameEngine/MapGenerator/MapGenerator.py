@@ -26,28 +26,36 @@ class MapGenerator(object):
         # Now randomly swap some of them
         self.randomly_swap_blocs(chunk, regions_blocs_positions)
         # Add Trees, rocks etc
-        decorated_terrain = self.decorate_chunk(chunk, regions_blocs_positions)
+        decorated_terrain = self.decorate_chunk(chunk, regions_blocs_positions, anchor_pos)
         # Create some AIs in this chunk
         self.populate_chunk(chunk, anchor_pos)
         return decorated_terrain
 
+    def get_random_position(self, anchor_pos):
+        return anchor_pos + Position.Position(
+            random.randint(0, self.config['chunk_size']),
+            random.randint(0, self.config['chunk_size']),
+        )
+
     def populate_chunk(self, chunk, anchor_pos):
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Hitbox.Hitbox(9, 9))
-        self.ecs.add_component(entity, Position.Position(9, 9))
+        ent_pos = self.get_random_position(anchor_pos)
+        self.ecs.add_component(entity, ent_pos)
+        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
         self.ecs.add_component(entity, Rabbit.Rabbit())
         self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
 
         entity = self.ecs.new_entity()
-        self.ecs.add_component(entity, Position.Position(x=15, y=10))
-        self.ecs.add_component(entity, Hitbox.Hitbox(15, 10))
+        ent_pos = self.get_random_position(anchor_pos)
+        self.ecs.add_component(entity, ent_pos)
+        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
 
-    def decorate_chunk(self, terrain, regions_blocs_positions):
+    def decorate_chunk(self, terrain, regions_blocs_positions, anchor_pos):
         # Add lichen
         for i in range(20):
-            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
+            ent_pos = self.get_random_position(anchor_pos)
             entity = self.ecs.new_entity()
             self.ecs.add_component(entity, ent_pos)
             self.ecs.add_component(
@@ -60,7 +68,7 @@ class MapGenerator(object):
             )
         # Add trees
         for i in range(20):
-            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
+            ent_pos = self.get_random_position(anchor_pos)
             entity = self.ecs.new_entity()
             self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
             self.ecs.add_component(entity, ent_pos)
@@ -74,7 +82,7 @@ class MapGenerator(object):
             )
         # Add rocks
         for i in range(20):
-            ent_pos = Position.Position(random.randint(-20, 20), random.randint(-20, 20))
+            ent_pos = self.get_random_position(anchor_pos)
             entity = self.ecs.new_entity()
             self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
             self.ecs.add_component(entity, ent_pos)
