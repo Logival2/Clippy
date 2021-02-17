@@ -35,11 +35,21 @@ class Position(object):
             return self.y == other.y and self.x == other.x
         return (self.y, self.x) == other
 
+## Normal comparison operators (>, <) are used to check if AT LEAST one value is (>, <)
+# to the other instance
     def __gt__(self, other):
         return self.y > other.y or self.x > other.x
 
     def __lt__(self, other):
         return self.y < other.y or self.x < other.x
+
+## BITWISE operators (>>, <<) are used to check if ALL values are (>=, <=)
+# to the other instance
+    def __rshift__(self, other):
+        return self.y >= other.y and self.x >= other.x
+
+    def __lshift__(self, other):
+        return self.y <= other.y and self.x <= other.x
 
     def __mul__(self, other):
         if isinstance(other, Position):

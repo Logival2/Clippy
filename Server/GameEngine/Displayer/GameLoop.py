@@ -12,35 +12,50 @@ from GameEngine.Components.Position import Position
 
 class GameLoop(object):
     def __init__(self, config):
-        ### Pygame related ###
+        ### Pygame related
         pygame.init()
         self.config = config
         self.tile_size = config['tile_size']
         self.borders_width = config['borders_width']
-        # Based on the tile size (px), ensure that the final resolution makes for an even
-        # number of tiles
+        # Based on the tile size (px), ensure that the final resolution
+        # will result in an even number of tiles
         if config['target_resolution']:
             tmp_screen_size = config['target_resolution']
         else:
             tmp_screen_size = pygame.display.Info()
-            tmp_screen_size = Position(x=tmp_screen_size.current_w, y=tmp_screen_size.current_h)
-        self.tiles_nbr =  tmp_screen_size // self.tile_size
+            tmp_screen_size = Position(
+                x=tmp_screen_size.current_w,
+                y=tmp_screen_size.current_h
+            )
+        self.tiles_nbr = tmp_screen_size // self.tile_size
+        # Always get an even number of tiles ? Don't remember why I did that
         if self.tiles_nbr.x % 2: self.tiles_nbr.x -=1
         if self.tiles_nbr.y % 2: self.tiles_nbr.y -=1
-        # Set variables
+        ### Now set variables:
+        # Number of tiles total
         self.screen_size = self.tiles_nbr * self.tile_size
+        # Number of horizontal tiles for the HUD
         self.hud_tiles_nbr = (config['hud_width_px'] // self.tile_size) + 1
-        self.map_tiles_nbr = Position(x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr, y=self.tiles_nbr.y - 2)
-        # Launch display
+        # Number of tiles for the map
+        self.map_tiles_nbr = Position(
+            x=self.tiles_nbr.x - 3 - self.hud_tiles_nbr,
+            y=self.tiles_nbr.y - 2
+        )
+        self.needed_lines_top = self.map_tiles_nbr.y // 2 + 2
+        self.mid_map_position = Position(
+            y=self.map_tiles_nbr.y // 2,
+            x=self.map_tiles_nbr.x // 2
+        )
+        self.player_pos = None
+        ### Launch display
         self.display = pygame.display.set_mode((self.screen_size.x , self.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
         self.font = pygame.font.Font('./GameEngine/Displayer/assets/fonts/Everson_Mono.ttf', 24)
         self.sprites = {}
         self.load_available_sprites(self.tile_size)
-        self.last_print_time = time.time()
+        # self.last_print_time = time.time()
         self.clock = pygame.time.Clock()
-
 
     def update(self, map, game_state):
         events = pygame.event.get()
@@ -50,13 +65,14 @@ class GameLoop(object):
         self.display.fill(BLACK)
 
         self.draw_borders()
+        self.player_pos = game_state["components"]["Position"][1]
         # self.draw_hud(info_list)
         self.draw_map(map, game_state)
         self.draw_entities(map, game_state)
 
         # SEND INPUTS
         inputs = self.get_inputs()
-        # For now just put it in the gamestate
+        # For now just put it in the game_state
         game_state["players"][0]["inputs"] = inputs
         # if inputs:
         #     self.client.dispatch_event(
@@ -64,7 +80,6 @@ class GameLoop(object):
         #         player_id=self.client.player_id,
         #         inputs=inputs,
         #     )
-
         pygame.display.update()
         self.clock.tick(5)
         return game_state
@@ -72,11 +87,14 @@ class GameLoop(object):
     def draw_entities(self, map, game_state):
         ''' Draw the dynamic entities, which are in the game state '''
         for entity_id, sprite in game_state["components"]["Sprite"].items():
+            entity_position = game_state["components"]["Position"][entity_id]
+            entity_screen_position = self.map_pos_to_screen_pos(entity_position)
+            if not entity_screen_position: continue  # Out of screen
             self.display_entity(
                 sprite.sprite_type,
                 sprite.region,
                 sprite.noise_value,
-                game_state["components"]["Position"][entity_id]
+                entity_screen_position
             )
         # with self.client.access_game_state() as game_state:
         #     if time.time() - self.last_print_time > 0.5:
@@ -89,50 +107,29 @@ class GameLoop(object):
         #     # print()
         #     # print('PLAYER', game_state.players)
 
+    def screen_pos_to_map_pos(self, screen_pos):
+        return self.player_pos + screen_pos - self.mid_map_position
+
+    def map_pos_to_screen_pos(self, map_pos):
+        screen_pos = map_pos + self.mid_map_position - self.player_pos
+        if screen_pos >> Position(0, 0) and screen_pos << self.map_tiles_nbr:
+            return screen_pos
+        # Off screen position, return None
+
     def draw_map(self, map, game_state):
-        ''' Display the static map, received at the start of the connection '''
-        x_idx = 0
-        y_idx = 0
-        while y_idx < self.map_tiles_nbr.y and y_idx < len(map):
-            while x_idx < self.map_tiles_nbr.x and x_idx < len(map[0]):
-                pos = Position(y=y_idx, x=x_idx)
-                # print(pos)
-                # tile_data = self.client.map[y_idx][x_idx]
-                # Take in ECS
-                tile_data = map[y_idx][x_idx]
-                self.display_entity(*tile_data, pos)
-                x_idx += 1
-            x_idx = 0
-            y_idx += 1
+        ''' Display the static map, received at the start of the connection
+        and keep the player at the center of the screen '''
+        for y_idx in range(self.map_tiles_nbr.y):
+            for x_idx in range(self.map_tiles_nbr.x):
+                screen_pos = Position(y=y_idx, x=x_idx)
+                map_pos = self.screen_pos_to_map_pos(screen_pos)
+                line = map.get(map_pos.y, None)
+                if not line: continue
+                tile = line.get(map_pos.x, None)
+                if not tile: continue
+                self.display_entity(*tile, screen_pos)
 
-    # def tmp_draw_map(self, map_handler):
-    #     """ Draw the map sent by the server, keeping the player at the center of the screen """
-    #     needed_lines_top = self.map_tiles_nbr.y // 2 + 2
-    #     to_add_top = needed_lines_top - map_handler.player_pos.y
-    #     term_y_idx = 0 if to_add_top <= 0 else to_add_top
-    #     map_y_idx = 0 if to_add_top >= 0 else -to_add_top
-    #
-    #     tiles_to_add_left = self.map_tiles_nbr.x // 2 - map_handler.player_pos.x
-    #     shift_x = 0 if tiles_to_add_left <= 0 else tiles_to_add_left
-    #     shift_x += 1
-    #     map_x_start = 0 if tiles_to_add_left >= 0 else -tiles_to_add_left
-    #     avail_tiles_right = self.map_tiles_nbr.x // 2
-    #     map_x_end = map_handler.player_pos.x + avail_tiles_right
-    #
-    #     while term_y_idx < self.map_tiles_nbr.y and map_y_idx < len(map_handler.map):
-    #         term_y_idx += 1
-    #         tmp_line = map_handler.map[map_y_idx][map_x_start:map_x_end]
-    #         for x_idx, tile in enumerate(tmp_line):
-    #             if tile:
-    #                 types = tile.get_types()
-    #                 pos = Position(x=shift_x + x_idx, y=term_y_idx)
-    #                 # Lower entity
-    #                 if types[1]: self.display_entity(tile.low_ent, tile.noise_value, pos)
-    #                 # Top entity
-    #                 if types[0]: self.display_entity(tile.top_ent, tile.noise_value, pos)
-    #         map_y_idx += 1
-
-    def display_entity(self, sprite_type, region, noise_value, pos):
+    def display_entity(self, sprite_type, region, noise_value, screen_pos):
         """ From the entity type, position and noise value assigned to this position
         (computed server side) draw a sprite"""
         sprite_name = f'{region}_{sprite_type}'
@@ -141,7 +138,10 @@ class GameLoop(object):
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
         sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
-        self.display.blit(self.sprites[sprite_name][sprite_idx], ((pos + Position(1, 1)) * self.tile_size).get_xy())
+        self.display.blit(
+            self.sprites[sprite_name][sprite_idx],
+            ((screen_pos + Position(1, 1)) * self.tile_size).get_xy()
+        )
 
     def draw_hud(self, info_list):
         hud_text_x_start = (3 + self.map_tiles_nbr.x) * self.tile_size
