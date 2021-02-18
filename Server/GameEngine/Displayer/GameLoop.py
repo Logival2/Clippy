@@ -33,6 +33,7 @@ class GameLoop(object):
         # Always get an even number of tiles ? Don't remember why I did that
         if self.tiles_nbr.x % 2: self.tiles_nbr.x -=1
         if self.tiles_nbr.y % 2: self.tiles_nbr.y -=1
+        print(self.tiles_nbr)
         ### Now set variables:
         # Number of tiles total
         self.screen_size = self.tiles_nbr * self.tile_size
