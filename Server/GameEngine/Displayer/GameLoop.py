@@ -8,6 +8,7 @@ import pygame
 from pygame.locals import *
 
 from GameEngine.Displayer.utils import exit_error
+from GameEngine.Displayer.sprite_utils import upscale_sprites
 from GameEngine.Displayer.config import *
 from GameEngine.Components.Position import Position
 
@@ -53,11 +54,14 @@ class GameLoop(object):
         self.display = pygame.display.set_mode((self.screen_size.x , self.screen_size.y))
         pygame.display.set_caption('Clippy')
         ### ASSETS ###
+        self.border_ratio = 4
         self.font = pygame.font.Font('./GameEngine/Displayer/assets/fonts/Everson_Mono.ttf', 24)
         self.sprites = {}
         self.load_available_sprites(self.tile_size)
         # self.last_print_time = time.time()
         self.clock = pygame.time.Clock()
+        # Launch sprite upscaling
+
 
     def update(self, map, game_state):
         events = pygame.event.get()
@@ -150,9 +154,11 @@ class GameLoop(object):
             if sprite_name not in self.sprites.keys():
                 sprite_name = 'default'
         sprite_idx = int(noise_value * len(self.sprites[sprite_name]))
+
+        x, y = ((screen_pos + Position(1, 1)) * self.tile_size).get_xy()
         self.display.blit(
             self.sprites[sprite_name][sprite_idx],
-            ((screen_pos + Position(1, 1)) * self.tile_size).get_xy()
+            (x - 4, y - 4)
         )
 
     def draw_hud(self, info_list):
@@ -225,16 +231,25 @@ class GameLoop(object):
         return res
 
     def load_available_sprites(self, sprite_size):
+        main_path =  "./GameEngine/Displayer/assets/sprites"
+        main_output_path =  "./GameEngine/Displayer/assets/upscaled_sprites"
+        upscale_sprites(self.border_ratio, main_path, False, main_output_path)
         self.load_sprite_folder(
-            "./GameEngine/Displayer/assets/sprites",
+            main_output_path,
             sprite_size
         )
+        no_rot_path = "./GameEngine/Displayer/assets/sprites/no_rot_sprites"
+        no_rot_output_path = "./GameEngine/Displayer/assets/upscaled_sprites/no_rot_sprites"
+        upscale_sprites(self.border_ratio, no_rot_path, True, no_rot_output_path)
         self.load_sprite_folder(
-            "./GameEngine/Displayer/assets/sprites/no_rot_sprites",
+            no_rot_output_path,
             sprite_size, rotate=False
         )
+        no_rot_no_flip_path = "./GameEngine/Displayer/assets/sprites/no_rot_sprites/no_flip_sprites"
+        no_rot_no_flip_output_path = "./GameEngine/Displayer/assets/upscaled_sprites/no_rot_sprites/no_flip_sprites"
+        upscale_sprites(self.border_ratio, no_rot_no_flip_path, True, no_rot_no_flip_output_path)
         self.load_sprite_folder(
-            "./GameEngine/Displayer/assets/sprites/no_rot_sprites/no_flip_sprites",
+            no_rot_no_flip_output_path,
             sprite_size, rotate=False, flip=False
         )
         print(f'[+] {len(self.sprites)} sprites loaded:')
@@ -266,5 +281,10 @@ class GameLoop(object):
             tmp_sprite = pygame.image.load(f'{path}/{name}.png')
             # Transform it to a pygame friendly format (quicker drawing)
             tmp_sprite.convert()
-            # Scale it to the tile size
-            return pygame.transform.scale(tmp_sprite, (self.config['tile_size'], self.config['tile_size']))
+            # Sprites are 20 * 20 (as semi transparent borders have been added)
+            # so scale it to
+            # self.config['tile_size'] + (self.config['tile_size'] // 4)
+            # As we want the semi transparent borders to be kept overlapping on
+            # neighbour tiles
+            new_size = self.config['tile_size'] + (self.config['tile_size'] // (self.border_ratio // 2))
+            return pygame.transform.scale(tmp_sprite, (new_size, new_size))
