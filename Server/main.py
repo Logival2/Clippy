@@ -21,7 +21,7 @@ if __name__ == '__main__':
                                         'LEFT': {"status": False, "function": move_left},
                                         'DOWN': {"status": False, "function": move_down},
                                         'RIGHT': {"status": False, "function": move_right}}))
-    ecs.add_component(entity, Hitbox(x=10, y=10))
+    ecs.add_component(entity, Hitbox(x=10, y=10, static=False))
     ecs.game_state["players"][0] = {
         "name": "rick",
         "entity_id": entity

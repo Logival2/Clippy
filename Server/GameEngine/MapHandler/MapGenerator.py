@@ -37,14 +37,14 @@ class MapGenerator(object):
         entity = self.ecs.new_entity()
         ent_pos = self.get_random_position(anchor_pos)
         self.ecs.add_component(entity, ent_pos)
-        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy(), False))
         self.ecs.add_component(entity, Pig.Pig())
         self.ecs.add_component(entity, Sprite.Sprite('pig', 'desert', 0.5))
 
         entity = self.ecs.new_entity()
         ent_pos = self.get_random_position(anchor_pos)
         self.ecs.add_component(entity, ent_pos)
-        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
+        self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy(), False))
         self.ecs.add_component(entity, Fox.Fox())
         self.ecs.add_component(entity, Sprite.Sprite('fox', 'desert', 0.5))
 

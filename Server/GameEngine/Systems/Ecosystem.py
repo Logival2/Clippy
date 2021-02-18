@@ -40,7 +40,8 @@ def rabbit_update():
         rabbit[id].urge_to_reproduce += rabbit[id].reproduction_rate
         if rabbit[id].hunger >= 100:
             # ecs.delete_id(id)
-            continue
+            # continue
+            pass
 
         """Can it eat ?"""
         for food in food_ids:
@@ -56,18 +57,18 @@ def rabbit_update():
             if dist < rabbit[id].view_radius * MAP_CONFIG["chunk_size"] and mate is not id:
                 if rabbit[mate].sexe is not rabbit[id].sexe:
                     rep_mate[mate] = dist
-                    rep_direction[0] += positions[mate].x
-                    rep_direction[1] += positions[mate].y
+                    rep_direction[0] += positions[mate].x - positions[id].x
+                    rep_direction[1] += positions[mate].y - positions[id].y
                     rep_direction[2] += 1
-                social_direction[0] += positions[mate].x
-                social_direction[1] += positions[mate].y
+                social_direction[0] += positions[mate].x - positions[id].x
+                social_direction[1] += positions[mate].y - positions[id].y
                 social_direction[2] += 1
         rep_direction[0] /= (rep_direction[2] if rep_direction[2] != 0 else 1)
         rep_direction[1] /= (rep_direction[2] if rep_direction[2] != 0 else 1)
         social_direction[0] /= (social_direction[2] if rep_direction[2] != 0 else 1)
         social_direction[1] /= (social_direction[2] if rep_direction[2] != 0 else 1)
-        delta_x = (social_direction[0]*rabbit[id].social_rate + rep_direction[0]*rabbit[id].urge_to_reproduce) - positions[id].x
-        delta_y = (social_direction[1]*rabbit[id].social_rate + rep_direction[1]*rabbit[id].urge_to_reproduce) - positions[id].y
+        delta_x = (social_direction[0]*rabbit[id].social_rate + rep_direction[0]*rabbit[id].urge_to_reproduce)
+        delta_y = (social_direction[1]*rabbit[id].social_rate + rep_direction[1]*rabbit[id].urge_to_reproduce)
 
         """Predator fear"""
 
