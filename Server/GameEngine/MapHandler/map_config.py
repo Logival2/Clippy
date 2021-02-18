@@ -2,10 +2,10 @@ from collections import OrderedDict
 
 
 MAP_CONFIG = {
-    'seed': 1,
-    'regions_nbr': 5,
-    'map_size': 64,
-    'chunk_size': 64,
+    'seed': 21879,
+    'regions_nbr': 8,
+    'map_size': 128,
+    'chunk_size': 24,
     'noise_scale': 15,  # Bigger = Zoom in
     'random_bloc_swaps_frequency': 0.01,
     'regions': {
@@ -39,7 +39,7 @@ MAP_CONFIG = {
                 ('stone', .8),
             ],
             'lichen_probability': 0.1,
-            'trees_probability': 2,
+            'trees_probability': 1.2,
             'rocks_probability': 0.2,
         },
         'hell': {
