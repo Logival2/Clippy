@@ -3,10 +3,8 @@ import random
 from pprint import pprint
 
 from opensimplex import OpenSimplex
-import sys
+import GameEngine.Components
 from GameEngine.Components import *
-# pprint(sys.modules)
-# WTF is this? Why isn't Fox imported by * ????
 from GameEngine.Components import Fox
 from GameEngine.Components import Pig
 from GameEngine.Components import Vegetable
@@ -100,10 +98,12 @@ class MapGenerator(object):
                 ### Define the bloc type now, based on two noises of different scales
                 # along with some random
                 noise_value = self.get_simplex_value(tile_pos)
+                small_noise_value = self.get_simplex_value(tile_pos, small=True)
                 region = self.get_pos_region(tile_pos, noise_value)
                 # Also use a bit of another noise, a smaller one (more details)
                 bloc_type_noise_value = (
-                    + 6 * noise_value
+                    + 4 * noise_value
+                    + 2 * small_noise_value
                     + 1 *random.uniform(0, 1)
                 ) / 7
                 bloc_type = self.get_bloc_type(bloc_type_noise_value, region)
@@ -159,7 +159,7 @@ class MapGenerator(object):
                 closest_region = (idx % self.config['regions_nbr'], d)
         regions_key_list = list(self.config['regions'].keys())
         choice_list = [regions_key_list[closest_region[0] % len(regions_key_list)]]
-        if abs(second_closest_region[1] - closest_region[1]) < 5:
+        if abs(second_closest_region[1] - closest_region[1]) < 10:
             choice_list += [
                 regions_key_list[second_closest_region[0] % len(regions_key_list)],
             ]
@@ -180,10 +180,11 @@ class MapGenerator(object):
                 point_y = random.randint(0, self.config['map_size'])
             self.capitals_positions.append(Position.Position(x=point_x, y=point_y))
 
-    def get_simplex_value(self, tile_pos):
+    def get_simplex_value(self, tile_pos, small=False):
         ''' Returns the noise value of a Position.Position '''
+        noise_size = "small_noise_scale" if small else "noise_scale"
         noise_value = self.simplex.noise2d(
-            *(tile_pos / self.config['noise_scale']).get_xy()
+            *(tile_pos / self.config[noise_size]).get_xy()
         )
         return (noise_value + 1) / 2  # To get a value between 0 and 1
 
