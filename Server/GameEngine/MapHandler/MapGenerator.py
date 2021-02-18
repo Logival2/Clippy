@@ -25,7 +25,7 @@ class MapGenerator(object):
         # Only create the ground blocs
         chunk, regions_blocs_positions = self.layout_basic_ground(anchor_pos)
         # Now randomly swap some of them
-        # self.randomly_swap_blocs(chunk, anchor_pos)
+        self.randomly_swap_blocs(chunk, anchor_pos)
         # Add Trees, rocks etc
         self.decorate_chunk(chunk, regions_blocs_positions, anchor_pos)
         # Create some AIs in this chunk
@@ -63,7 +63,7 @@ class MapGenerator(object):
         return entity
 
     def decorate_chunk(self, terrain, regions_blocs_positions, anchor_pos):
-        entities_density = 60  # Bigger = less entities
+        entities_density = 70  # Bigger = less entities
         for region, region_bloc_positions in regions_blocs_positions.items():
             lichen_probability = self.config["regions"][region]["lichen_probability"]
             # Add lichen
