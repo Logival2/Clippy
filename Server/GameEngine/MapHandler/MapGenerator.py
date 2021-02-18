@@ -1,11 +1,14 @@
 import math
 import random
+from pprint import pprint
 
 from opensimplex import OpenSimplex
-
+import sys
 from GameEngine.Components import *
-# WTF is this? Fox is not imported by * ????
+# pprint(sys.modules)
+# WTF is this? Why isn't Fox imported by * ????
 from GameEngine.Components import Fox
+from GameEngine.Components import Pig
 from GameEngine.Components import Vegetable
 from GameEngine.MapHandler.map_config import MAP_CONFIG
 
@@ -35,8 +38,8 @@ class MapGenerator(object):
         ent_pos = self.get_random_position(anchor_pos)
         self.ecs.add_component(entity, ent_pos)
         self.ecs.add_component(entity, Hitbox.Hitbox(*ent_pos.get_xy()))
-        self.ecs.add_component(entity, Rabbit.Rabbit())
-        self.ecs.add_component(entity, Sprite.Sprite('rabbit', 'desert', 0.5))
+        self.ecs.add_component(entity, Pig.Pig())
+        self.ecs.add_component(entity, Sprite.Sprite('pig', 'desert', 0.5))
 
         entity = self.ecs.new_entity()
         ent_pos = self.get_random_position(anchor_pos)

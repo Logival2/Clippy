@@ -18,8 +18,8 @@ MAP_CONFIG = {
                 ('stone', 1),
             ],
             'lichen_probability': 0.4,
-            'trees_probability': 0.2,
-            'rocks_probability': 0.5,
+            'trees_probability': 0.15,
+            'rocks_probability': 0.2,
         },
         'mountain': {
             'repartition': [
@@ -29,7 +29,7 @@ MAP_CONFIG = {
             ],
             'lichen_probability': 0.1,
             'trees_probability': 0.1,
-            'rocks_probability': 1,
+            'rocks_probability': 1.3,
         },
         'temperate': {
             'repartition': [
@@ -39,16 +39,16 @@ MAP_CONFIG = {
                 ('stone', .8),
             ],
             'lichen_probability': 0.1,
-            'trees_probability': 1.2,
+            'trees_probability': 1.3,
             'rocks_probability': 0.2,
         },
         'hell': {
             'repartition': [
-                ('lava', .3),
+                ('lava', 1),
             ],
             'lichen_probability': 0,
             'trees_probability': 0,
-            'rocks_probability': 0.5,
+            'rocks_probability': 0.7,
         },
         'ocean': {
             'repartition': [
