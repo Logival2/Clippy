@@ -3,3 +3,4 @@ __pycache__
 upscaled_sprites
 venv
 .idea
+Server/GameEngine/Displayer/assets/runtime_sprites/*.png
