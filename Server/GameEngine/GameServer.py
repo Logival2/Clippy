@@ -40,20 +40,20 @@ class ClippyGame(object):
             players={},  # dict with `player_id: player_dict` entries
             components={"Position": {}}
         )
-        self.backend = Backend(
-            self.tmp_initial_game_state,
-            self.time_step,
-            event_handlers={
-                'MOVE': self.on_move,
-                'JOIN': self.on_join,
-                'MAP_REQUEST': self.on_map_request
-                }
-        )
+        # self.backend = Backend(
+        #     self.tmp_initial_game_state,
+        #     self.time_step,
+        #     event_handlers={
+        #         'MOVE': self.on_move,
+        #         'JOIN': self.on_join,
+        #         'MAP_REQUEST': self.on_map_request
+        #         }
+        # )
         # Put the map_gen here as it needs most of this class variables to work
         self.map_handler = MapHandler(self)
         self.add_system(self.movement_system)
         self.add_system(self.debug_system)
-        self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
+        # self.on_join(0, self.tmp_initial_game_state, "128.1.1.2")
 
     def movement_system(self, game_state, dt):
         position_update = {}
