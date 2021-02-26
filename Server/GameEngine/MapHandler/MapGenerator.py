@@ -77,6 +77,7 @@ class MapGenerator(object):
                 ent_pos = random.choice(regions_blocs_positions[region])
                 regions_blocs_positions[region].remove(ent_pos)
                 entity = self.create_entity(ent_pos + anchor_pos, "tree", True)
+                self.ecs.add_component(entity, Vegetable.Vegetable())
             # Add rocks
             rocks_probability = self.config["regions"][region]["rocks_probability"]
             for i in range(int(len(region_bloc_positions) * rocks_probability / entities_density)):

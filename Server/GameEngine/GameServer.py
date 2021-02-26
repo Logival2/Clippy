@@ -24,6 +24,7 @@ class ClippyGame(object):
         self.game_loop = GameLoop(DISPLAY_CONFIG)
         self.entity = 10
         self.systems = []
+        self.id_delete = []
         self.debug_timer = None
         self.game_state = {
             "players": {},
@@ -91,6 +92,9 @@ class ClippyGame(object):
         # Before a player joins, updating the game state is unnecessary.
         # if len(game_state.players) == 0:
         #     return {}
+        for ids in self.id_delete:
+            self.delete_id(ids)
+        self.id_delete.clear()
         updates = {}
         for function in self.systems:
             if str(signature(function)) != "()":
