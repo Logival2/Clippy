@@ -13,6 +13,25 @@ from GameEngine.MapHandler.map_config import MAP_CONFIG
 """ Multi process the AI """
 
 
+def retrieve_nearby(id, types, dist):
+    ret = {}
+    pos = ecs.get_component(Position)
+
+    if type(types) != list:
+        types = [types]
+
+    for tipe in types:
+        elems = ecs.filter(tipe)
+        nearby = []
+        for elem in elems:
+            distance = math.dist([pos[id].x, pos[id].y], [pos[elem].x, pos[elem].y])
+            if distance < dist:
+                nearby.append({"id": elem, "dist": distance})
+        ret[tipe.__name__] = nearby
+
+    return ret
+
+
 def fox_update():
     """ What does the fow says ? """
     foxs = ecs.get_component(Fox)
@@ -28,11 +47,7 @@ def food_finding(id):
     pos = ecs.get_component(Position)
     rabbit = ecs.get_component(Pig, id)
 
-    nearby_food = []
-    for food in foods:
-        distance = math.dist([pos[id].x, pos[id].y],[pos[food].x, pos[food].y])
-        if distance < rabbit.view_radius * MAP_CONFIG["chunk_size"]:
-            nearby_food.append({"id": food, "dist": distance})
+    nearby_food = retrieve_nearby(id, Vegetable, rabbit.view_radius * MAP_CONFIG["chunk_size"])["Vegetable"]
 
     nearby_food.sort(key=lambda a: a["dist"])
 
