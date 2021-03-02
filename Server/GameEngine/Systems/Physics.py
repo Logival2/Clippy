@@ -21,7 +21,7 @@ def hitbox_update():
 
     for id in non_static:
         for collide in collides:
-            if positions[id] == positions[collide] and id != collide:
+            if (positions[id] == positions[collide] or positions[id] == hitboxs[collide]) and id != collide:
                 if not does_collide(Position(x=hitboxs[id].x, y=positions[id].y), collides, positions):
                     positions[id].x = hitboxs[id].x
                 elif not does_collide(Position(x=positions[id].x, y=hitboxs[id].y), collides, positions):

@@ -7,7 +7,8 @@ class Pig(object):
         self.reproduction_rate = random.uniform(0, .1)
         self.social_rate = random.uniform(0, 1)
         self.food_search_rate = random.uniform(0, 1)
-        self.view_radius = random.uniform(.75, 100)
+        self.view_radius = random.uniform(.4, .5)
+        self.view_radius = random.uniform(.4, .5)
 
         self.hunger = 0 # dies if it reach 100
         self.urge_to_reproduce = 0

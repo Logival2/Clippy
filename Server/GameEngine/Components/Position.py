@@ -3,18 +3,21 @@ import struct
 
 
 # @umsgpack.ext_serializable(0x1)
+from GameEngine.Components.Hitbox import Hitbox
+
+
 class Position(object):
     def __init__(self, y, x):
         self.y = y
         self.x = x
 
     def __add__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Hitbox):
             return Position(self.y + other.y, self.x + other.x)
         return Position(self.y + other, self.x + other)
 
     def __sub__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Hitbox):
             return Position(self.y - other.y, self.x - other.x)
         return Position(self.y + other, self.x + other)
 
@@ -31,7 +34,7 @@ class Position(object):
         return f"Position(y={self.y}, x={self.x})"
 
     def __eq__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Hitbox):
             return self.y == other.y and self.x == other.x
         return (self.y, self.x) == other
 
@@ -52,7 +55,7 @@ class Position(object):
         return self.y <= other.y and self.x <= other.x
 
     def __mul__(self, other):
-        if isinstance(other, Position):
+        if isinstance(other, Position) or isinstance(other, Hitbox):
             return Position(self.y * other.y, self.x * other.x)
         return Position(self.y * other, self.x * other)
 
