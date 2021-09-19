@@ -3,6 +3,7 @@ import socket
 
 from CONFIG import *
 
+coucou
 
 class Client(object):
     def __init__(self, id):
